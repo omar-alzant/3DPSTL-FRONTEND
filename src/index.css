@@ -1,0 +1,430 @@
+@import 'bootstrap/dist/css/bootstrap.min.css';
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;700&family=Poppins:wght@400;500;600&display=swap');
+
+:root{
+  --nav: #0d0d33;
+  --body-h: #0d0d33;
+  -body-g: #7e6292;
+  --pk: #ec008c;
+  --pk-h: #eb66b6;
+  --gr: #38b54a;
+  --gr-h: #73b87d;
+  --yl: #feb912;
+  --yl-h: #ffd061;
+  --bl: #00aeef;
+  --bl-h: #71b5ce;
+  --white: #ffffff;
+  --black: #000000;
+  --black-light: #333333;
+  --red-light: #f0d0d4;
+  --gray-light: rgb(168, 165, 165);
+}
+
+td, th{
+  border: 1px solid rgb(168, 165, 165) !important;
+}
+.swatch{
+    display: flex !important;
+    width: 24px !important;
+    height: 24px !important;
+    border-radius: 50% !important;
+}
+.c-black{
+  color: var(--white) !important;
+}
+
+.c-white{
+  color: var(--black) !important;
+}
+
+.c-pk-h{
+  color: var(--pk-h) !important;
+}
+
+.c-gr-h{
+  color: var(--gr-h) !important;
+}
+
+.c-bl-h{
+  color: var(--bl-h) !important;  
+}
+.c-yl-h{
+  color: var(--yl-h) !important;
+}
+
+.c-pk{
+  color: var(--pk) !important;
+}
+
+.c-gr{
+  color: var(--gr) !important;
+}
+
+.c-bl{
+  color: var(--bl) !important;  
+}
+.c-yl{
+  color: var(--yl) !important;
+}
+
+.bg-bl-h{
+  background-color: var(--bl-h) !important;
+}
+
+.bg-gray-l{
+  background-color: var(--gray-light) !important;
+}
+
+.bg-nav{
+  background-color: var(--nav) !important;
+}
+
+.bg-body-h{
+  background-color: var(--body-h) !important;
+}
+.bg-body-g{
+  background-color: var(--body-g) !important;
+}
+
+
+.bg-yl-h{
+  background-color: var(--yl-h) !important;
+}
+
+.bg-gr-h{
+  background-color: var(--gr-h) !important;
+}
+
+.bg-red-light{
+  background-color: var(--red-light) !important;
+}
+
+.bg-pk-h{
+  background-color: var(--pk-h) !important;
+}
+
+.br-pk-h{
+  border: 1px solid var(--pk-h) !important;
+}
+
+.br-bl-h{
+  border: 1px solid var(--bl-h) !important;
+}
+.br-black{
+  border: 1px solid var(--black) !important;
+}
+.br-black-light{
+  border: 1px solid var(--black-light) !important;
+}
+
+.br-yl-h{
+  border: 1px solid var(--yl-h) !important;
+}
+
+.br-gr-h{
+  border: 1px solid var(--gr-h) !important;
+}
+
+.br-danger{
+  border: 1px solid rgb(241, 94, 94) !important;
+}
+
+.cursor{
+  cursor: pointer !important;
+}
+
+.brr{
+  border-radius: 10px;
+}
+
+.op-50{
+  opacity: 0.9;
+}
+
+.br-0{
+  border:none !important;
+}
+
+.selectedCard{
+  border: 3px dotted var(--yl-h) !important;
+  /* background-color: var(--gr-h) !important; */
+}
+
+/* Fix for Quill editor image overflow */
+.ql-editor img {
+  max-width: 100dvw !important;
+  height: auto !important;
+  display: block !important;
+  margin: 10px 0 !important;
+}
+
+/* Ensures the container itself handles the scroll if something is still too wide */
+.ql-container {
+  font-size: 16px !important;
+  overflow-y: auto !important;
+}
+
+.variant-divider {
+  height: 28px;
+  width: 1px;
+  background: #dee2e6;
+}
+
+.btn-hover-facebook:hover{
+  box-shadow: 2px 2px  rgba(255, 178, 178, 0.2);
+  border-radius: 50px;
+  padding: 2px;
+
+}
+/* Hide the arrow and prevent clicking when toggle is disabled */
+.hide-accordion-toggle .accordion-button::after {
+  display: none !important;
+}
+
+.hide-accordion-toggle .accordion-button {
+  pointer-events: none; /* Disables the click/toggle effect */
+  cursor: default;
+}
+
+/* If you still want your "Open Item" button inside to work */
+.hide-accordion-toggle .cursor, 
+.hide-accordion-toggle button {
+  pointer-events: auto; 
+}
+.whatsapp-float {
+  position: fixed;
+  width: 60px;
+  height: 60px;
+  bottom: 40px;
+  right: 40px;
+  background-color: #25d366; 
+  color: #FFF;
+  border-radius: 50px;
+  text-align: center;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+
+.whatsapp-float:hover {
+  transform: scale(1.1);
+  background-color: #128c7e; /* Darker green on hover */
+  color: white;
+}
+
+/* Position the Cart below or above it */
+.floating-cart {
+  position: fixed;
+  bottom: 90px; /* Adjust this to be above or below WhatsApp */
+  right: 20px;
+  width: 60px;
+  height: 60px;
+  background-color: var(--pk-h); /* Primary Blue */
+  border-radius: 50%;
+  z-index: 1000;
+  transition: transform 0.2s;
+}
+
+
+.floating-cart:hover {
+  transform: scale(1.1);
+  background-color: var(--pk); /* Primary Blue */
+
+}
+/* Tooltip that appears on hover */
+.whatsapp-tooltip {
+  visibility: hidden;
+  width: 120px;
+  background-color: #333;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%; 
+  right: 0;
+  opacity: 0;
+  transition: opacity 0.3s;
+  font-size: 14px;
+}
+.floating-cart-tooltip {
+  visibility: hidden;
+  width: 120px;
+  background-color: #333;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%; 
+  right: 0;
+  opacity: 0;
+  transition: opacity 0.3s;
+  font-size: 14px;
+}
+
+.whatsapp-float:hover .whatsapp-tooltip {
+  visibility: visible;
+  opacity: 1;
+}
+
+.floating-cart:hover .floating-cart-tooltip {
+  visibility: visible;
+  opacity: 1;
+}
+.filter-sticky {
+  position: sticky;
+  top: 0px;
+  bottom: 20px;
+  z-index: 999;
+  background: white; /* Needed or it will overlap */
+  padding-bottom: 10px;
+  border-bottom: 1px solid #ddd; /* for clean look */
+}
+
+.carousel-control-next-icon, .carousel-control-prev-icon{
+   background-color: #374c55 !important;
+    border-radius: 10px;
+    padding: 20px;
+}
+
+.carousel-control-next:active, .carousel-control-prev:active{
+   background-color: transparent !important;
+    /* border-radius: 10px;
+    padding: 20px; */
+}
+
+.card {
+  transition: all 0.3s ease;
+  backdrop-filter: blur(0);
+}
+
+.card:hover {
+  transform: scale(1.03);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 16px 40px rgba(0,0,0,0.18);
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image: url('./watermark.svg');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100%; /* Adjust size */
+  opacity: 0.1; /* Transparency */
+  pointer-events: none;
+  z-index: -1;
+}
+
+.modelInCategory:hover{
+  color: black !important;
+}
+
+.category-list:hover{
+  color: gray !important;
+}
+
+Button:hover{
+  /* background-color: #38b54a !important; */
+  opacity: 0.7;
+}
+
+a:active{
+  background-color: var(--pk-h) !important;
+}
+
+
+.nav-link.active{
+  background-color: var(--pk-h) !important;
+  color: white !important;
+}
+
+.btn-hover:hover{
+  border: 1px solid gray !important;
+}
+
+.spinner-large {
+  display: block;
+  border: 6px solid #f3f3f3;
+  border-top: 6px solid var(--c1);
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+}
+
+.spinner-small {
+  display: block;
+  border: 6px solid #f3f3f3;
+  border-top: 6px solid var(--c1);
+  border-radius: 50%;
+  width: 10px;
+  height: 10px;
+  animation: spin 1s linear infinite;
+}
+
+body {
+  margin: 0;
+  /* font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif; */
+    font-family: 'Poppins', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: white !important;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Fredoka', sans-serif;
+}
+
+
+.modern-card {
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.modern-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+}
+
+.image-wrapper {
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-top-left-radius: 1rem;
+  border-top-right-radius: 1rem;
+  background: #f8f9fa;
+}
+
+.card-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.modern-card:hover .card-image {
+  transform: scale(1.05);
+}
+
+/* Text clamp */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}

@@ -1,0 +1,23 @@
+.cart-item-card {
+  border-radius: 10px;
+}
+
+.cart-item-image {
+  object-fit: cover;
+}
+
+.cart-item-accordion .accordion-button {
+  padding: 0.75rem;
+}
+
+.cart-item-accordion .accordion-button::after {
+  margin-left: auto;
+}
+
+.swatch {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: inline-block;
+  border: 1px solid #ccc;
+}

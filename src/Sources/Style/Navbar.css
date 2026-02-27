@@ -1,0 +1,194 @@
+/* ---------- NAVBAR BASE ---------- */
+.kids-navbar {
+    background: var(--nav);
+    border-bottom: 1px solid #f1e4dc;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    font-family: "Poppins", "Nunito", sans-serif;
+  }
+  
+  /* ---------- BRAND ---------- */
+  .kids-navbar .navbar-brand img {
+    transition: transform 0.3s ease;
+  }
+  
+  .kids-navbar .navbar-brand img:hover {
+    transform: scale(1.05) rotate(-2deg);
+  }
+  
+  /* ---------- NAV LINKS ---------- */
+  .kids-nav-link {
+    display: flex !important;
+    border: 1px solid rgb(179, 179, 179) !important;
+    border-radius: 10px !important;
+    padding: 2px 8px !important;
+    font-weight: 200;
+    color: #333 !important;
+    transition: all 0.25s ease;
+  }
+  
+  .kids-nav-link:hover {
+    background-color: #6d6d6d;
+    color: #f1f1f1 !important;
+  }
+  
+  /* Active route */
+  .kids-nav-link.active {
+    background-color: rgba(0, 0, 0, 0.76) !important; 
+    color: white !important;
+  }
+  
+  /* ---------- CART ---------- */
+  .kids-cart {
+    /* background: var(--); */
+    color: black !important;
+    border-radius: 20px;
+    padding: 8px 14px;
+    font-weight: 600;
+  }
+  
+  .kids-cart .badge {
+    background: #ffd166;
+    color: #333;
+    font-weight: 700;
+  }
+  
+  /* ---------- AVATAR ---------- */
+  .kids-avatar {
+    border: 3px solid #ffd166;
+    padding: 2px;
+    transition: transform 0.25s ease;
+  }
+  
+  .kids-avatar:hover {
+    transform: scale(1.08);
+  }
+  
+  /* ---------- OFFCANVAS ---------- */
+  .offcanvas {
+    background: #fff9f4;
+  }
+  
+  .offcanvas-title {
+    font-weight: 700;
+    color: #ff7aa2;
+  }
+  
+  /* ---------- POPOVER ---------- */
+  .popover {
+    border-radius: 16px;
+    border: none;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  }
+  
+  .popover-header {
+    background: #ff7aa2;
+    color: white;
+    font-weight: 600;
+  }
+  /* ---------- POPOVER ---------- */
+.kids-profile-popover {
+    border-radius: 18px;
+    border: none;
+    min-width: 230px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+    .kids-profile-popover {
+        animation: popBubble 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+        }
+  
+  /* Header */
+  .kids-popover-header {
+    background: linear-gradient(135deg, #ff7aa2, #ff9ebc);
+    color: white;
+    border-radius: 18px 18px 0 0;
+    padding: 14px;
+  }
+  
+  /* Body */
+  .kids-popover-body {
+    padding: 14px;
+    background: #fff9f4;
+  }
+  
+  /* Buttons */
+  .kids-popover-btn {
+    width: 100%;
+    border-radius: 14px;
+    padding: 10px;
+    font-weight: 600;
+    border: none;
+    background: #ffe3ec;
+    color: #ff5c8a;
+    transition: all 0.1s ease;
+  }
+  
+  .kids-popover-btn:hover {
+    background: #ff7aa2;
+    color: white;
+  }
+  
+  /* Divider */
+  .kids-popover-divider {
+    height: 1px;
+    background: #f1dcdc;
+    margin: 10px 0;
+  }
+  
+  /* Animation */
+  @keyframes popBubble {
+    0% {
+      opacity: 0;
+      transform: scale(0.85);
+    }
+    70% {
+      opacity: 1;
+      transform: scale(1.03);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+  
+  /* Make navbar a positioning context */
+  .kids-navbar {
+    position: relative;
+  }
+  
+  .kids-navbar .global-search-wrapper {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 520px;
+    max-width: 90%;
+  }
+  
+  @media (max-width: 991.98px) {
+    .kids-navbar .global-search-wrapper {
+      display: none;
+    }
+  }
+  
+
+/* Hide centered search on mobile */
+@media (max-width: 991.98px) {
+  .kids-navbar .global-search-wrapper {
+    display: none;
+  }
+}
+/* Fallback: target search InputGroup inside navbar */
+.kids-navbar form {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 520px;
+  max-width: 90%;
+}
+
+/* Hide on mobile */
+@media (max-width: 991.98px) {
+  .kids-navbar form {
+    display: none;
+  }
+}

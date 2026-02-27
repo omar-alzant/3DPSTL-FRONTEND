@@ -1,0 +1,16 @@
+[build]
+  command = "npm install --legacy-peer-deps && npm run build"
+  publish = "build"
+
+# 1. قاعدة الـ Sitemap (يجب أن تكون في الأعلى)
+[[redirects]]
+  from = "/sitemap.xml"
+  to = "https://web-production-8253.up.railway.app/sitemap" # ضع رابط الـ Railway هنا
+  status = 200
+  force = true
+
+# 2. قاعدة الـ React Router (لضمان عمل الروابط عند عمل Refresh)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

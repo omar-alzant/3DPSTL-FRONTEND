@@ -1,0 +1,125 @@
+/* Category Bar */
+.category-menu-bar {
+    position: relative;
+    z-index: 1000;
+    background: #fff;
+    border-bottom: 1px solid #eee;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    padding: 10px 0;
+}
+
+/* Category Label */
+.category-menu-bar h5 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #444;
+}
+
+/* Category Name */
+.category-menu-bar .cursor {
+    cursor: pointer;
+    transition: 0.25s;
+    padding: 6px 12px;
+    border-radius: 10px;
+}
+.category-item {
+    padding: 6px;
+    margin-left: 5px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.22s ease;
+}
+
+.category-item:hover,
+.category-item.active {
+    background: #eaf1ff;
+    color: #2b63ff !important;
+    box-shadow: 0 3px 8px rgba(43, 99, 255, 0.15);
+    transform: translateY(-2px);
+}
+
+.category-menu-bar .cursor:hover {
+    background: #f4f7ff;
+    color: #3366ff;
+    transform: translateY(-2px);
+}
+
+/* Mega Menu Container */
+.mega-menu-dropdown {
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: #ffffff;
+    padding: 30px 40px;
+    border-radius: 0 0 14px 14px;
+    border-top: 3px solid #4a8cff;
+    box-shadow: 0 12px 20px rgba(0,0,0,0.08);
+    max-height: 200px;
+    overflow-y: auto;
+    animation: fadeDown 0.25s ease-out;
+}
+
+/* Fade Down Animation */
+@keyframes fadeDown {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Type Title */
+.mega-menu-dropdown h6 {
+    font-size: 1.05rem;
+    color: #4a8cff;
+    font-weight: 700;
+    margin-bottom: 10px;
+    border-bottom: 2px solid #e7efff;
+    padding-bottom: 6px;
+}
+
+/* Model Links */
+.mega-menu-dropdown ul li a {
+    display: block;
+    padding: 6px 0;
+    border-radius: 8px;
+    color: #555 !important;
+    font-size: 0.95rem;
+    transition: 0.18s;
+}
+
+.mega-menu-dropdown ul li a:hover {
+    color: #4a8cff !important;
+    background: #f2f6ff;
+    padding-left: 6px;
+}
+
+
+/* Container for the categories */
+.category-scroll-container {
+    /* For Firefox */
+    scrollbar-width: thin; 
+    scrollbar-color: #007bff #f8f9fa; /* thumb color, track color */
+  }
+  
+  /* For Chrome, Edge, and Safari */
+  .category-scroll-container::-webkit-scrollbar {
+    height: 2px; /* This makes the horizontal scrollbar thin */
+  }
+  
+  .category-scroll-container::-webkit-scrollbar-track {
+    background: #f1f1f1; 
+    border-radius: 10px;
+  }
+  
+  .category-scroll-container::-webkit-scrollbar-thumb {
+    background: #007bff; 
+    border-radius: 10px;
+  }
+  
+  .category-scroll-container::-webkit-scrollbar-thumb:hover {
+    background: #0056b3; 
+  }

@@ -1,0 +1,34 @@
+:root {
+
+    --c1: #6a4dff;
+    --c2: #5143dd;
+    --c3: #6d5fff;
+    --holder: #0d0d33;
+    --inputInfill: #0e0e25;
+    --inputBorder: #36363e;
+    --white: #ffffff;
+    --bg: #0d0d33;
+    --bg1: #18184a;
+    --bgPopup: #0d0d3386;
+    --bgBtnHover: #816af3;
+    --bgBtnHoverMoreLight: #9a88f4;
+    --inputInfillFocus: #282850;
+    --ccc: #ccc;
+    --999: #999;
+  
+  
+    --primary: #2a9d8f;
+    --primary-dark: #21867a;
+    --secondary: #ffbe0b;
+    --secondary-dark: #fca311;
+    --danger: #e63946;
+    --danger-dark: #c1121f;
+    --neutral-bg: #fafafa88;
+    --neutral-border: #e0e0e0;
+    --text-main: #333;
+    --text-muted: #777;
+    --radius: 12px;
+    --transition: all 0.3s ease;
+  
+    }
+    

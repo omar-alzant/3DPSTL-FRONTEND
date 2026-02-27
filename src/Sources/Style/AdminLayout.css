@@ -1,0 +1,79 @@
+/* Layout Wrapper */
+.admin-wrapper {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: row;
+  /* top:50px; */
+}
+
+/* Sidebar Styling */
+.admin-sidebar {
+  height: 100dvh;
+  position: sticky;
+  left: 0;
+  /* top: 50px; */
+  /* z-index: 1000; */
+  transition: all 0.3s ease-in-out;
+  /* overflow-x: hidden; */
+}
+
+.admin-sidebar.open {
+  width: '100%';
+}
+
+.admin-sidebar.closed {
+  width: 70px;
+}
+
+/* Main Content Area */
+.admin-main {
+  flex-grow: 1;
+  transition: all 0.3s ease-in-out;
+  min-width: 0;
+}
+
+/* .admin-main.expanded {
+  margin-left: 250px;
+}
+
+.admin-main.collapsed {
+  margin-left: 70px;
+} */
+
+/* Nav Item Styling */
+.admin-nav-item {
+  transition: background-color 0.2s;
+  white-space: nowrap;
+  opacity: 0.8;
+}
+
+.admin-nav-item:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  opacity: 1;
+}
+
+.active-link {
+  opacity: 1 !important;
+  background-color: rgba(255, 255, 255, 0.15) !important;
+  font-weight: 600;
+}
+
+/* Active Highlight Colors (as per your ADMIN_MENU array) */
+.active-brands { border-left: 4px solid #ffc107; }
+.active-category { border-left: 4px solid #17a2b8; }
+.active-types { border-left: 4px solid #6610f2; }
+.active-models { border-left: 4px solid #fd7e14; }
+.active-items { border-left: 4px solid #28a745; }
+.active-carousel { border-left: 4px solid #e83e8c; }
+.active-orders { border-left: 4px solid #007bff; }
+
+.nav-icon {
+  font-size: 1.2rem;
+  min-width: 24px;
+  display: flex;
+  justify-content: center;
+}
+
+.transition-opacity {
+  transition: opacity 0.2s ease;
+}

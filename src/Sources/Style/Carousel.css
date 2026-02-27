@@ -1,0 +1,55 @@
+.custom-carousel-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.carousel-arrow {
+  background: rgba(0, 0, 0, 0.45);
+  border: none;
+  border-radius: 50%;
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  transition: all 0.2s ease-in-out;
+}
+
+.carousel-arrow:hover {
+  background: rgba(0, 0, 0, 0.7);
+  transform: scale(1.05);
+}
+
+.carousel-caption{
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+}
+
+.carousel-caption-custom {
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.65),
+    rgba(0, 0, 0, 0)
+  );
+  left: 0;
+  right: 0;
+  bottom: 0;
+  /* padding: 2rem; */
+  text-align: left;
+}
+
+.carousel-title {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.carousel-indicators [data-bs-target] {
+  background-color: #fff;
+  opacity: 0.6;
+}
+
+.carousel-indicators .active {
+  opacity: 1;
+}
