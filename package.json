@@ -3,12 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "proxy": "http://localhost:8080",
-  "description": "Liban bebe frontend code.",
+  "description": "3dpstl frontend code.",
   "keywords": [
-    "liban",
-    "bebe",
-    "libanbebe",
-    "shopping"
+    "3d",
+    "3dprinting",
+    "3dpstl",
+    "decorative",
+    "3dmodels"
   ],
   "author": "Omar J Zant",
   "license": "ISC",

@@ -51,7 +51,7 @@ const TermsPage = () => {
           <section id="general" className="mb-5">
   <h3 className="c-black mb-3">1. General Terms and Acceptance</h3>
   <p>
-    By using <strong>libanbebe.com</strong>, you agree to be bound by these terms. 
+    By using <strong>3dpstl.com</strong>, you agree to be bound by these terms. 
     Our physical store is located in Tripoli, serving families across Lebanon.
   </p>
   

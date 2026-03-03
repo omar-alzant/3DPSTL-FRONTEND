@@ -157,7 +157,7 @@ const downloadOrderPDF = (order) => {
 };
 
 const sendWhatsappMessage = (clientPhoneNumber) => {
-  const message = encodeURIComponent("Hello! we are the saler of Libanbebe, please can you comfirm your order below! thanks!");
+  const message = encodeURIComponent("Hello! we are the saler of 3dpstl, please can you comfirm your order below! thanks!");
 
   const whatsappUrl = `https://wa.me/${clientPhoneNumber}?text=${message}`;
   window.open(whatsappUrl, "_blank")

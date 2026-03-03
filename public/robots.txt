@@ -2,4 +2,4 @@ User-agent: *
 Disallow: /admin/
 Disallow: /api/admin/
 
-Sitemap: https://libanbebe.com/sitemap.xml
+Sitemap: https://3dpstl.com/sitemap.xml

@@ -66,7 +66,7 @@ function AdminLayout() {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `libanbebe-db-${new Date().toISOString().split("T")[0]}.sql`;
+      a.download = `3dpstl-db-${new Date().toISOString().split("T")[0]}.sql`;
       document.body.appendChild(a);
       a.click();
 

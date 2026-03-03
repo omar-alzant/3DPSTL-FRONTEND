@@ -1,9 +1,9 @@
-📄 Terms & Conditions Structure for libanbebe.com
+📄 Terms & Conditions Structure for 3dpstl.com
 
 I. General Terms and Acceptance
 Acceptance of Terms: States that by using the website, the user agrees to be bound by the T&Cs.
 
-Business Information: Clearly lists the website URL (https://www.libanbebe.com) and the operating address (cher3 alrahibet Tripoli, Lebanon 1300).
+Business Information: Clearly lists the website URL (https://www.3dpstl.com) and the operating address (cher3 alrahibet Tripoli, Lebanon 1300).
 
 Governing Law: Defines that the laws of Lebanon will govern the agreement.
 
@@ -14,7 +14,7 @@ Registration: Requirements for account creation (e.g., minimum age, providing ac
 
 Account Security: The user is responsible for maintaining the confidentiality of their password and for all activity that occurs under their account.
 
-Termination: Libanbebe.com reserves the right to suspend or terminate accounts for breaches of the T&Cs.
+Termination: 3dpstl.com reserves the right to suspend or terminate accounts for breaches of the T&Cs.
 
 III. E-commerce and Sales Terms
 Since you selected Yes, users can buy goods (one-time payments only), these clauses are mandatory:
@@ -29,7 +29,7 @@ The user agrees to pay all charges at the prices in effect at the time of their 
 
 Confirmation that only one-time payments are accepted (no subscriptions).
 
-Order Acceptance: States that an order confirmation does not guarantee acceptance; it is merely an acknowledgement. Libanbebe.com reserves the right to refuse or cancel an order.
+Order Acceptance: States that an order confirmation does not guarantee acceptance; it is merely an acknowledgement. 3dpstl.com reserves the right to refuse or cancel an order.
 
 Shipping and Delivery: Clauses covering risk of loss, delivery times (with disclaimers for delays), and shipping costs.
 
@@ -54,7 +54,7 @@ Intellectual Property (IP) Disclaimer: A general statement about not infringing 
 VI. Disclaimers and Limitations of Liability
 Warranty Disclaimer: The site is provided "as is" and "as available," without warranties.
 
-Limitation of Liability: Limits the liability of Libanbebe.com for any damages (direct, indirect, consequential) arising from the use of the site or products.
+Limitation of Liability: Limits the liability of 3dpstl.com for any damages (direct, indirect, consequential) arising from the use of the site or products.
 
 VII. Contact Information
 Contact for T&C Questions: Clearly states that users can contact you for any questions regarding the Terms & Conditions using the following method: Phone number: +961 71 711 207.
