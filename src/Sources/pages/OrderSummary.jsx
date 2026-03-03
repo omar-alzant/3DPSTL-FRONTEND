@@ -12,10 +12,10 @@ const OrderSummary = () => {
   const [items, setItems] = React.useState([]);
   
   React.useEffect(() => {
-    if (!state?.orderId) {
-      navigate('/cart');
-      return;
-    }
+    // if (!state?.orderId) {
+    //   navigate('/cart');
+    //   return;
+    // }
   
     const fetchOrder = async () => {
       const token = sessionStorage.getItem("token");

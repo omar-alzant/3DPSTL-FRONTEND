@@ -127,9 +127,10 @@ const processOrder = async () => {
       return;
     }
 
-    if (data.orderId) {
+      if (data.order) {
       clearCart();  
-      navigate('/order-summary', { state: { order: data.order, items: data.items } });
+      console.log(data.order);
+      navigate('/order-summary', { state: { orderId: data.order.id, items: data.items } });
     }
   } catch (err) {
     showToast("Something went wrong during checkout.", "danger");

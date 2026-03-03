@@ -182,12 +182,12 @@ export default function ItemDetails({
 
         {/* VARIANT SELECTORS (Sizes & Colors) */}
         {
-          !sizes.find(s => s.toLowerCase() === "simple") &&
+          !sizes.find(s => s.toLowerCase() === "unspecified") &&
           <div className="mb-1">
           <label className="fw-bold mb-1">Size</label>
           <div className="d-flex gap-2">
             {sizes.map(s => (
-              s.toLowerCase() !== "simple" && <Button 
+              s.toLowerCase() !== "unspecified" && <Button 
                 key={s} 
                 variant={selectedSize === s ? "primary" : "outline-secondary"} 
                 onClick={() => setSelectedSize(s)}
