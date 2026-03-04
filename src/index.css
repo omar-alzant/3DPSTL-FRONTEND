@@ -1,24 +1,32 @@
 @import 'bootstrap/dist/css/bootstrap.min.css';
 @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;700&family=Poppins:wght@400;500;600&display=swap');
 
-:root{
-  --nav: #0d0d33;
-  --body-h: #0d0d33;
-  -body-g: #7e6292;
-  --pk: #ec008c;
-  --pk-h: #eb66b6;
-  --gr: #38b54a;
-  --gr-h: #73b87d;
-  --yl: #feb912;
-  --yl-h: #ffd061;
-  --bl: #00aeef;
-  --bl-h: #71b5ce;
-  --white: #ffffff;
-  --black: #000000;
-  --black-light: #333333;
-  --red-light: #f0d0d4;
-  --gray-light: rgb(168, 165, 165);
+:root {
+  --brand-bg: #0B0F2A;           /* deep navy */
+  --brand-card: #12163A;         /* card background */
+  --brand-border: #1E245C;
+  --brand-primary: #6C63FF;      /* main purple */
+  --brand-secondary: #4F46E5;    /* indigo */
+  --brand-light: #A5B4FC;        /* soft accent */
+  --brand-text: #E6E9FF;
+  --brand-muted: #9CA3AF;
 }
+
+.br-black-light {
+  background: var(--brand-card);
+  border: 1px solid var(--brand-border);
+}
+
+/* ===== 3DSTL THEME ===== */
+
+.bg-body-h {
+  background: #0B0F2A !important;
+}
+
+.c-black {
+  color: #E6E9FF !important;
+}
+
 
 td, th{
   border: 1px solid rgb(168, 165, 165) !important;
@@ -373,20 +381,42 @@ a:active{
   height: 10px;
   animation: spin 1s linear infinite;
 }
-
+body::before {
+  content: "";
+  position: fixed;
+  width: 700px;
+  height: 700px;
+  background: radial-gradient(circle, rgba(108,99,255,0.12), transparent 70%);
+  top: -250px;
+  right: -250px;
+  z-index: -1;
+}
 body {
   margin: 0;
-  background-color: var(--body-g) !important;
-
+  
   /* font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif; */
-    font-family: 'Poppins', sans-serif;
-    -webkit-font-smoothing: antialiased;
+  'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+  sans-serif; */
+  font-family: 'Poppins', sans-serif;
+  -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  color: white !important;
+  background-color: var(--brand-bg);
+  color: var(--brand-text);
+}
+input.form-control:focus {
+  box-shadow: none !important;
 }
 
+input.form-control:focus + button,
+input.form-control:focus {
+  outline: none;
+}
+
+.input-group:focus-within {
+  border-color: #6C63FF !important;
+  box-shadow: 0 0 25px rgba(108,99,255,0.25) !important;
+  transition: 0.3s ease;
+}
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
@@ -431,5 +461,24 @@ h1, h2, h3, h4, h5, h6 {
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.form-control::placeholder {
+  color: #C7D2FE !important; /* soft purple-white */
+  opacity: 1 !important;
+}
+footer::before {
+  content: "";
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(108,99,255,0.12), transparent 70%);
+  bottom: -200px;
+  left: -200px;
+  z-index: 0;
+}
+
+footer {
+  position: relative;
   overflow: hidden;
 }

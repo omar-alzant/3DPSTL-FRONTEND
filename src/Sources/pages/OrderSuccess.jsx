@@ -5,7 +5,7 @@ import { useParams, Link } from 'react-router-dom';
 const OrderSuccess = () => {
 
   const { orderId } = useParams();
-    const message = encodeURIComponent("Hello! I'm shopping at Liban bebe and have a question about an item.");
+    const message = encodeURIComponent("Hello! I'm shopping at 3DSTL and have a question about an item.");
   const phoneNumber = "96176118290";
   const supportNumber = "+961 76 118 290";
 

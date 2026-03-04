@@ -9,7 +9,7 @@ import MapLocation from './MapLocation';
 
 const Footer = () => {
   const programedByContact = `https://wa.me/96176118290?text=Hello, How are you?`;
-  const message = encodeURIComponent("Hello! I'm shopping at Liban bebe and have a question about an item.");
+  const message = encodeURIComponent("Hello! I'm shopping at 3DSTL and have a question about an item.");
   const phoneNumber = "96170693460";
 
   const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
@@ -36,37 +36,60 @@ const Footer = () => {
     },
   ];
   return (
-    <footer className="bg-body-h  c-black pt-5 pb-3 border-top mt-5">
-      <Container>
+      <footer
+        className="pt-5 pb-3 mt-5"
+        style={{
+          background: "#0B0F2A",
+          color: "#E6E9FF",
+          borderTop: "1px solid #1E245C"
+        }}
+      >      <Container>
         {/* Section 1: Trust Badges */}
         <Row className="text-center mb-5 g-4">
           <Col md={4}>
-            <GoShieldCheck  size={32} className="mb-2 " />
-            <h6 className="fw-bold">Safety First</h6>
-            <p className="small ">100% Non-toxic, BPA-free materials for your little ones.</p>
+            <GoShieldCheck size={32} style={{ color: "#6C63FF" }} />
+            <h6 className="fw-bold mt-2">Precision Quality</h6>
+            <p className="small ">
+              High-accuracy 3D prints with professional finishing.
+            </p>
           </Col>
+
           <Col md={4}>
-            <AiOutlineTruck  size={32} className="mb-2 " />
-            <h6 className="fw-bold">Fast Delivery</h6>
-            <p className="small ">Free shipping on all orders over $50.</p>
+            <AiOutlineTruck size={32} style={{ color: "#6C63FF" }} />
+            <h6 className="fw-bold mt-2">Fast Production</h6>
+            <p className="small ">
+              Efficient turnaround for custom and business orders.
+            </p>
           </Col>
+
           <Col md={4}>
-            <FiRotateCcw  size={32} className="mb-2 " />
-            <h6 className="fw-bold">Easy Returns</h6>
-            <p className="small ">Life is busy. Return anything within 30 days, no stress.</p>
+            <FiRotateCcw size={32} style={{ color: "#6C63FF" }} />
+            <h6 className="fw-bold mt-2">Custom Solutions</h6>
+            <p className="small ">
+              From prototypes to branding pieces — tailored to your needs.
+            </p>
           </Col>
         </Row>
-
         <hr className="my-5" />
 
         {/* Section 2: Main Footer Links */}
         <Row className="gy-4">
           <Col xs={12} lg={4} md={12}>
-            <h4 className="fw-bold  mb-3">Little Family</h4>
-            <p className="">
-              Designed by moms, for moms. We curate the safest and most stylish 
-              essentials for every stage of your parenting journey.
-            </p>
+          <h4
+            className="fw-bold mb-3"
+            style={{
+              background: "linear-gradient(90deg,#6C63FF,#4F46E5)",
+              WebkitBackgroundClip: "text",
+              color: "transparent"
+            }}
+          >
+            3DSTL
+          </h4>         
+          <p>
+            Precision 3D printing & digital fabrication.
+            Custom models, branding pieces, mechanical parts,
+            and creative designs engineered with detail.
+          </p>
             <SocialButtons />
           </Col>
 
@@ -106,7 +129,7 @@ const Footer = () => {
         {/* Section 3: Bottom Bar */}
         <div className="mt-5 pt-3 border-top d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
           <p className="small  mb-0">
-            © {year} Liban bebe. Made with ❤️ for happy families.
+            © {year} 3DSTL. Engineered with precision.
           </p>
           <div className="d-flex gap-3">
           <div className="d-flex align-items-center gap-2 mt-3 mt-md-0">

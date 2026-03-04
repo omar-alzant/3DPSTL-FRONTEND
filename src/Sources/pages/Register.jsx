@@ -63,7 +63,6 @@ export default function Register() {
     bg={toast.bg}
     onClose={() => setToast({ ...toast, show: false })}
   />
-    // Use Container for structure and centering, limiting width
     <Container className="auth-container d-flex flex-column align-items-center py-5" style={{ maxWidth: '400px' }}>
     <Logo className="logo-svg mb-4" style={{ height: '60px' }} />
 

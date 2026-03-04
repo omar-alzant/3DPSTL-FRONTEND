@@ -94,18 +94,18 @@ const TermsPage = () => {
   <Card className="bg-light border-0 mt-3">
     <Card.Body className="small">
       <p className="mb-2">
-        <strong>Store Name:</strong> Liban Bebe
+        <strong>Store Name:</strong> 3DSTL
       </p>
 
       <p className="mb-2">
         <strong>Phone / WhatsApp:</strong>{" "}
         <a
-          href="https://wa.me/96170693460"
+          href="https://wa.me/96176118290"
           target="_blank"
           rel="noopener noreferrer"
           className="text-decoration-none"
         >
-          +961 71 711 207
+          +961 76 118 290
         </a>
       </p>
 

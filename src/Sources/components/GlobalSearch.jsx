@@ -41,28 +41,56 @@ export default function GlobalSearch({ onClose }) {
   };
 
   return (
-    <Container className="my-3 " fluid="sm" >
-          <Form onSubmit={handleSubmit}>
-            <InputGroup>
-
-
-              <Form.Control
-                placeholder="Search products, models, or descriptions..."
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                className="border-start-0"
-              />
-
-              <Button type="submit" variant="outline-secondary">
-                <IoSearch className="fs-5"/>
-              </Button>
-
-              <Button variant="outline-danger" onClick={resetSearch}>
-                <CiCircleRemove className="fs-10"/>
-              </Button>
-            </InputGroup>
-          </Form>
-     </Container>
-
+    <Container className="my-4" fluid="sm">
+      <Form onSubmit={handleSubmit}>
+        <InputGroup
+          style={{
+            background: "#12163A",
+            border: "1px solid #1E245C",
+            borderRadius: "12px",
+            overflow: "hidden",
+            boxShadow: "0 0 20px rgba(108,99,255,0.05)"
+          }}
+        >
+          <Form.Control
+            placeholder="Search products, models, or descriptions..."
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            style={{
+              background: "transparent",
+              border: "none",
+              color: "#fff",
+              padding: "12px 16px"
+            }}
+          />
+  
+          <Button
+            type="submit"
+            style={{
+              background: "transparent",
+              border: "none",
+              color: "#6C63FF",
+              padding: "0 16px"
+            }}
+          >
+            <IoSearch className="fs-5" />
+          </Button>
+  
+          {query && (
+            <Button
+              onClick={resetSearch}
+              style={{
+                background: "transparent",
+                border: "none",
+                color: "#A5B4FC",
+                padding: "0 16px"
+              }}
+            >
+              <CiCircleRemove className="fs-5" />
+            </Button>
+          )}
+        </InputGroup>
+      </Form>
+    </Container>
   );
 }

@@ -48,7 +48,7 @@ const LogoutButton = ({ onClose }) => {
     {
       token !== null ?
       (
-        <Button className="bg-gr-h br-0" onClick={handleLogout} >
+        <Button className="br-0" onClick={handleLogout} >
           Logout
         </Button>
       )

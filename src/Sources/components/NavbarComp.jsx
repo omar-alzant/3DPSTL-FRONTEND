@@ -35,12 +35,18 @@ function NavbarComp() {
         <Container fluid>
             <Navbar.Brand href="/">
               {/* <Image src="/logoIco.svg" height={"30px"} style={{objectFit: "cover"}}/> */}
-              <Image src="/logo.png" height={"50px"} style={{objectFit: "cover"}}/>
-            
+              <Image
+                src="/logo.png"
+                height={"45px"}
+                style={{
+                  objectFit: "contain",
+                  filter: "drop-shadow(0 0 8px rgba(108,99,255,0.4))"
+                }}
+              />            
             </Navbar.Brand>
             <Navbar.Toggle 
               aria-controls={`offcanvasNavbar-expand-${expand}`}
-              style={{border: "none"}}
+              style={{border: "none", background: "white"}}
               title='Click to show navs'
               onClick={() => setShowOffcanvas(true)}            
              >
@@ -48,12 +54,16 @@ function NavbarComp() {
              
              <Navbar.Offcanvas
               show={showOffcanvas}
+              style={{
+                background: "#0B0F2A",
+                borderLeft: "1px solid #1E245C"
+              }}
               onHide={() => setShowOffcanvas(false)}
               id={`offcanvasNavbar-expand-${expand}`}
               aria-labelledby={`offcanvasNavbarLabel-expand-${expand}`}
               placement="end"
             >
-              <Offcanvas.Header closeButton>
+              <Offcanvas.Header closeButton style={{borderBottom: "1px solid #1E245C"}}>
                 <Offcanvas.Title id={`offcanvasNavbarLabel-expand-${expand}`} className='d-flex align-items-center justify-items-between'>
                   <Image src="/logo.png" height={"30px"} style={{objectFit: "cover"}}/>
                  
@@ -118,8 +128,14 @@ function NavbarComp() {
                     className="kids-nav-link d-flex align-items-center justify-content-center gap-2 m-1"
                   >
                     <CiShoppingCart size="1.5rem" />
-                    <Badge bg="success">{cart.length}</Badge>
-                  </Nav.Link>
+                    <Badge
+                      style={{
+                        background: "linear-gradient(90deg,#6C63FF,#4F46E5)",
+                        border: "none"
+                      }}
+                    >
+                      {cart.length}
+                    </Badge>                  </Nav.Link>
                       <hr />
                       <div 
                   className=" m-1 text-center"

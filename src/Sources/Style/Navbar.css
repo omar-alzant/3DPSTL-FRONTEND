@@ -1,43 +1,44 @@
 /* ---------- NAVBAR BASE ---------- */
+
 .kids-navbar {
-    background: var(--nav);
-    border-bottom: 1px solid #f1e4dc;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-    font-family: "Poppins", "Nunito", sans-serif;
-  }
-  
-  /* ---------- BRAND ---------- */
-  .kids-navbar .navbar-brand img {
-    transition: transform 0.3s ease;
-  }
-  
-  .kids-navbar .navbar-brand img:hover {
-    transform: scale(1.05) rotate(-2deg);
-  }
-  
-  /* ---------- NAV LINKS ---------- */
-  .kids-nav-link {
-    display: flex !important;
-    border: 1px solid rgb(179, 179, 179) !important;
-    border-radius: 10px !important;
-    padding: 2px 8px !important;
-    font-weight: 200;
-    color: #333 !important;
-    transition: all 0.25s ease;
-  }
-  
-  .kids-nav-link:hover {
-    background-color: #6d6d6d;
-    color: #f1f1f1 !important;
-  }
-  
-  /* Active route */
-  .kids-nav-link.active {
-    background-color: rgba(0, 0, 0, 0.76) !important; 
-    color: white !important;
-  }
-  
-  /* ---------- CART ---------- */
+  background: #0B0F2A;
+  border-bottom: 1px solid #1E245C;
+}
+
+.kids-nav-link {
+  color: #A5B4FC !important;
+  font-weight: 500;
+  transition: 0.3s ease;
+}
+
+.kids-nav-link:hover {
+  color: #6C63FF !important;
+}
+
+.kids-avatar {
+  border: 2px solid #4F46E5;
+}
+
+.kids-profile-popover {
+  background: #12163A;
+  border: 1px solid #1E245C;
+  color: #E6E9FF;
+}
+
+.kids-popover-header {
+  background: #12163A;
+  border-bottom: 1px solid #1E245C;
+}
+
+.kids-popover-body {
+  background: #12163A;
+}
+
+.kids-popover-divider {
+  height: 1px;
+  background: #1E245C;
+  margin: 12px 0;
+}  /* ---------- CART ---------- */
   .kids-cart {
     /* background: var(--); */
     color: black !important;
@@ -70,7 +71,7 @@
   
   .offcanvas-title {
     font-weight: 700;
-    color: #ff7aa2;
+    color: #6C63FF;
   }
   
   /* ---------- POPOVER ---------- */
@@ -81,7 +82,7 @@
   }
   
   .popover-header {
-    background: #ff7aa2;
+    background: #6C63FF;
     color: white;
     font-weight: 600;
   }
@@ -98,7 +99,7 @@
   
   /* Header */
   .kids-popover-header {
-    background: linear-gradient(135deg, #ff7aa2, #ff9ebc);
+    background: linear-gradient(135deg, #6C63FF, #ff9ebc);
     color: white;
     border-radius: 18px 18px 0 0;
     padding: 14px;
@@ -123,7 +124,7 @@
   }
   
   .kids-popover-btn:hover {
-    background: #ff7aa2;
+    background: #6C63FF;
     color: white;
   }
   

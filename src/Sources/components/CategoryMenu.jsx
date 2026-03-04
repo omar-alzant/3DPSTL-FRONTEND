@@ -56,7 +56,7 @@ function CategoryMenu({ onNavigate }) {
               className="d-flex flex-row mb-1"
 
             >
-              <h6 className="fw-bold p-2">Categories:</h6>
+              <h6 className="fw-bold p-2 c-white">Categories:</h6>
               <ul 
                   className="list-unstyled d-flex flex-nowrap overflow-auto  category-scroll-container" 
                   style={{ whiteSpace: 'nowrap', alignItems: "baseline" }}             

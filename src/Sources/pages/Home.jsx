@@ -183,20 +183,20 @@ export default function Home() {
 {/* HERO */}
 <Row className="justify-content-center text-center mb-5">
   <Col lg={8}>
-    <h1
-      className="fw-bold mb-3 mt-2"
-      style={{
-        fontSize: "3rem",
-        background: "linear-gradient(to right,#ec4899,#a855f7,#3b82f6)",
-        WebkitBackgroundClip: "text",
-        color: "transparent",
-      }}
-    >
-      Everything Your Baby Needs
-    </h1>
-
+  <h1
+  style={{
+    fontSize: "3.2rem",
+    fontWeight: "800",
+    background: "linear-gradient(90deg,#6C63FF,#4F46E5)",
+    WebkitBackgroundClip: "text",
+    color: "transparent",
+    textShadow: "0 0 30px rgba(108,99,255,0.25)"
+  }}
+>
+  Precision 3D Printing & Design
+</h1>
     <p className="text-muted mb-4">
-      Discover premium baby products with love and care. From clothing to toys, we have it all.
+    Custom models, business branding, gifts, and functional prints — engineered with accuracy.
     </p>
 
 
@@ -215,14 +215,14 @@ export default function Home() {
       to="/Shop"
       className="d-inline-block"
       style={{
-        background: "linear-gradient(to right,#ec4899,#a855f7)",
+        background: "linear-gradient(90deg,#6C63FF,#4F46E5)",
         border: "none",
-        borderRadius: "0.375rem",
-        padding: "0.5rem 1.5rem",
+        borderRadius: "8px",
+        padding: "0.6rem 1.6rem",
         fontSize: "1.125rem",
         color: "white",
-        textDecoration: "none",
-        fontWeight: "500",
+        fontWeight: "600",
+        boxShadow: "0 4px 20px rgba(108,99,255,0.35)"
       }}
     >
       Shop Now
@@ -233,15 +233,29 @@ export default function Home() {
 {/* CATEGORIES */}
 <section className="py-5">
   <Container>
-    <h2 className="text-center fw-bold mb-5">Shop by Types</h2>
-
+    <h2
+      className="text-center fw-bold mb-5"
+      style={{
+        color: "var(--brand-light)",
+        letterSpacing: "1px"
+      }}
+    >
+      Shop by Types
+    </h2>
     <Row >
       {loading ? (
         <div className="text-center py-5">Loading...</div>
       ) : (
         Array.isArray(homeTypes) && homeTypes.map(type => (  
-          <section key={type.id} className="mb-5 br-black-light p-3 rounded-4">
-            
+        <section
+          key={type.id}
+          className="mb-5 p-4 rounded-4"
+          style={{
+            background: "var(--brand-card)",
+            border: "1px solid var(--brand-border)",
+            boxShadow: "0 0 30px rgba(79,70,229,0.08)"
+          }}
+        >            
             {/* TYPE CAROUSEL */}
             <h3 className="mb-1">{type.name}
             < hr />
@@ -272,11 +286,32 @@ export default function Home() {
 
 {/* SALE ITEMS */}
 <div className="d-flex align-items-center justify-content-between text-danger">
-  <h3 className="mb-3 fw-bold text-danger">🔥 On Sale</h3>
+  <h3
+    className="mb-3 fw-bold"
+    style={{
+      color: "#6C63FF",
+      display: "flex",
+      alignItems: "center",
+      gap: "10px"
+    }}
+  >
+    🔥 On Sale
+  </h3>
   {items.length !== 0 && 
          <Button
-         variant="outline-warning"
-         onClick={() => navigate(`/shop?onsale=true`)}
+         style={{
+          borderColor: "#6C63FF",
+          color: "#6C63FF",
+        }}
+        onMouseOver={(e) => {
+          e.target.style.background = "#6C63FF";
+          e.target.style.color = "white";
+        }}
+        onMouseOut={(e) => {
+          e.target.style.background = "transparent";
+          e.target.style.color = "#6C63FF";
+        }}
+        onClick={() => navigate(`/shop?onsale=true`)}
        >
          See more 
        </Button>

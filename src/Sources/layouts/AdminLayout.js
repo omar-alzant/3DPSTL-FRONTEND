@@ -85,9 +85,9 @@ function AdminLayout() {
   };
 
   return (
-    <div className="bg-dark admin-wrapper">
+    <div className=" admin-wrapper">
       {/* Sidebar */}
-      <aside className={`admin-sidebar bg-dark shadow ${isOpen ? "open" : "closed"}`}>
+      <aside className={`admin-sidebar  shadow ${isOpen ? "open" : "closed"}`}>
         <div
           onClick={toggleSidebar}
           className="cursor sidebar-header d-flex align-items-start justify-content-start px-3 py-4"

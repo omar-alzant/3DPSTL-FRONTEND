@@ -1,79 +1,133 @@
-/* Layout Wrapper */
+/* ===============================
+   3DSTL ADMIN LAYOUT THEME
+================================= */
+
+/* ---------- Layout Wrapper ---------- */
 .admin-wrapper {
   display: flex;
   min-height: 100vh;
-  flex-direction: row;
-  /* top:50px; */
+  background: #0B0F2A;
+  color: #E6E9FF;
 }
 
-/* Sidebar Styling */
+/* ---------- Sidebar ---------- */
 .admin-sidebar {
   height: 100dvh;
   position: sticky;
   left: 0;
-  /* top: 50px; */
-  /* z-index: 1000; */
+  background: #12163A;
+  border-right: 1px solid #1E245C;
   transition: all 0.3s ease-in-out;
-  /* overflow-x: hidden; */
+  overflow-x: hidden;
 }
 
 .admin-sidebar.open {
-  width: '100%';
+  width: 250px;
 }
 
 .admin-sidebar.closed {
   width: 70px;
 }
 
-/* Main Content Area */
+/* Sidebar Header */
+.sidebar-header {
+  border-bottom: 1px solid #1E245C;
+}
+
+/* ---------- Nav Items ---------- */
+.admin-nav-item {
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  opacity: 0.85;
+  color: #C7D2FE !important;
+  border-left: 3px solid transparent;
+}
+
+.admin-nav-item:hover {
+  background: rgba(108, 99, 255, 0.12);
+  opacity: 1;
+  color: #FFFFFF !important;
+}
+
+/* Active Link */
+.active-link {
+  opacity: 1 !important;
+  background: rgba(108, 99, 255, 0.18) !important;
+  border-left: 3px solid #6C63FF !important;
+  color: #FFFFFF !important;
+  font-weight: 600;
+}
+
+/* Remove old multicolor borders */
+.active-brands,
+.active-category,
+.active-types,
+.active-models,
+.active-items,
+.active-carousel,
+.active-orders {
+  border-left: none;
+}
+
+/* ---------- Sidebar Footer ---------- */
+.sidebar-footer {
+  border-top: 1px solid #1E245C;
+}
+
+/* Backup Button */
+.sidebar-footer .btn-outline-warning {
+  border-color: #6C63FF;
+  color: #6C63FF;
+}
+
+.sidebar-footer .btn-outline-warning:hover {
+  background: #6C63FF;
+  color: white;
+  box-shadow: 0 0 12px rgba(108,99,255,0.6);
+}
+
+/* ---------- Progress Bar ---------- */
+.progress {
+  background: #1E245C;
+  height: 6px;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  background: linear-gradient(90deg, #6C63FF, #8B84FF);
+}
+
+/* ---------- Main Content ---------- */
 .admin-main {
   flex-grow: 1;
   transition: all 0.3s ease-in-out;
   min-width: 0;
+  background: #0B0F2A;
 }
 
-/* .admin-main.expanded {
-  margin-left: 250px;
+/* Header */
+.content-header {
+  background: #12163A;
+  border-bottom: 1px solid #1E245C !important;
+  color: #6C63FF;
 }
 
-.admin-main.collapsed {
-  margin-left: 70px;
-} */
-
-/* Nav Item Styling */
-.admin-nav-item {
-  transition: background-color 0.2s;
-  white-space: nowrap;
-  opacity: 0.8;
+/* Page Content */
+.admin-main .p-4 {
+  color: #E6E9FF;
 }
 
-.admin-nav-item:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-  opacity: 1;
+/* ---------- Scrollbar (optional premium touch) ---------- */
+.admin-sidebar::-webkit-scrollbar {
+  width: 6px;
 }
 
-.active-link {
-  opacity: 1 !important;
-  background-color: rgba(255, 255, 255, 0.15) !important;
-  font-weight: 600;
+.admin-sidebar::-webkit-scrollbar-thumb {
+  background: #1E245C;
+  border-radius: 10px;
 }
 
-/* Active Highlight Colors (as per your ADMIN_MENU array) */
-.active-brands { border-left: 4px solid #ffc107; }
-.active-category { border-left: 4px solid #17a2b8; }
-.active-types { border-left: 4px solid #6610f2; }
-.active-models { border-left: 4px solid #fd7e14; }
-.active-items { border-left: 4px solid #28a745; }
-.active-carousel { border-left: 4px solid #e83e8c; }
-.active-orders { border-left: 4px solid #007bff; }
-
-.nav-icon {
-  font-size: 1.2rem;
-  min-width: 24px;
-  display: flex;
-  justify-content: center;
-}
-
-.transition-opacity {
-  transition: opacity 0.2s ease;
+.admin-sidebar::-webkit-scrollbar-thumb:hover {
+  background: #6C63FF;
 }
