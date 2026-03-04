@@ -311,18 +311,21 @@ td, th{
   box-shadow: 0 16px 40px rgba(0,0,0,0.18);
 }
 
+/* 
 body::before {
   content: "";
   position: fixed;
   inset: 0;
   background-image: url('./watermark.svg');
+  background-color: var(--body-g);
   background-repeat: no-repeat;
   background-position: center;
-  background-size: 100%; /* Adjust size */
-  opacity: 0.1; /* Transparency */
+  background-size: 100%; 
+  opacity: 0.1; 
   pointer-events: none;
   z-index: -1;
 }
+*/
 
 .modelInCategory:hover{
   color: black !important;
@@ -373,6 +376,8 @@ a:active{
 
 body {
   margin: 0;
+  background-color: var(--body-g) !important;
+
   /* font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif; */

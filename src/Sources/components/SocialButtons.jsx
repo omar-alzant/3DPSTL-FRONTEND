@@ -9,19 +9,19 @@ const SocialButtons = () => {
     { 
       id: 'fb', 
       icon: <FaFacebookF />, 
-      url: 'https://facebook.com/liban_bebe', 
+      url: 'https://facebook.com/profile.php?id=61583981580179', 
       color: 'fb-hover' 
     },
     { 
       id: 'ig', 
       icon: <FaInstagram />, 
-      url: 'https://instagram.com/liban_bebe', 
+      url: 'https://instagram.com/3dstl961', 
       color: 'ig-hover' 
     },
     { 
       id: 'wa', 
       icon: <FaWhatsapp />, 
-      url: 'https://wa.me/96170693460', 
+      url: 'https://wa.me/96176118290', 
       color: 'wa-hover' 
     },
   ];
