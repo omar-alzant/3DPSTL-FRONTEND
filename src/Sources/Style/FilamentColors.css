@@ -1,0 +1,27 @@
+.filament-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
+    gap:20px;
+  }
+  
+  .filament-card{
+    background:white;
+    border-radius:12px;
+    padding:20px;
+    text-align:center;
+    box-shadow:0 2px 10px rgba(0,0,0,0.05);
+    transition:0.2s;
+  }
+  
+  .filament-card:hover{
+    transform:translateY(-3px);
+    box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  }
+  
+  .filament-circle{
+    width:70px;
+    height:70px;
+    border-radius:50%;
+    margin:auto;
+    border:3px solid #eee;
+  }

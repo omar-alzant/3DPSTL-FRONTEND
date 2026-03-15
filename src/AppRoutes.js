@@ -23,6 +23,8 @@ import AdminOrders from './Sources/pages/AdminOrders';
 import OrderSummary from './Sources/pages/OrderSummary';
 import OrderSuccess from './Sources/pages/OrderSuccess';
 import AuthCallback from './Sources/components/AuthCallback';
+import AdminColors from './Sources/pages/AdminColors';
+import FilamentColors from './Sources/pages/FilamentColors';
 
 export default function AppRoutes() {
   return (
@@ -42,6 +44,7 @@ export default function AppRoutes() {
         <Route path="/cart" element={<MainLayout><CartPage /></MainLayout>} />
         <Route path="/profile" element={<MainLayout><ProfilePage /></MainLayout>} />
         <Route path="/terms" element={<MainLayout><TermsPage /></MainLayout>} />
+        <Route path="/filamentColors" element={<MainLayout><FilamentColors /></MainLayout>} />
         <Route path="/item/:id" element={ <MainLayout> <ItemPage /> </MainLayout>} />
 
         {/* Admin Section */}
@@ -54,6 +57,7 @@ export default function AppRoutes() {
            <Route path="items" element={<AdminItems />} />
            <Route path="carousel" element={<AdminCarousel />} />
            <Route path="orders" element={<AdminOrders />} />
+           <Route path="colors" element={<AdminColors />} />
           {/*<Route path="benefits" element={<AdminBenefits />} />
           <Route path="home" element={<AdminHome />} />
           <Route path="shop" element={<AdminShop />} />

@@ -112,6 +112,18 @@ function NavbarComp() {
                       as={NavLink}
                       onClick={() => setShowOffcanvas(false)}
 
+                      to="/filamentColors"
+                      className="kids-nav-link m-1 align-items-center justify-content-center text-center"
+                      style={{
+                        textDecoration: "none",
+                      }}
+                    >
+                      Colors
+                    </Nav.Link>
+                  <Nav.Link
+                      as={NavLink}
+                      onClick={() => setShowOffcanvas(false)}
+
                       to="/terms"
                       className="kids-nav-link m-1 align-items-center justify-content-center text-center"
                       style={{

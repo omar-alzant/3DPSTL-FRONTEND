@@ -13,6 +13,7 @@ import {
   BsCart3,
   BsChevronLeft,
   BsList,
+  BsDisc,
 } from "react-icons/bs";
 
 import "../Style/AdminLayout.css";
@@ -25,6 +26,7 @@ const ADMIN_MENU = [
   { label: "Items", path: "items", icon: <BsBoxSeam />, activeClass: "active-items" },
   { label: "Carousel", path: "carousel", icon: <BsImages />, activeClass: "active-carousel" },
   { label: "Orders", path: "orders", icon: <BsCart3 />, activeClass: "active-orders" },
+  { label: "Colors", path: "colors", icon: <BsDisc />, activeClass: "active-colors" },
 ];
 
 function AdminLayout() {
