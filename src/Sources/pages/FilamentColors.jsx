@@ -55,7 +55,7 @@ export default function FilamentColors() {
 
       <div className="filament-grid">
 
-        {colors.map(color => (
+        {Array.isArray(colors) && colors.map(color => (
 
           <div key={color.id} className="filament-card">
 
