@@ -25,6 +25,7 @@ import OrderSuccess from './Sources/pages/OrderSuccess';
 import AuthCallback from './Sources/components/AuthCallback';
 import AdminColors from './Sources/pages/AdminColors';
 import FilamentColors from './Sources/pages/FilamentColors';
+import AboutUs from './Sources/pages/AboutUs';
 
 export default function AppRoutes() {
   return (
@@ -44,6 +45,7 @@ export default function AppRoutes() {
         <Route path="/cart" element={<MainLayout><CartPage /></MainLayout>} />
         <Route path="/profile" element={<MainLayout><ProfilePage /></MainLayout>} />
         <Route path="/terms" element={<MainLayout><TermsPage /></MainLayout>} />
+        <Route path="/aboutUs" element={<MainLayout><AboutUs /></MainLayout>} />
         <Route path="/filamentColors" element={<MainLayout><FilamentColors /></MainLayout>} />
         <Route path="/item/:id" element={ <MainLayout> <ItemPage /> </MainLayout>} />
 

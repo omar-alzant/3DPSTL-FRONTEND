@@ -133,6 +133,18 @@ function NavbarComp() {
                       Terms
                     </Nav.Link>
                   <Nav.Link
+                      as={NavLink}
+                      onClick={() => setShowOffcanvas(false)}
+
+                      to="/aboutUS"
+                      className="kids-nav-link m-1 align-items-center justify-content-center text-center"
+                      style={{
+                        textDecoration: "none",
+                      }}
+                    >
+                      About Us
+                    </Nav.Link>
+                  <Nav.Link
                     as={NavLink}
                     to="/cart"
                     onClick={() => setShowOffcanvas(false)}
