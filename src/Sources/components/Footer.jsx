@@ -10,7 +10,7 @@ import MapLocation from './MapLocation';
 const Footer = () => {
   const programedByContact = `https://wa.me/96176118290?text=Hello, How are you?`;
   const message = encodeURIComponent("Hello! I'm shopping at 3DSTL and have a question about an item.");
-  const phoneNumber = "96170693460";
+  const phoneNumber = "96176118290";
 
   const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
   const year = new Date().getFullYear();
