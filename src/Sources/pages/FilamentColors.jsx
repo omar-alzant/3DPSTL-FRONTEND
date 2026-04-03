@@ -75,11 +75,11 @@ export default function FilamentColors() {
             </div>
 
         
-            {color.filament_brands?.name && (
+            {/* {color.filament_brands?.name && (
               <div className="small text-secondary">
                 {color.filament_brands.name}
               </div>
-            )}
+            )} */}
 
             {/* <div className="mt-2">
               {color.stock > 0 ? (
