@@ -238,6 +238,9 @@ function NavbarComp() {
           </Container>
         </Navbar>
       ))}
+  <div className="dev-note minimal">
+  Beta version — improvements are ongoing.
+</div>
                 <GlobalSearch onNavigate={() => setShowOffcanvas(false)} />
 
       <div className="d-none d-lg-block c-white">
