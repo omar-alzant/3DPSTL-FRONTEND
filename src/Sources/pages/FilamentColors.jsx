@@ -51,7 +51,15 @@ export default function FilamentColors() {
   return (
     <Container className="mt-4">
 
-      <h4 className="mb-4">Filament Colors</h4>
+    <div className="d-flex justify-content-between align-items-center">
+
+      <h4 className="mb-4">Filament Colors </h4>
+        Total: {colors.length}
+    </div>
+      <p className="filament-note">
+  Colors are for reference only and may slightly vary from the actual filament due to lighting and display differences.
+</p>
+
 
       <div className="filament-grid">
 

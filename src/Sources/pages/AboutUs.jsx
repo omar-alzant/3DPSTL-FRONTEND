@@ -14,7 +14,7 @@ const profileData = {
   links: [
     { name: 'WhatsApp', url: whatsappUrl, icon: <FaWhatsapp />, color: '#25D366' },
     { name: 'Instagram', url: 'https://www.instagram.com/3dstl961?igsh=MTFpamM4eHc3MGhvYQ==', icon: <FaInstagram />, color: '#E1306C' },
-    { name: 'Facebook', url: 'https://facebook.com/your', icon: <FaFacebookF />, color: '#1877F2' },
+    { name: 'Facebook', url: 'https://www.facebook.com/share/1AzWw7eedn', icon: <FaFacebookF />, color: '#1877F2' },
     { name: 'Location', url: 'https://maps.app.goo.gl/YgeRm1o4HJLLJn2CA', icon: <LocateIcon />, color: '#187755' },
     // { name: 'Website', url: '/', icon: <Globe />, color: '#6366F1' },
   ]

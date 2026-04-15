@@ -3,6 +3,18 @@
     grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
     gap:20px;
   }
+  .filament-note {
+    position: sticky;
+    top: 0;
+    font-size: 1rem;
+    color: #6c757d; /* soft gray */
+    margin-bottom: 12px;
+    line-height: 1.5;
+    z-index: 1000;
+    padding: 10px;
+    background-color: white;
+  }
+
   
   .filament-card{
     background:white;

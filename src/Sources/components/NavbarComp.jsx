@@ -240,7 +240,7 @@ function NavbarComp() {
       ))}
                 <GlobalSearch onNavigate={() => setShowOffcanvas(false)} />
 
-      <div className="d-none d-lg-block c-black">
+      <div className="d-none d-lg-block c-white">
           <CategoryMenu onNavigate={() => setShowOffcanvas(false)} />
       </div>
 

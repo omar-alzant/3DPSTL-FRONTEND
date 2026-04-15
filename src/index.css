@@ -38,11 +38,11 @@ td, th{
     border-radius: 50% !important;
 }
 .c-black{
-  color: var(--white) !important;
+  color: black !important;
 }
 
 .c-white{
-  color: var(--black) !important;
+  color: white !important;
 }
 
 .c-pk-h{

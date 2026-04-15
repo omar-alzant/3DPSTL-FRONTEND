@@ -149,8 +149,8 @@ function CategoryMenu({ onNavigate }) {
             {/* LEVEL 1 — CATEGORIES */}
             {!mobileCategory && (
               <>
-                <h6 className="fw-bold mb-2">Categories</h6>
-                <ul className="list-unstyled">
+                <h6 className="fw-bold mb-2 c-white">Categories</h6>
+                <ul className="list-unstyled c-white">
                   {menuData.map(cat => (
                     <li
                       key={cat.id}
