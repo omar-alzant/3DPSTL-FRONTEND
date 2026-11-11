@@ -15,7 +15,7 @@ const SocialButtons = () => {
     { 
       id: 'ig', 
       icon: <FaInstagram />, 
-      url: 'https://instagram.com/3dstl961', 
+      url: 'https://instagram.com/3dpstl', 
       color: 'ig-hover' 
     },
     { 
