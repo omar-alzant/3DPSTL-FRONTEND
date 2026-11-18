@@ -9,8 +9,9 @@ import initialSign from './initialSign.js';
 import toteBag from './toteBag.js';
 import flexiToy from './flexiToy.js';
 import birthSign from './birthSign.js';
+import phoneCase from './phoneCase.js';
 
-export const TOOLS = [keychain, pencilTopper, initialSign, dualName, lbPlate, plate, keycaps, toteBag, flexiToy, birthSign];
+export const TOOLS = [keychain, pencilTopper, initialSign, dualName, lbPlate, plate, keycaps, toteBag, flexiToy, birthSign, phoneCase];
 
 export const getTool = (id) => TOOLS.find((t) => t.id === id);
 

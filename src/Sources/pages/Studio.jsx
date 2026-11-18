@@ -34,7 +34,7 @@ export default function Studio() {
   return (
     <div className="studio" dir="rtl" lang="ar">
       {tool ? (
-        <Editor key={toolId + (d || '') + (location.state?.params ? location.key : '')} tool={tool} initial={initial} config={config} orderId={location.state?.orderId} />
+        <Editor key={toolId + (d || '') + (location.state?.params ? location.key : '')} tool={tool} initial={initial} config={config} orderId={location.state?.orderId} downloadId={location.state?.downloadId} />
       ) : (
         <Gallery config={config} />
       )}

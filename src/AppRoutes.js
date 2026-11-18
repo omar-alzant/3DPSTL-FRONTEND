@@ -28,6 +28,8 @@ import FilamentColors from './Sources/pages/FilamentColors';
 import AboutUs from './Sources/pages/AboutUs';
 import AdminStudioOrders from './Sources/pages/AdminStudioOrders';
 import AdminStudioPricing from './Sources/pages/AdminStudioPricing';
+import AdminCredits from './Sources/pages/AdminCredits';
+import Credits from './Sources/pages/Credits';
 
 // Studio (Three.js + HarfBuzz) is loaded on demand so the rest of the site stays light
 const Studio = lazy(() => import('./Sources/pages/Studio'));
@@ -62,6 +64,7 @@ export default function AppRoutes() {
         <Route path="/item/:id" element={ <MainLayout> <ItemPage /> </MainLayout>} />
         <Route path="/studio" element={studioPage} />
         <Route path="/studio/:toolId" element={studioPage} />
+        <Route path="/credits" element={<MainLayout><Credits /></MainLayout>} />
 
         {/* Admin Section */}
         <Route path="admin" element={<MainLayout><AdminLayout /></MainLayout>} >
@@ -76,6 +79,7 @@ export default function AppRoutes() {
            <Route path="colors" element={<AdminColors />} />
            <Route path="studio" element={<AdminStudioOrders />} />
            <Route path="pricing" element={<AdminStudioPricing />} />
+           <Route path="credits" element={<AdminCredits />} />
           {/*<Route path="benefits" element={<AdminBenefits />} />
           <Route path="home" element={<AdminHome />} />
           <Route path="shop" element={<AdminShop />} />

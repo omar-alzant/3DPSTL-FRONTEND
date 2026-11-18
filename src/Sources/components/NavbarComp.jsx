@@ -12,6 +12,7 @@ import { NavLink } from "react-router-dom";
 import GlobalSearch from './GlobalSearch';
 import { useAuth } from '../context/AuthContext';
 import CategoryMenu from './CategoryMenu';
+import CreditBadge from './CreditBadge';
 import { CiShoppingCart } from "react-icons/ci";
 import '../Style/Navbar.css'
 
@@ -44,6 +45,10 @@ function NavbarComp() {
                 }}
               />            
             </Navbar.Brand>
+            {/* رصيد الكريدت: ظاهر دائماً (حتى على الهاتف خارج القائمة)، وفي آخر الشريط على الشاشات الكبيرة */}
+            <div className="ms-auto me-2 order-lg-last ms-lg-2 me-lg-0">
+              <CreditBadge />
+            </div>
             <Navbar.Toggle 
               aria-controls={`offcanvasNavbar-expand-${expand}`}
               style={{border: "none", background: "white"}}

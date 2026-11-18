@@ -66,6 +66,20 @@ function Field({ def, value, onChange, params, tool }) {
       return <FontPicker value={value} onChange={set} sample={sample} />;
     }
     case 'select':
+      if (def.dropdown) {
+        // قائمة منسدلة مقسّمة بمجموعات (للقوائم الطويلة مثل موديلات الهواتف)
+        const groups = [...new Set(def.options.map((o) => o.group || ''))];
+        return (
+          <select className="sd-dropdown" value={value} onChange={(e) => set(e.target.value)}>
+            {groups.map((g) => {
+              const opts = def.options.filter((o) => (o.group || '') === g).map((o) => (
+                <option key={o.value} value={o.value}>{o.label}</option>
+              ));
+              return g ? <optgroup key={g} label={g}>{opts}</optgroup> : opts;
+            })}
+          </select>
+        );
+      }
       return (
         <div className="sd-seg">
           {def.options.map((o) => (

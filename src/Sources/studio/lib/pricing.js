@@ -47,3 +47,10 @@ export function priceFor(config, toolId, grams, colors = 1, minutes = 0) {
 }
 
 export const isToolEnabled = (config, toolId) => toolPricing(config, toolId).enabled;
+
+/** كلفة تنزيل ملف من الأداة بالكريدت: قيمة الأداة، وإلا القيمة الافتراضية (0 = مجاني) */
+export function toolCredits(config, toolId) {
+  const v = config?.tools?.[toolId]?.credits;
+  if (v !== null && v !== undefined && v !== '' && Number.isFinite(Number(v))) return Math.max(0, Math.round(Number(v)));
+  return Math.max(0, Math.round(Number(config?.creditsPerDownload) || 0));
+}

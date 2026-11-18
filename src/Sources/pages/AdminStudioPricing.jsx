@@ -16,6 +16,8 @@ const toForm = (s) => ({
   swapSeconds: s.swapSeconds ?? TIME_DEFAULTS.swapSeconds,
   startupMinutes: s.startupMinutes ?? TIME_DEFAULTS.startupMinutes,
   whatsapp: s.whatsapp || '',
+  creditsPerDownload: s.creditsPerDownload ?? 0,
+  payment: s.payment || {}, // edited in Admin → Credits; kept as-is here
   tools: Object.fromEntries(
     TOOLS.map((t) => {
       const v = s.tools?.[t.id] || {};
@@ -24,6 +26,7 @@ const toForm = (s) => ({
         pricePerGram: v.pricePerGram ?? '',
         minPrice: v.minPrice ?? '',
         setupFee: v.setupFee ?? 0,
+        credits: v.credits ?? '',
       }];
     })
   ),
@@ -124,6 +127,7 @@ export default function AdminStudioPricing() {
             <label>Minimum price per piece ({cur})<Num value={form.minPrice} onChange={set('minPrice')} /></label>
             <label>Fee per extra colour ({cur})<Num value={form.colorFee} onChange={set('colorFee')} /></label>
             <label>Price per print hour ({cur})<Num value={form.pricePerHour} onChange={set('pricePerHour')} /></label>
+            <label>Credits per file download (default)<Num value={form.creditsPerDownload} onChange={set('creditsPerDownload')} step="1" /></label>
             <label className="sd-span-2">WhatsApp number for orders (international, no +)
               <input type="text" value={form.whatsapp} placeholder="96176118290" onChange={(e) => set('whatsapp')(e.target.value)} />
             </label>
@@ -165,7 +169,7 @@ export default function AdminStudioPricing() {
 
       <section className="sd-box mt-3">
         <h6>Per-tool prices</h6>
-        <small className="sd-muted d-block mb-2">Leave a field empty to use the default price. Hidden tools disappear from the Studio page.</small>
+        <small className="sd-muted d-block mb-2">Credits / download: what downloading this tool's files costs (0 = free, empty = default). Admins never pay. Leave a field empty to use the default price. Hidden tools disappear from the Studio page.</small>
         <div className="sd-table-wrap">
           <table className="sd-table">
             <thead>
@@ -175,6 +179,7 @@ export default function AdminStudioPricing() {
                 <th>Price / g ({cur})</th>
                 <th>Minimum ({cur})</th>
                 <th>Setup fee ({cur})</th>
+                <th>Credits / download</th>
               </tr>
             </thead>
             <tbody>
@@ -195,6 +200,7 @@ export default function AdminStudioPricing() {
                     <td><Num value={v.pricePerGram} onChange={setTool(t.id, 'pricePerGram')} placeholder={String(form.pricePerGram)} step="0.001" /></td>
                     <td><Num value={v.minPrice} onChange={setTool(t.id, 'minPrice')} placeholder={String(form.minPrice)} /></td>
                     <td><Num value={v.setupFee} onChange={setTool(t.id, 'setupFee')} /></td>
+                    <td><Num value={v.credits} onChange={setTool(t.id, 'credits')} placeholder={String(form.creditsPerDownload || 0)} step="1" /></td>
                   </tr>
                 );
               })}

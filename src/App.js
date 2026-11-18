@@ -4,6 +4,7 @@ import AppRoutes from './AppRoutes';
 import { AuthProvider } from './Sources/context/AuthContext';
 import { BrowserRouter } from "react-router-dom";
 import { CartProvider } from './Sources/context/CartContext';
+import { CreditsProvider } from './Sources/context/CreditsContext';
 import HumanGate from './Sources/components/HumanGate';
 
 export default function App() {
@@ -11,9 +12,11 @@ export default function App() {
     <HumanGate>
     <BrowserRouter>
       <AuthProvider>
+      <CreditsProvider>
       <CartProvider>
         <AppRoutes />
       </CartProvider>
+      </CreditsProvider>
       </AuthProvider>
     </BrowserRouter>
     </HumanGate>
