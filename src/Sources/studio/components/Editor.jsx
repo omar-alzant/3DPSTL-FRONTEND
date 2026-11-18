@@ -55,6 +55,20 @@ export default function Editor({ tool, initial, config, orderId }) {
           <Viewer parts={parts} fitKey={tool.id} />
           {busy && <div className="sd-badge">جارٍ التحديث…</div>}
           {error && <div className="sd-badge sd-err">خطأ: {error}</div>}
+          {stats && (
+            <div className="sd-mini">
+              <span>
+                <b>{price.toFixed(2)} {config.currency}</b> · {formatMinutes(minutes)}
+              </span>
+              <button
+                type="button"
+                className="sd-btn sd-primary"
+                onClick={() => document.querySelector('.sd-bar')?.scrollIntoView({ behavior: 'smooth', block: 'end' })}
+              >
+                اطلب ↓
+              </button>
+            </div>
+          )}
         </div>
         <div className="sd-bar">
           {stats && (

@@ -132,7 +132,7 @@ function Gate({ onPass }) {
   return (
     <div className="hv-page" dir="rtl">
       <div className="hv-card">
-        <img className="hv-logo" src={`${process.env.PUBLIC_URL || ''}/logo192.png`} alt="3DPSTL" onError={(e) => (e.currentTarget.style.display = 'none')} />
+        <img className="hv-logo" src={`${process.env.PUBLIC_URL || ''}/logoIco.svg`} alt="3DSTL" onError={(e) => (e.currentTarget.style.display = 'none')} />
         <h1>التحقق البشري</h1>
         <p>نعتذر عن الإزعاج، لكن نحتاج التأكد أنك شخص حقيقي لحماية موقعنا من البرامج الضارة.</p>
         <p>أكمل التحقق أدناه، وستتمكن من الدخول مباشرة.</p>
@@ -145,7 +145,7 @@ function Gate({ onPass }) {
         )}
         <hr />
         <p className="hv-foot">يبقى التحقق صالحاً لمدة 24 ساعة على هذا الجهاز.</p>
-        <p className="hv-brand">3DPSTL</p>
+        <img className="hv-wordmark" src={`${process.env.PUBLIC_URL || ''}/logo.png`} alt="3DSTL" onError={(e) => (e.currentTarget.style.display = 'none')} />
       </div>
     </div>
   );
