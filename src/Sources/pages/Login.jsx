@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { ReactComponent as Logo } from '../../logo.svg';
-import ReCAPTCHA from "react-google-recaptcha";
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
 
 import {
@@ -25,8 +24,7 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [logoutFromOtherDevicesBtn, setLogoutFromOtherDevicesBtn] = useState(false);
   const [showForm, setShowForm] = useState(false);
-  const [recaptchaToken, setRecaptchaToken] = useState("");
-  const [recaptchaValid, setRecaptchaValid] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const { showToast } = useToast();
 
@@ -42,57 +40,41 @@ export default function Login() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [error]);
 
-  // --- Recaptcha Handlers ---
-  const handleRecaptchaChange = (token) => {
-    setRecaptchaToken(token);
-    setRecaptchaValid(!!token);
-    setError("");
-  };
-
-  const handleRecaptchaExpired = () => {
-    setRecaptchaToken(null);
-    setRecaptchaValid(false);
-    setError("The recaptcha token was invalid.");
-    showToast("The recaptcha token was invalid.", "danger")
-
-  };
-
-  const handleRecaptchaError = () => {
-    setRecaptchaToken(null);
-    setRecaptchaValid(false);
-    setError("Please, try again!");
-    showToast("Please, try again!", "danger")
-
-  };
-
   // --- Logout Logic ---
   const handleLogoutClick = () => {
     setShowForm(true);
   };
 
   const handleConfirmLogout = async () => {
+    if (!email || !password) {
+      showToast("Please enter your email and password", "danger");
+      return;
+    }
+    setLoggingOut(true);
     try {
       const res = await fetch(`${apiAuthUrl}/logoutAlldevices`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password, recaptchaToken }),
+        body: JSON.stringify({ email, password }),
       });
 
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
 
-      if (data.ok) {
+      if (res.ok && data.ok) {
         setError('');
-        showToast("Logout from other devices done", "warning")
-        setRecaptchaToken(null);
-        setRecaptchaValid(false);
+        showToast("Logout from other devices done", "warning");
         setLogoutFromOtherDevicesBtn(false);
         setShowForm(false);
+      } else {
+        const msg = data.message || data.error || "Error occurred.";
+        setError(msg);
+        showToast(msg, "danger");
       }
     } catch (err) {
       setError("Error occurred.");
-      showToast("Error occurred", "danger")
-
-      setRecaptchaValid(false);
+      showToast("Error occurred", "danger");
+    } finally {
+      setLoggingOut(false);
     }
   };
 
@@ -177,23 +159,15 @@ export default function Login() {
                   </InputGroup>
                 </Form.Group>
 
-                <div className="d-flex justify-content-center">
-                  <ReCAPTCHA
-                    sitekey={process.env.REACT_APP_RECAPTCHA_SITE_KEY}
-                    onChange={handleRecaptchaChange}
-                    onExpired={handleRecaptchaExpired}
-                    onErrored={handleRecaptchaError}
-                  />
-                </div>
               </Form>
             </Modal.Body>
             <Modal.Footer>
               <Button
                 variant="danger"
-                disabled={!recaptchaValid}
+                disabled={loggingOut || !email || !password}
                 onClick={handleConfirmLogout}
               >
-                Confirm
+                {loggingOut ? <Spinner size="sm" /> : "Confirm"}
               </Button>
               <Button variant="secondary" onClick={() => setShowForm(false)}>
                 Cancel
