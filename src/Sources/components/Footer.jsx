@@ -39,15 +39,15 @@ const Footer = () => {
       <footer
         className="pt-5 pb-3 mt-5"
         style={{
-          background: "#0B0F2A",
-          color: "#E6E9FF",
-          borderTop: "1px solid #1E245C"
+          background: "var(--brand-bg)",
+          color: "var(--brand-text)",
+          borderTop: "1px solid var(--brand-border)"
         }}
       >      <Container>
         {/* Section 1: Trust Badges */}
         <Row className="text-center mb-5 g-4">
           <Col md={4}>
-            <GoShieldCheck size={32} style={{ color: "#6C63FF" }} />
+            <GoShieldCheck size={32} style={{ color: "var(--brand-primary)" }} />
             <h6 className="fw-bold mt-2">Precision Quality</h6>
             <p className="small ">
               High-accuracy 3D prints with professional finishing.
@@ -55,7 +55,7 @@ const Footer = () => {
           </Col>
 
           <Col md={4}>
-            <AiOutlineTruck size={32} style={{ color: "#6C63FF" }} />
+            <AiOutlineTruck size={32} style={{ color: "var(--brand-primary)" }} />
             <h6 className="fw-bold mt-2">Fast Production</h6>
             <p className="small ">
               Efficient turnaround for custom and business orders.
@@ -63,7 +63,7 @@ const Footer = () => {
           </Col>
 
           <Col md={4}>
-            <FiRotateCcw size={32} style={{ color: "#6C63FF" }} />
+            <FiRotateCcw size={32} style={{ color: "var(--brand-primary)" }} />
             <h6 className="fw-bold mt-2">Custom Solutions</h6>
             <p className="small ">
               From prototypes to branding pieces — tailored to your needs.
@@ -78,7 +78,7 @@ const Footer = () => {
           <h4
             className="fw-bold mb-3"
             style={{
-              background: "linear-gradient(90deg,#6C63FF,#4F46E5)",
+              background: "var(--brand-gradient)",
               WebkitBackgroundClip: "text",
               color: "transparent"
             }}

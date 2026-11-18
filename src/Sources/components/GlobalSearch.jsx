@@ -45,11 +45,11 @@ export default function GlobalSearch({ onClose }) {
       <Form onSubmit={handleSubmit}>
         <InputGroup
           style={{
-            background: "#12163A",
-            border: "1px solid #1E245C",
+            background: "var(--brand-card)",
+            border: "1px solid var(--brand-border)",
             borderRadius: "12px",
             overflow: "hidden",
-            boxShadow: "0 0 20px rgba(108,99,255,0.05)"
+            boxShadow: "0 0 20px rgba(106, 77, 255,0.05)"
           }}
         >
           <Form.Control
@@ -69,7 +69,7 @@ export default function GlobalSearch({ onClose }) {
             style={{
               background: "transparent",
               border: "none",
-              color: "#6C63FF",
+              color: "var(--brand-primary)",
               padding: "0 16px"
             }}
           >
@@ -82,7 +82,7 @@ export default function GlobalSearch({ onClose }) {
               style={{
                 background: "transparent",
                 border: "none",
-                color: "#A5B4FC",
+                color: "var(--brand-light)",
                 padding: "0 16px"
               }}
             >

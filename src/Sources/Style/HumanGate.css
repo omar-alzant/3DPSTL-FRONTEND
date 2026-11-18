@@ -1,0 +1,23 @@
+/* صفحة التحقق البشري — بألوان الموقع (كحلي/بنفسجي) */
+.hv-page {
+  min-height: 100vh; display: grid; place-items: center; padding: 24px;
+  background: var(--brand-bg, #0f0f3a); color: var(--brand-text, #fff);
+  font-family: 'IBM Plex Sans Arabic', 'Poppins', system-ui, sans-serif; text-align: center;
+}
+.hv-card {
+  width: min(460px, 100%); background: var(--brand-card, #17174a); border: 1px solid var(--brand-border, #2c2c6e);
+  border-radius: 18px; padding: 32px 28px; box-shadow: 0 20px 60px rgba(0, 0, 0, .45);
+}
+.hv-logo { width: 64px; height: 64px; object-fit: contain; margin-bottom: 8px; }
+.hv-card h1 { font-size: 26px; margin: 4px 0 14px; font-weight: 700; }
+.hv-card p { color: var(--brand-light, #c9c9ef); line-height: 1.8; margin: 0 0 6px; font-size: 15px; }
+.hv-widget { display: flex; justify-content: center; min-height: 70px; margin: 18px 0 8px; }
+.hv-status { color: var(--brand-light, #c9c9ef); }
+.hv-error { color: #f87171 !important; }
+.hv-error button {
+  margin-inline-start: 6px; border: 1px solid currentColor; background: transparent; color: inherit;
+  border-radius: 8px; padding: 2px 10px; cursor: pointer; font: inherit;
+}
+.hv-card hr { border: 0; border-top: 1px solid var(--brand-border, #2c2c6e); margin: 20px 0 14px; }
+.hv-foot { font-size: 13px !important; color: var(--brand-muted, #8f8fc2) !important; }
+.hv-brand { font-weight: 700; letter-spacing: 2px; color: var(--brand-primary, #6a4dff) !important; margin-top: 6px !important; }

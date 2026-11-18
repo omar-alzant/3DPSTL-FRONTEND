@@ -1,0 +1,327 @@
+/* =====================================================================
+   3DSTL THEME — colours taken from the logo
+   Loaded LAST (see src/index.js) so it wins over Bootstrap and older CSS.
+   Change a colour here and the whole site (shop, studio, admin) follows.
+   ===================================================================== */
+
+:root,
+[data-bs-theme='dark'] {
+  /* ---- Logo palette ---- */
+  --brand-bg: #0d0d33;          /* logo background navy */
+  --brand-bg-2: #11113f;        /* alternate section background */
+  --brand-card: #16164a;        /* cards, panels, menus */
+  --brand-card-2: #1e1e5c;      /* inputs, hover, raised */
+  --brand-border: #2a2a72;
+  --brand-primary: #6a4dff;     /* logo violet */
+  --brand-primary-2: #5143dd;   /* logo deep violet (shadow side) */
+  --brand-primary-3: #6e5fff;   /* logo light violet */
+  --brand-light: #b3a8ff;       /* soft violet for links / accents on navy */
+  --brand-text: #f2f0ff;        /* logo white, slightly warm */
+  --brand-muted: #a9a6d6;
+  --brand-secondary: var(--brand-primary-2);
+  --brand-gradient: linear-gradient(90deg, #6a4dff, #5143dd);
+  --brand-glow: rgba(106, 77, 255, 0.35);
+  --brand-success: #34d399;
+  --brand-warning: #fbbf24;
+  --brand-danger: #f87171;
+
+  /* ---- Old variable names still used around the code ---- */
+  --c1: var(--brand-primary);
+  --c2: var(--brand-primary-2);
+  --c3: var(--brand-primary-3);
+  --bg: var(--brand-bg);
+  --bg1: var(--brand-card);
+  --body-h: var(--brand-bg);
+  --body-g: var(--brand-bg);
+  --nav: var(--brand-bg);
+  --pk-h: var(--brand-primary);
+  --pk: var(--brand-primary-2);
+  --bl-h: var(--brand-primary-3);
+  --bl: var(--brand-primary-2);
+  --yl-h: var(--brand-warning);
+  --yl: var(--brand-warning);
+  --gr-h: var(--brand-success);
+  --gr: var(--brand-success);
+  --gray-light: var(--brand-card);
+  --black: var(--brand-border);
+  --black-light: var(--brand-border);
+  --red-light: rgba(248, 113, 113, 0.15);
+  --white: #ffffff;
+
+  /* ---- Bootstrap (dark mode is set on <html data-bs-theme="dark">) ---- */
+  --bs-body-bg: var(--brand-bg);
+  --bs-body-bg-rgb: 13, 13, 51;
+  --bs-body-color: var(--brand-text);
+  --bs-body-color-rgb: 242, 240, 255;
+  --bs-emphasis-color: #ffffff;
+  --bs-emphasis-color-rgb: 255, 255, 255;
+  --bs-secondary-color: var(--brand-muted);
+  --bs-secondary-color-rgb: 169, 166, 214;
+  --bs-secondary-bg: var(--brand-card);
+  --bs-secondary-bg-rgb: 22, 22, 74;
+  --bs-tertiary-bg: var(--brand-card-2);
+  --bs-tertiary-bg-rgb: 30, 30, 92;
+  --bs-tertiary-color: var(--brand-muted);
+  --bs-heading-color: #ffffff;
+  --bs-border-color: var(--brand-border);
+  --bs-border-color-translucent: rgba(179, 168, 255, 0.16);
+  --bs-primary: var(--brand-primary);
+  --bs-primary-rgb: 106, 77, 255;
+  --bs-primary-text-emphasis: var(--brand-light);
+  --bs-primary-bg-subtle: rgba(106, 77, 255, 0.16);
+  --bs-primary-border-subtle: rgba(106, 77, 255, 0.45);
+  --bs-link-color: var(--brand-light);
+  --bs-link-color-rgb: 179, 168, 255;
+  --bs-link-hover-color: #ffffff;
+  --bs-link-hover-color-rgb: 255, 255, 255;
+  --bs-focus-ring-color: rgba(106, 77, 255, 0.35);
+  --bs-highlight-bg: rgba(106, 77, 255, 0.3);
+  --bs-form-valid-color: var(--brand-success);
+  --bs-form-invalid-color: var(--brand-danger);
+}
+
+body {
+  background-color: var(--brand-bg) !important;
+  color: var(--brand-text);
+}
+
+::selection { background: rgba(106, 77, 255, 0.45); color: #fff; }
+
+a { color: var(--brand-light); }
+a:hover { color: #fff; }
+a:active { background-color: transparent !important; }
+
+h1, h2, h3, h4, h5, h6 { color: #fff; }
+
+/* ---------- Text helpers used across the pages ---------- */
+.c-black, .text-dark { color: var(--brand-text) !important; }
+.text-muted, .text-secondary { color: var(--brand-muted) !important; }
+.text-primary { color: var(--brand-light) !important; }
+.text-black { color: var(--brand-text) !important; }
+.bg-white, .bg-light { background-color: var(--brand-card) !important; color: var(--brand-text); }
+.bg-dark { background-color: var(--brand-bg-2) !important; }
+.border-primary { border-color: var(--brand-primary) !important; }
+
+/* ---------- Buttons ---------- */
+.btn-primary {
+  --bs-btn-color: #fff;
+  --bs-btn-bg: var(--brand-primary);
+  --bs-btn-border-color: var(--brand-primary);
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: var(--brand-primary-2);
+  --bs-btn-hover-border-color: var(--brand-primary-2);
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: var(--brand-primary-2);
+  --bs-btn-active-border-color: var(--brand-primary-2);
+  --bs-btn-disabled-bg: var(--brand-primary);
+  --bs-btn-disabled-border-color: var(--brand-primary);
+  --bs-btn-focus-shadow-rgb: 106, 77, 255;
+  background-image: var(--brand-gradient);
+  border: 0;
+}
+.btn-outline-primary {
+  --bs-btn-color: var(--brand-light);
+  --bs-btn-border-color: var(--brand-primary);
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: var(--brand-primary);
+  --bs-btn-hover-border-color: var(--brand-primary);
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: var(--brand-primary-2);
+  --bs-btn-active-border-color: var(--brand-primary-2);
+  --bs-btn-focus-shadow-rgb: 106, 77, 255;
+}
+.btn-secondary, .btn-light {
+  --bs-btn-color: var(--brand-text);
+  --bs-btn-bg: var(--brand-card-2);
+  --bs-btn-border-color: var(--brand-border);
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: #26266e;
+  --bs-btn-hover-border-color: var(--brand-primary);
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: #26266e;
+  --bs-btn-active-border-color: var(--brand-primary);
+}
+.btn-outline-secondary, .btn-outline-light, .btn-outline-dark {
+  --bs-btn-color: var(--brand-text);
+  --bs-btn-border-color: var(--brand-border);
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: var(--brand-card-2);
+  --bs-btn-hover-border-color: var(--brand-primary);
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: var(--brand-card-2);
+  --bs-btn-active-border-color: var(--brand-primary);
+}
+.btn-outline-info {
+  --bs-btn-color: var(--brand-light);
+  --bs-btn-border-color: var(--brand-primary-3);
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: var(--brand-primary-3);
+  --bs-btn-hover-border-color: var(--brand-primary-3);
+}
+.btn-link { --bs-btn-color: var(--brand-light); --bs-btn-hover-color: #fff; --bs-btn-active-color: #fff; }
+/* the old global "Button:hover { opacity: .7 }" made every button look washed out */
+button:hover, .btn:hover { opacity: 1; }
+
+/* ---------- Cards, lists, tables, forms ---------- */
+.card {
+  --bs-card-bg: var(--brand-card);
+  --bs-card-border-color: var(--brand-border);
+  --bs-card-cap-bg: var(--brand-card-2);
+  --bs-card-color: var(--brand-text);
+  --bs-card-title-color: #fff;
+}
+.card:hover { box-shadow: 0 16px 40px rgba(5, 5, 30, 0.6), 0 0 0 1px rgba(106, 77, 255, 0.35); }
+.shadow-sm { box-shadow: 0 4px 18px rgba(5, 5, 30, 0.45) !important; }
+
+.list-group { --bs-list-group-bg: var(--brand-card); --bs-list-group-border-color: var(--brand-border); --bs-list-group-color: var(--brand-text); --bs-list-group-action-hover-bg: var(--brand-card-2); --bs-list-group-active-bg: var(--brand-primary); --bs-list-group-active-border-color: var(--brand-primary); }
+
+.table { --bs-table-bg: transparent; --bs-table-color: var(--brand-text); --bs-table-border-color: var(--brand-border); --bs-table-striped-bg: rgba(106, 77, 255, 0.06); --bs-table-hover-bg: rgba(106, 77, 255, 0.1); }
+td, th { border: 1px solid var(--brand-border) !important; }
+
+.form-control, .form-select {
+  background-color: var(--brand-card-2);
+  border-color: var(--brand-border);
+  color: var(--brand-text);
+}
+.form-control:focus, .form-select:focus {
+  background-color: var(--brand-card-2);
+  border-color: var(--brand-primary);
+  color: #fff;
+  box-shadow: 0 0 0 0.2rem rgba(106, 77, 255, 0.25) !important;
+}
+.form-control::placeholder { color: #8f8cc4 !important; }
+.form-control:disabled, .form-select:disabled { background-color: var(--brand-card); color: var(--brand-muted); }
+.input-group-text { background-color: var(--brand-card); border-color: var(--brand-border); color: var(--brand-muted); }
+.form-check-input { background-color: var(--brand-card-2); border-color: var(--brand-border); }
+.form-check-input:checked { background-color: var(--brand-primary); border-color: var(--brand-primary); }
+.input-group:focus-within { border-color: var(--brand-primary) !important; box-shadow: 0 0 25px rgba(106, 77, 255, 0.25) !important; }
+
+/* react-select */
+.react-select__control, .react-select__menu { background-color: var(--brand-card-2) !important; border-color: var(--brand-border) !important; }
+.react-select__single-value, .react-select__input-container { color: var(--brand-text) !important; }
+.react-select__option--is-focused { background-color: rgba(106, 77, 255, 0.2) !important; }
+.react-select__option--is-selected { background-color: var(--brand-primary) !important; }
+.react-select__multi-value { background-color: rgba(106, 77, 255, 0.25) !important; }
+.react-select__multi-value__label { color: var(--brand-text) !important; }
+
+/* ---------- Overlays: modal, dropdown, popover, offcanvas, toast ---------- */
+.modal { --bs-modal-bg: var(--brand-card); --bs-modal-color: var(--brand-text); --bs-modal-border-color: var(--brand-border); --bs-modal-header-border-color: var(--brand-border); --bs-modal-footer-border-color: var(--brand-border); }
+.dropdown-menu { --bs-dropdown-bg: var(--brand-card); --bs-dropdown-border-color: var(--brand-border); --bs-dropdown-link-color: var(--brand-text); --bs-dropdown-link-hover-bg: var(--brand-card-2); --bs-dropdown-link-hover-color: #fff; --bs-dropdown-link-active-bg: var(--brand-primary); }
+.popover { --bs-popover-bg: var(--brand-card); --bs-popover-border-color: var(--brand-border); --bs-popover-header-bg: var(--brand-card-2); --bs-popover-header-color: #fff; --bs-popover-body-color: var(--brand-text); }
+.offcanvas { --bs-offcanvas-bg: var(--brand-bg); --bs-offcanvas-color: var(--brand-text); }
+.accordion { --bs-accordion-bg: var(--brand-card); --bs-accordion-color: var(--brand-text); --bs-accordion-border-color: var(--brand-border); --bs-accordion-btn-bg: var(--brand-card); --bs-accordion-btn-color: var(--brand-text); --bs-accordion-active-bg: var(--brand-card-2); --bs-accordion-active-color: #fff; --bs-accordion-btn-focus-box-shadow: 0 0 0 0.2rem rgba(106, 77, 255, 0.25); }
+.pagination { --bs-pagination-bg: var(--brand-card); --bs-pagination-border-color: var(--brand-border); --bs-pagination-color: var(--brand-light); --bs-pagination-hover-bg: var(--brand-card-2); --bs-pagination-hover-color: #fff; --bs-pagination-active-bg: var(--brand-primary); --bs-pagination-active-border-color: var(--brand-primary); }
+.breadcrumb { --bs-breadcrumb-item-active-color: var(--brand-muted); --bs-breadcrumb-divider-color: var(--brand-muted); }
+.progress { --bs-progress-bg: var(--brand-border); --bs-progress-bar-bg: var(--brand-primary); }
+.badge.bg-primary { background: var(--brand-gradient) !important; }
+.spinner-border, .spinner-grow { color: var(--brand-primary); }
+
+/* Tabs (Profile → My Orders, item page…) — active tab was white text on nothing */
+.nav-tabs { --bs-nav-tabs-border-color: var(--brand-border); --bs-nav-tabs-link-hover-border-color: var(--brand-border); --bs-nav-tabs-link-active-bg: var(--brand-card); --bs-nav-tabs-link-active-color: #fff; --bs-nav-tabs-link-active-border-color: var(--brand-border) var(--brand-border) var(--brand-card); }
+.nav-tabs .nav-link { color: var(--brand-muted); }
+.nav-tabs .nav-link.active { background-color: var(--brand-card) !important; color: #fff !important; border-bottom: 2px solid var(--brand-primary); }
+.nav-pills .nav-link.active, .nav-link.active:not(.kids-nav-link):not(.admin-nav-item) { background-color: var(--brand-primary) !important; color: #fff !important; }
+
+/* ---------- Navbar ---------- */
+.kids-navbar, .bg-body-h { background: var(--brand-bg) !important; border-bottom: 1px solid var(--brand-border); }
+.kids-nav-link { color: var(--brand-muted) !important; border-radius: 10px; }
+.kids-nav-link:hover { color: #fff !important; }
+.kids-nav-link.active { color: #fff !important; background: rgba(106, 77, 255, 0.18) !important; box-shadow: inset 0 -2px 0 var(--brand-primary); }
+.kids-avatar { border-color: var(--brand-primary) !important; }
+.kids-profile-popover, .kids-popover-body { background: var(--brand-card) !important; color: var(--brand-text); }
+.kids-popover-header { background: var(--brand-gradient) !important; color: #fff; }
+.kids-popover-divider { background: var(--brand-border) !important; }
+.kids-navbar .navbar-toggler { background: var(--brand-card-2) !important; border: 1px solid var(--brand-border) !important; }
+.kids-navbar .navbar-toggler-icon { filter: invert(1); }
+.offcanvas .btn-close { filter: invert(1) grayscale(1); }
+.dev-note.minimal {
+  background: var(--brand-bg-2) !important;
+  color: var(--brand-muted) !important;
+  border-bottom: 1px solid var(--brand-border) !important;
+  text-align: center;
+  padding: 2px 0;
+}
+
+/* ---------- Category bar & mega menu ---------- */
+.category-menu-bar { background: var(--brand-bg) !important; border-bottom: 1px solid var(--brand-border) !important; box-shadow: none !important; }
+.category-menu-bar h5 { color: #fff !important; }
+.category-item:hover, .category-item.active, .category-menu-bar .cursor:hover {
+  background: rgba(106, 77, 255, 0.16) !important;
+  color: #fff !important;
+  box-shadow: 0 3px 10px rgba(106, 77, 255, 0.2) !important;
+}
+.mega-menu-dropdown { background: var(--brand-card) !important; border-top: 3px solid var(--brand-primary) !important; box-shadow: 0 16px 30px rgba(5, 5, 30, 0.6) !important; }
+.mega-menu-dropdown h6 { color: var(--brand-light) !important; border-bottom-color: var(--brand-border) !important; }
+.mega-menu-dropdown ul li a { color: var(--brand-text) !important; }
+.mega-menu-dropdown ul li a:hover { color: #fff !important; background: rgba(106, 77, 255, 0.16) !important; }
+.category-scroll-container { scrollbar-color: var(--brand-primary) transparent; }
+.category-scroll-container::-webkit-scrollbar-track { background: transparent !important; }
+.category-scroll-container::-webkit-scrollbar-thumb, .category-scroll-container::-webkit-scrollbar-thumb:hover { background: var(--brand-primary) !important; }
+.modelInCategory:hover, .category-list:hover { color: var(--brand-light) !important; }
+
+/* ---------- Shop / products ---------- */
+.image-wrapper { background: var(--brand-card-2) !important; }
+.modern-card:hover { box-shadow: 0 12px 30px rgba(106, 77, 255, 0.25) !important; }
+.filter-sticky { background: var(--brand-bg) !important; border-bottom-color: var(--brand-border) !important; }
+.selectedCard { border: 3px dotted var(--brand-primary) !important; }
+.carousel-control-next-icon, .carousel-control-prev-icon { background-color: rgba(106, 77, 255, 0.55) !important; }
+.carousel-arrow { background: rgba(13, 13, 51, 0.6) !important; border: 1px solid var(--brand-border) !important; }
+.carousel-arrow:hover { background: var(--brand-primary) !important; }
+.spinner-large, .spinner-small { border-color: var(--brand-border) !important; border-top-color: var(--brand-primary) !important; }
+.variant-divider { background: var(--brand-border) !important; }
+.swatch, .filament-circle { border-color: var(--brand-border) !important; }
+
+/* Floating cart (was an undefined colour) */
+.floating-cart { background: var(--brand-gradient) !important; box-shadow: 0 6px 20px var(--brand-glow); }
+.floating-cart:hover { background: var(--brand-primary-2) !important; }
+.whatsapp-tooltip, .floating-cart-tooltip { background-color: var(--brand-card) !important; border: 1px solid var(--brand-border); }
+
+/* Filament colours page */
+.filament-note { background: var(--brand-bg) !important; color: var(--brand-muted) !important; }
+.filament-card { background: var(--brand-card) !important; border: 1px solid var(--brand-border); box-shadow: none !important; color: var(--brand-text); }
+.filament-card:hover { box-shadow: 0 8px 24px rgba(106, 77, 255, 0.25) !important; }
+
+/* Multi colour picker (admin) */
+.selected-colors { border-color: var(--brand-border) !important; }
+.color-tag { border-color: var(--brand-card) !important; }
+.color-tag .remove-btn { background: var(--brand-card-2) !important; color: #fff !important; border-color: var(--brand-border) !important; }
+.color-tag.selected-client { border-color: var(--brand-primary) !important; box-shadow: 0 0 6px var(--brand-glow) !important; }
+
+/* ---------- About us ---------- */
+.glass-card { background: var(--brand-card) !important; border-color: var(--brand-border) !important; color: var(--brand-text) !important; }
+.profile-img { border-color: var(--brand-primary) !important; }
+.link-item { background: var(--brand-card-2) !important; color: var(--brand-text) !important; border: 1px solid var(--brand-border); }
+.link-item:hover { background: #26266e !important; color: #fff !important; }
+
+/* ---------- Footer & social ---------- */
+.social-btn { background-color: var(--brand-card-2) !important; color: var(--brand-light) !important; border-color: var(--brand-border) !important; }
+.fb-hover:hover, .ig-hover:hover, .wa-hover:hover { background-color: var(--brand-primary) !important; color: #fff !important; }
+footer a { color: var(--brand-light); }
+footer a:hover { color: #fff; }
+
+/* ---------- Rich text (Quill) ---------- */
+.ql-toolbar.ql-snow, .ql-container.ql-snow { border-color: var(--brand-border) !important; }
+.ql-toolbar.ql-snow { background: var(--brand-card-2); }
+.ql-snow .ql-stroke { stroke: var(--brand-text) !important; }
+.ql-snow .ql-fill { fill: var(--brand-text) !important; }
+.ql-snow .ql-picker { color: var(--brand-text) !important; }
+.ql-snow .ql-picker-options { background: var(--brand-card) !important; }
+.ql-editor.ql-blank::before { color: var(--brand-muted) !important; }
+
+/* ---------- Background glows (now in logo violet) ---------- */
+body::before, footer::before { background: radial-gradient(circle, rgba(106, 77, 255, 0.14), transparent 70%) !important; }
+
+/* ---------- Scrollbar ---------- */
+html { scrollbar-color: var(--brand-border) var(--brand-bg); }
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: var(--brand-bg); }
+::-webkit-scrollbar-thumb { background: var(--brand-border); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: var(--brand-primary); }
+.offcanvas { background: var(--brand-bg) !important; color: var(--brand-text); }
+.offcanvas-title { color: #fff !important; }
+
+/* "Add to cart" / confirm buttons: brand violet instead of Bootstrap green */
+.btn-success { --bs-btn-bg: var(--brand-primary); --bs-btn-border-color: var(--brand-primary); --bs-btn-hover-bg: var(--brand-primary-2); --bs-btn-hover-border-color: var(--brand-primary-2); --bs-btn-active-bg: var(--brand-primary-2); --bs-btn-active-border-color: var(--brand-primary-2); --bs-btn-color: #fff; --bs-btn-hover-color: #fff; }
+.btn-outline-success { --bs-btn-color: var(--brand-light); --bs-btn-border-color: var(--brand-primary); --bs-btn-hover-color: #fff; --bs-btn-hover-bg: var(--brand-primary); --bs-btn-hover-border-color: var(--brand-primary); --bs-btn-active-color: #fff; --bs-btn-active-bg: var(--brand-primary-2); --bs-btn-active-border-color: var(--brand-primary-2); }
+.badge.bg-info, .bg-info { background-color: var(--brand-primary-3) !important; color: #fff !important; }
+.badge.bg-secondary { background-color: var(--brand-card-2) !important; color: var(--brand-text) !important; border: 1px solid var(--brand-border); }

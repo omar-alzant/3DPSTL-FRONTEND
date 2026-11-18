@@ -210,8 +210,8 @@ const CommentsSection = (({ itemId, user, rating_count, rating_avg}, ref) => {
               className="p-3 mb-3"
               style={{
                 borderRadius: "12px",
-                background: "#f8f9fa",
-                border: "1px solid #eee"
+                background: "var(--brand-card)",
+                border: "1px solid var(--brand-border)"
               }}
             >
               <div className="d-flex justify-content-between">

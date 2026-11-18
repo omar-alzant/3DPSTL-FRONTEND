@@ -40,6 +40,6 @@
   .fb-hover:hover,
 .ig-hover:hover,
 .wa-hover:hover {
-  color: #6C63FF !important;
+  color: var(--brand-primary) !important;
   transform: translateY(-2px);
 }

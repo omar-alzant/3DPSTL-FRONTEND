@@ -22,11 +22,24 @@ export default function AdminItems() {
   const [page, setPage] = useState(1);
   const pageSize = 10;
   const [totalItems, setTotalItems] = useState(0);
+  // البحث على الخادم (في كل العناصر) بعد توقّف الكتابة بقليل، مع العودة للصفحة 1
+  const [search, setSearch] = useState('');
+  const [query, setQuery] = useState('');
+  useEffect(() => {
+    const t = setTimeout(() => {
+      setQuery(search.trim());
+      setPage(1);
+    }, 350);
+    return () => clearTimeout(t);
+  }, [search]);
 
   const adminItemURL = `${process.env.REACT_APP_API_URL}/api/admin/products/item`;
   const adminModelURL = `${process.env.REACT_APP_API_URL}/api/admin/products/model`;
   const adminBrandURL = `${process.env.REACT_APP_API_URL}/api/admin/products/market`;
 
+
+  // Admin list filter: all / hidden / visible products
+  const [visibility, setVisibility] = useState('all');
 
   /* ---------------- FORM ---------------- */
   const [form, setForm] = useState({
@@ -35,6 +48,7 @@ export default function AdminItems() {
     description: '',
     brandsF: [],
     isSimple: false,
+    isdisabled: false,
     galleryurls: [],
     short_description: '',
     variants: [{
@@ -54,6 +68,7 @@ export default function AdminItems() {
   const normalizeItem = useCallback((raw) => ({
     ...raw,
     galleryurls: raw.galleryurls || [],
+    isDisabled: raw.isdisabled === true, // shows the 🔒 in the list
     variants: Array.isArray(raw.variants) ? raw.variants : [],
     brandsF: Array.isArray(raw.brands_ids)
       ? raw.brands_ids
@@ -72,18 +87,25 @@ export default function AdminItems() {
     setLoading(true);
     try {
       const res = await fetch(
-        `${adminItemURL}?page=${page}&pageSize=${pageSize}`,
+        `${adminItemURL}?page=${page}&pageSize=${pageSize}&include_hidden=true${visibility !== 'all' ? `&visibility=${visibility}` : ''}${query ? `&q=${encodeURIComponent(query)}` : ''}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       const json = await res.json();
+      if (!res.ok) throw new Error(json.error);
+      const total = json.total || 0;
+      // إن أصبحت الصفحة فارغة (مثلاً بعد حذف آخر عنصر فيها) نرجع للصفحة السابقة
+      if (page > 1 && (page - 1) * pageSize >= total) {
+        setPage(Math.max(1, Math.ceil(total / pageSize)));
+        return;
+      }
       setMaterials((json.items || []).map(normalizeItem));
-      setTotalItems(json.total || 0);
+      setTotalItems(total);
     } catch {
       showToast("Error loading items", "danger");
     } finally {
       setLoading(false);
     }
-  }, [page, token, normalizeItem]);
+  }, [page, token, normalizeItem, visibility, query]);
 
   useEffect(() => { if (token) fetchItems(); }, [fetchItems, token]);
 
@@ -155,6 +177,7 @@ export default function AdminItems() {
       description: form.description,
       short_description: form.short_description,
       isSimple: form.isSimple,
+      isdisabled: !!form.isdisabled,
       brands_ids: form.brandsF.map(b => b.value),
       galleryurls: form.galleryurls || [],
       variants: form.variants.map(v => ({
@@ -211,6 +234,7 @@ export default function AdminItems() {
       short_description: material.short_description,
       brandsF: selectedBrands,
       isSimple: material.issimple,
+      isdisabled: material.isdisabled === true,
       galleryurls: material.galleryurls || [],
       variants: material.variants.map(v => ({
         ...v,
@@ -254,6 +278,7 @@ const resetForm = () => {
       short_description: '',
       brandsF: null,
       isSimple: false,
+      isdisabled: false,
       galleryurls: null,
       });
   };
@@ -279,6 +304,7 @@ const handleDescriptionChange = (html) => {
       short_description: material.short_description,
       brandsF: selectedBrands,
       isSimple: material.issimple,
+      isdisabled: material.isdisabled === true,
       galleryurls: material.galleryurls || [],
       variants: Array.isArray(material.variants)
         ? material.variants
@@ -306,6 +332,7 @@ const handleDescriptionChange = (html) => {
     { controlId: 'description', name: 'description', label: 'Description', type: "Editor", colWidth: 12 },
     { controlId: 'short_description', name: 'short_description', label: 'Short Description', type: "textarea", colWidth: 12 },
     { controlId: 'isSimple', name: 'isSimple', label: 'Simple Product (No Sizes/Colors)', type: 'checkbox', colWidth: 12 },
+    { controlId: 'isdisabled', name: 'isdisabled', label: 'Hidden — not shown in the shop (only admins can see it)', type: 'checkbox', colWidth: 12 },
     { 
       controlId: 'variants-matrix', 
       name: 'variants', 
@@ -342,14 +369,23 @@ const handleDescriptionChange = (html) => {
 
       <hr />
 
-      {loading ? (
-  <div className="text-center">
-    <Spinner animation="border" />
-  </div>
-) : (
+      <div className="d-flex align-items-center gap-2 mb-3">
+        <small className="text-muted me-1">Show:</small>
+        {[['all', 'All'], ['hidden', '🔒 Hidden'], ['visible', 'Visible']].map(([v, label]) => (
+          <Button key={v} size="sm" variant={visibility === v ? 'primary' : 'outline-secondary'}
+            onClick={() => { setVisibility(v); setPage(1); }}>
+            {label}
+          </Button>
+        ))}
+      </div>
+
+      {(
   <>
     <PreviewAdminContent
-      materials={materials}
+      materials={loading ? [] : materials}
+      loading={loading}
+      search={search}
+      onSearch={setSearch}
       withVariants
       startEditing={startEditing}
       deleteMaterial={deleteMaterial}
@@ -361,7 +397,7 @@ const handleDescriptionChange = (html) => {
     {/* ✅ PAGINATION HERE */}
     <div className="d-flex justify-content-between align-items-center mt-4">
       <small className="text-muted">
-        Page {page} • Total items: {totalItems}
+        Page {page} of {Math.max(1, Math.ceil(totalItems / pageSize))} • {query ? 'Results' : 'Total items'}: {totalItems}
       </small>
 
       <div className="d-flex gap-2">

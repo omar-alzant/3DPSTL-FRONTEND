@@ -1,47 +1,47 @@
 /* ---------- NAVBAR BASE ---------- */
 
 .kids-navbar {
-  background: #0B0F2A;
-  border-bottom: 1px solid #1E245C;
+  background: var(--brand-bg);
+  border-bottom: 1px solid var(--brand-border);
 }
 .dev-note.minimal {
-  background: #f8f9fa;
-  color: #6c757d;
+  background: var(--brand-bg-2);
+  color: var(--brand-muted);
   font-size: 0.85rem;
-  border-bottom: 1px solid #e9ecef;
+  border-bottom: 1px solid var(--brand-border);
 }
 .kids-nav-link {
-  color: #A5B4FC !important;
+  color: var(--brand-light) !important;
   font-weight: 500;
   transition: 0.3s ease;
 }
 
 .kids-nav-link:hover {
-  color: #6C63FF !important;
+  color: var(--brand-primary) !important;
 }
 
 .kids-avatar {
-  border: 2px solid #4F46E5;
+  border: 2px solid var(--brand-primary-2);
 }
 
 .kids-profile-popover {
-  background: #12163A;
-  border: 1px solid #1E245C;
-  color: #E6E9FF;
+  background: var(--brand-card);
+  border: 1px solid var(--brand-border);
+  color: var(--brand-text);
 }
 
 .kids-popover-header {
-  background: #12163A;
-  border-bottom: 1px solid #1E245C;
+  background: var(--brand-card);
+  border-bottom: 1px solid var(--brand-border);
 }
 
 .kids-popover-body {
-  background: #12163A;
+  background: var(--brand-card);
 }
 
 .kids-popover-divider {
   height: 1px;
-  background: #1E245C;
+  background: var(--brand-border);
   margin: 12px 0;
 }  /* ---------- CART ---------- */
   .kids-cart {
@@ -53,14 +53,14 @@
   }
   
   .kids-cart .badge {
-    background: #ffd166;
+    background: var(--brand-primary);
     color: #333;
     font-weight: 700;
   }
   
   /* ---------- AVATAR ---------- */
   .kids-avatar {
-    border: 3px solid #ffd166;
+    border: 3px solid var(--brand-primary);
     padding: 2px;
     transition: transform 0.25s ease;
   }
@@ -71,12 +71,12 @@
   
   /* ---------- OFFCANVAS ---------- */
   .offcanvas {
-    background: #fff9f4;
+    background: var(--brand-card);
   }
   
   .offcanvas-title {
     font-weight: 700;
-    color: #6C63FF;
+    color: var(--brand-primary);
   }
   
   /* ---------- POPOVER ---------- */
@@ -87,7 +87,7 @@
   }
   
   .popover-header {
-    background: #6C63FF;
+    background: var(--brand-primary);
     color: white;
     font-weight: 600;
   }
@@ -104,7 +104,7 @@
   
   /* Header */
   .kids-popover-header {
-    background: linear-gradient(135deg, #6C63FF, #ff9ebc);
+    background: var(--brand-gradient);
     color: white;
     border-radius: 18px 18px 0 0;
     padding: 14px;
@@ -113,7 +113,7 @@
   /* Body */
   .kids-popover-body {
     padding: 14px;
-    background: #fff9f4;
+    background: var(--brand-card);
   }
   
   /* Buttons */
@@ -123,20 +123,20 @@
     padding: 10px;
     font-weight: 600;
     border: none;
-    background: #ffe3ec;
-    color: #ff5c8a;
+    background: var(--brand-card-2);
+    color: var(--brand-light);
     transition: all 0.1s ease;
   }
   
   .kids-popover-btn:hover {
-    background: #6C63FF;
+    background: var(--brand-primary);
     color: white;
   }
   
   /* Divider */
   .kids-popover-divider {
     height: 1px;
-    background: #f1dcdc;
+    background: var(--brand-border);
     margin: 10px 0;
   }
   

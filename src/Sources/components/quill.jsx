@@ -83,7 +83,7 @@ const Editor = ({
               style={{
                 background: 'none',
                 border: 'none',
-                color: '#007bff',
+                color: 'var(--brand-light)',
                 padding: '5px 0',
                 cursor: 'pointer',
                 fontWeight: '600',

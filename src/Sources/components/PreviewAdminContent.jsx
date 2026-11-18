@@ -12,7 +12,8 @@ import ConfirmationModal from "./ConfirmationModal";
 import Form from "react-bootstrap/Form";
 import { Badge, Image, ListGroup } from "react-bootstrap";
 
-const PreviewAdminContent = ({ materials, editingId, startEditing, deleteMaterial, copyMaterial, canDelete, withVariants = false, flatView = false }) => {
+// search/onSearch اختياريان: إن مرّرتهما الصفحة يصبح البحث على الخادم (لكل العناصر وليس الصفحة الحالية فقط)
+const PreviewAdminContent = ({ materials, editingId, startEditing, deleteMaterial, copyMaterial, canDelete, withVariants = false, flatView = false, search, onSearch, loading = false }) => {
   const [showModal, setShowModal] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -36,47 +37,41 @@ const PreviewAdminContent = ({ materials, editingId, startEditing, deleteMateria
     setItemToDelete(null);
   };
 
-  // --- Filter Logic (Minimal change, focusing on top-level data) ---
-  const filteredMaterials = Array.isArray(materials)
-    ? materials.filter((m) => {
+  // --- البحث ---
+  // على الخادم إن مرّرت الصفحة onSearch، وإلا داخل اللائحة المعروضة
+  const serverSearch = typeof onSearch === "function";
+  const term = serverSearch ? search || "" : searchTerm;
+  const filteredMaterials = !Array.isArray(materials)
+    ? []
+    : serverSearch
+    ? materials
+    : materials.filter((m) => {
         const key = searchTerm.toLowerCase();
         return (
           m.name?.toLowerCase().includes(key) ||
           m.model_name?.toLowerCase().includes(key) ||
           m.description?.toLowerCase().includes(key)
         );
-      })
-    : [];
-    //   console.log(filteredMaterials);
-      
-  if (!filteredMaterials.length) {
-    return (
-      <Container className="text-center mt-4">
-        <Form.Control
-          type="text"
-          placeholder="Search..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="mb-3 w-50 mx-auto"
-        />
-        <p className="empty-list">No data found.</p>
-      </Container>
-    );
-  }
+      });
 
   return (
     <>
     <Container className="p-4">
-    {/* Search Bar with modern styling */}
-    <Form className="mb-4">
+    {/* خانة بحث واحدة لا تختفي (كانت تُستبدل بخانة أخرى عند عدم وجود نتائج فيضيع التركيز أثناء الكتابة) */}
+    <Form className="mb-4" onSubmit={(e) => e.preventDefault()}>
         <Form.Control
-            type="search" // Use 'search' type for better mobile usability
-            placeholder="Search products by name, model, or description..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="shadow-lg border-primary border-2 rounded-pill p-3" // Modern border and shadow
+            type="search"
+            placeholder="Search by name..."
+            value={term}
+            onChange={(e) => (serverSearch ? onSearch(e.target.value) : setSearchTerm(e.target.value))}
+            className="shadow-lg border-primary border-2 rounded-pill p-3"
         />
     </Form>
+
+    {loading && <p className="text-center text-muted">⏳ Loading...</p>}
+    {!loading && !filteredMaterials.length && (
+      <p className="empty-list text-center">{term ? `No results for “${term}”.` : "No data found."}</p>
+    )}
 
     {/* Use a larger grid for better card display */}
     <Row xs={1} md={2} lg={2} className="g-4">

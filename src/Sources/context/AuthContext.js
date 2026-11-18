@@ -144,8 +144,13 @@ const loginUser = async (email, password) => {
     setemail(userEmail);
     setIsAdmin(isAdmin);
     setProfile(newProfile);
-    // Navigate to the dashboard or home page
-    navigate('/'); 
+    // Go back to the page that asked for login (e.g. a Studio design), otherwise home
+    let back = '/';
+    try {
+      back = sessionStorage.getItem('afterLogin') || '/';
+      sessionStorage.removeItem('afterLogin');
+    } catch {}
+    navigate(back.startsWith('/') ? back : '/');
 
     return { success: true, data };
   } catch (err) {

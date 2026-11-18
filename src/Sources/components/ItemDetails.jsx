@@ -25,7 +25,7 @@ const ReadMore = ({ htmlContent, maxChars = 250 }) => {
       />
       <button 
         onClick={() => setIsExpanded(!isExpanded)}
-        style={{ color: '#007bff', cursor: 'pointer', border: 'none', background: 'none', padding: 0, fontWeight: 'bold' }}
+        style={{ color: 'var(--brand-light)', cursor: 'pointer', border: 'none', background: 'none', padding: 0, fontWeight: 'bold' }}
       >
         {isExpanded ? "Show Less" : "Read More"}
       </button>
@@ -213,8 +213,8 @@ export default function ItemDetails({
                   height: "35px",
                   borderRadius: "50%",
                   cursor: "pointer",
-                  border: selectedColor === c ? "3px solid #000" : "1px solid #ddd",
-                  boxShadow: selectedColor === c ? "0 0 0 2px #fff, 0 0 0 4px #0d6efd" : "none"
+                  border: selectedColor === c ? "3px solid #fff" : "1px solid var(--brand-border)",
+                  boxShadow: selectedColor === c ? "0 0 0 2px var(--brand-bg), 0 0 0 4px var(--brand-primary)" : "none"
                 }}
               />
             ))}

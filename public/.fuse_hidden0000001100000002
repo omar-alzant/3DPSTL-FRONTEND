@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;700&family=Poppins:wght@400;600&family=IBM+Plex+Sans+Arabic:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <meta name="description" content="3dpstl is your premier destination for premium 3d printing products. Shop high-quality 3d printing gear, toys, and essentials with delivery to your door.">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo.png" />
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+
+    <title>3DSTL | Premium 3d Printing Products</title>
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "3DSTL",
+        "url": "https://www.3dpstl.com",
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": "https://www.3dpstl.com/search?q={search_term_string}",
+          "query-input": "required name=search_term_string"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <noscript>
+      <div style="padding: 20px; text-align: center;">
+        <h1>3dpstl - Premium 3d Printing Products</h1>
+        <p>Shop the best selection of 3d printing gear, toys, and essentials. High-quality products delivered to your door. Please enable JavaScript to view our full catalog.</p>
+      </div>
+    </noscript>
+
+    <div id="root"></div>
+  </body>
+</html>

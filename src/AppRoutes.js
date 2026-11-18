@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { Navigate } from "react-router-dom";
 import { Routes, Route } from 'react-router-dom';
 import AdminLayout from './Sources/layouts/AdminLayout';
@@ -26,6 +26,18 @@ import AuthCallback from './Sources/components/AuthCallback';
 import AdminColors from './Sources/pages/AdminColors';
 import FilamentColors from './Sources/pages/FilamentColors';
 import AboutUs from './Sources/pages/AboutUs';
+import AdminStudioOrders from './Sources/pages/AdminStudioOrders';
+import AdminStudioPricing from './Sources/pages/AdminStudioPricing';
+
+// Studio (Three.js + HarfBuzz) is loaded on demand so the rest of the site stays light
+const Studio = lazy(() => import('./Sources/pages/Studio'));
+const studioPage = (
+  <MainLayout>
+    <Suspense fallback={<div className="text-center py-5" style={{ color: '#A5B4FC' }}>Loading Studio…</div>}>
+      <Studio />
+    </Suspense>
+  </MainLayout>
+);
 
 export default function AppRoutes() {
   return (
@@ -48,6 +60,8 @@ export default function AppRoutes() {
         <Route path="/aboutUs" element={<MainLayout><AboutUs /></MainLayout>} />
         <Route path="/filamentColors" element={<MainLayout><FilamentColors /></MainLayout>} />
         <Route path="/item/:id" element={ <MainLayout> <ItemPage /> </MainLayout>} />
+        <Route path="/studio" element={studioPage} />
+        <Route path="/studio/:toolId" element={studioPage} />
 
         {/* Admin Section */}
         <Route path="admin" element={<MainLayout><AdminLayout /></MainLayout>} >
@@ -60,6 +74,8 @@ export default function AppRoutes() {
            <Route path="carousel" element={<AdminCarousel />} />
            <Route path="orders" element={<AdminOrders />} />
            <Route path="colors" element={<AdminColors />} />
+           <Route path="studio" element={<AdminStudioOrders />} />
+           <Route path="pricing" element={<AdminStudioPricing />} />
           {/*<Route path="benefits" element={<AdminBenefits />} />
           <Route path="home" element={<AdminHome />} />
           <Route path="shop" element={<AdminShop />} />

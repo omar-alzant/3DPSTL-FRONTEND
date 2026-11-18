@@ -187,10 +187,10 @@ export default function Home() {
   style={{
     fontSize: "3.2rem",
     fontWeight: "800",
-    background: "linear-gradient(90deg,#6C63FF,#4F46E5)",
+    background: "var(--brand-gradient)",
     WebkitBackgroundClip: "text",
     color: "transparent",
-    textShadow: "0 0 30px rgba(108,99,255,0.25)"
+    textShadow: "0 0 30px rgba(106, 77, 255,0.25)"
   }}
 >
   Precision 3D Printing & Design
@@ -215,14 +215,14 @@ export default function Home() {
       to="/Shop"
       className="d-inline-block"
       style={{
-        background: "linear-gradient(90deg,#6C63FF,#4F46E5)",
+        background: "var(--brand-gradient)",
         border: "none",
         borderRadius: "8px",
         padding: "0.6rem 1.6rem",
         fontSize: "1.125rem",
         color: "white",
         fontWeight: "600",
-        boxShadow: "0 4px 20px rgba(108,99,255,0.35)"
+        boxShadow: "0 4px 20px rgba(106, 77, 255,0.35)"
       }}
     >
       Shop Now
@@ -253,7 +253,7 @@ export default function Home() {
           style={{
             background: "var(--brand-card)",
             border: "1px solid var(--brand-border)",
-            boxShadow: "0 0 30px rgba(79,70,229,0.08)"
+            boxShadow: "0 0 30px rgba(81, 67, 221,0.08)"
           }}
         >            
             {/* TYPE CAROUSEL */}
@@ -285,11 +285,11 @@ export default function Home() {
 </section>
 
 {/* SALE ITEMS */}
-<div className="d-flex align-items-center justify-content-between text-danger">
+<div className="d-flex align-items-center justify-content-between">
   <h3
     className="mb-3 fw-bold"
     style={{
-      color: "#6C63FF",
+      color: "var(--brand-primary)",
       display: "flex",
       alignItems: "center",
       gap: "10px"
@@ -300,16 +300,16 @@ export default function Home() {
   {items.length !== 0 && 
          <Button
          style={{
-          borderColor: "#6C63FF",
-          color: "#6C63FF",
+          borderColor: "var(--brand-primary)",
+          color: "var(--brand-primary)",
         }}
         onMouseOver={(e) => {
-          e.target.style.background = "#6C63FF";
+          e.target.style.background = "var(--brand-primary)";
           e.target.style.color = "white";
         }}
         onMouseOut={(e) => {
           e.target.style.background = "transparent";
-          e.target.style.color = "#6C63FF";
+          e.target.style.color = "var(--brand-primary)";
         }}
         onClick={() => navigate(`/shop?onsale=true`)}
        >
@@ -350,7 +350,7 @@ export default function Home() {
 </Row>
 
 <hr />
-<h3 className="mb-3 fw-bold text-danger">Our Brands</h3>
+<h3 className="mb-3 fw-bold" style={{ color: "var(--brand-primary)" }}>Our Brands</h3>
 <Row className="mb-4">
   {loading ? (
     <div className="text-center py-5">Loading...</div>

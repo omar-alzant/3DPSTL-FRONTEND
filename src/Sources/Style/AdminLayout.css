@@ -6,8 +6,8 @@
 .admin-wrapper {
   display: flex;
   min-height: 100vh;
-  background: #0B0F2A;
-  color: #E6E9FF;
+  background: var(--brand-bg);
+  color: var(--brand-text);
 }
 
 /* ---------- Sidebar ---------- */
@@ -15,8 +15,8 @@
   height: 100dvh;
   position: sticky;
   left: 0;
-  background: #12163A;
-  border-right: 1px solid #1E245C;
+  background: var(--brand-card);
+  border-right: 1px solid var(--brand-border);
   transition: all 0.3s ease-in-out;
   overflow-x: hidden;
 }
@@ -31,7 +31,7 @@
 
 /* Sidebar Header */
 .sidebar-header {
-  border-bottom: 1px solid #1E245C;
+  border-bottom: 1px solid var(--brand-border);
 }
 
 /* ---------- Nav Items ---------- */
@@ -39,12 +39,12 @@
   transition: all 0.2s ease;
   white-space: nowrap;
   opacity: 0.85;
-  color: #C7D2FE !important;
+  color: var(--brand-light) !important;
   border-left: 3px solid transparent;
 }
 
 .admin-nav-item:hover {
-  background: rgba(108, 99, 255, 0.12);
+  background: rgba(106, 77, 255, 0.12);
   opacity: 1;
   color: #FFFFFF !important;
 }
@@ -52,8 +52,8 @@
 /* Active Link */
 .active-link {
   opacity: 1 !important;
-  background: rgba(108, 99, 255, 0.18) !important;
-  border-left: 3px solid #6C63FF !important;
+  background: rgba(106, 77, 255, 0.18) !important;
+  border-left: 3px solid var(--brand-primary) !important;
   color: #FFFFFF !important;
   font-weight: 600;
 }
@@ -71,31 +71,31 @@
 
 /* ---------- Sidebar Footer ---------- */
 .sidebar-footer {
-  border-top: 1px solid #1E245C;
+  border-top: 1px solid var(--brand-border);
 }
 
 /* Backup Button */
 .sidebar-footer .btn-outline-warning {
-  border-color: #6C63FF;
-  color: #6C63FF;
+  border-color: var(--brand-primary);
+  color: var(--brand-primary);
 }
 
 .sidebar-footer .btn-outline-warning:hover {
-  background: #6C63FF;
+  background: var(--brand-primary);
   color: white;
-  box-shadow: 0 0 12px rgba(108,99,255,0.6);
+  box-shadow: 0 0 12px rgba(106, 77, 255,0.6);
 }
 
 /* ---------- Progress Bar ---------- */
 .progress {
-  background: #1E245C;
+  background: var(--brand-border);
   height: 6px;
   border-radius: 10px;
   overflow: hidden;
 }
 
 .progress-bar {
-  background: linear-gradient(90deg, #6C63FF, #8B84FF);
+  background: var(--brand-gradient);
 }
 
 /* ---------- Main Content ---------- */
@@ -103,19 +103,19 @@
   flex-grow: 1;
   transition: all 0.3s ease-in-out;
   min-width: 0;
-  background: #0B0F2A;
+  background: var(--brand-bg);
 }
 
 /* Header */
 .content-header {
-  background: #12163A;
-  border-bottom: 1px solid #1E245C !important;
-  color: #6C63FF;
+  background: var(--brand-card);
+  border-bottom: 1px solid var(--brand-border) !important;
+  color: var(--brand-primary);
 }
 
 /* Page Content */
 .admin-main .p-4 {
-  color: #E6E9FF;
+  color: var(--brand-text);
 }
 
 /* ---------- Scrollbar (optional premium touch) ---------- */
@@ -124,10 +124,10 @@
 }
 
 .admin-sidebar::-webkit-scrollbar-thumb {
-  background: #1E245C;
+  background: var(--brand-border);
   border-radius: 10px;
 }
 
 .admin-sidebar::-webkit-scrollbar-thumb:hover {
-  background: #6C63FF;
+  background: var(--brand-primary);
 }

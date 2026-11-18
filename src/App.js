@@ -4,9 +4,11 @@ import AppRoutes from './AppRoutes';
 import { AuthProvider } from './Sources/context/AuthContext';
 import { BrowserRouter } from "react-router-dom";
 import { CartProvider } from './Sources/context/CartContext';
+import HumanGate from './Sources/components/HumanGate';
 
 export default function App() {
   return (
+    <HumanGate>
     <BrowserRouter>
       <AuthProvider>
       <CartProvider>
@@ -14,6 +16,6 @@ export default function App() {
       </CartProvider>
       </AuthProvider>
     </BrowserRouter>
-
+    </HumanGate>
   );
 }

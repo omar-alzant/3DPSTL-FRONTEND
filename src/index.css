@@ -1,16 +1,6 @@
-@import 'bootstrap/dist/css/bootstrap.min.css';
 @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;700&family=Poppins:wght@400;500;600&display=swap');
 
-:root {
-  --brand-bg: #0B0F2A;           /* deep navy */
-  --brand-card: #12163A;         /* card background */
-  --brand-border: #1E245C;
-  --brand-primary: #6C63FF;      /* main purple */
-  --brand-secondary: #4F46E5;    /* indigo */
-  --brand-light: #A5B4FC;        /* soft accent */
-  --brand-text: #E6E9FF;
-  --brand-muted: #9CA3AF;
-}
+/* brand colours live in Sources/Style/theme.css */
 
 .br-black-light {
   background: var(--brand-card);
@@ -20,11 +10,11 @@
 /* ===== 3DSTL THEME ===== */
 
 .bg-body-h {
-  background: #0B0F2A !important;
+  background: var(--brand-bg) !important;
 }
 
 .c-black {
-  color: #E6E9FF !important;
+  color: var(--brand-text) !important;
 }
 
 
@@ -36,9 +26,6 @@ td, th{
     width: 24px !important;
     height: 24px !important;
     border-radius: 50% !important;
-}
-.c-black{
-  color: black !important;
 }
 
 .c-white{
@@ -386,7 +373,7 @@ body::before {
   position: fixed;
   width: 700px;
   height: 700px;
-  background: radial-gradient(circle, rgba(108,99,255,0.12), transparent 70%);
+  background: radial-gradient(circle, rgba(106, 77, 255,0.12), transparent 70%);
   top: -250px;
   right: -250px;
   z-index: -1;
@@ -413,8 +400,8 @@ input.form-control:focus {
 }
 
 .input-group:focus-within {
-  border-color: #6C63FF !important;
-  box-shadow: 0 0 25px rgba(108,99,255,0.25) !important;
+  border-color: var(--brand-primary) !important;
+  box-shadow: 0 0 25px rgba(106, 77, 255,0.25) !important;
   transition: 0.3s ease;
 }
 code {
@@ -464,7 +451,7 @@ h1, h2, h3, h4, h5, h6 {
   overflow: hidden;
 }
 .form-control::placeholder {
-  color: #C7D2FE !important; /* soft purple-white */
+  color: var(--brand-light) !important; /* soft purple-white */
   opacity: 1 !important;
 }
 footer::before {
@@ -472,7 +459,7 @@ footer::before {
   position: absolute;
   width: 500px;
   height: 500px;
-  background: radial-gradient(circle, rgba(108,99,255,0.12), transparent 70%);
+  background: radial-gradient(circle, rgba(106, 77, 255,0.12), transparent 70%);
   bottom: -200px;
   left: -200px;
   z-index: 0;

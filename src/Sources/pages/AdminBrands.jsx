@@ -31,6 +31,16 @@ export default function AdminBrands() {
   const [page, setPage] = useState(1);
   const pageSize = 10;
   const [totalItems, setTotalItems] = useState(0);
+  // البحث على الخادم (في كل العلامات) بعد توقّف الكتابة بقليل، مع العودة للصفحة 1
+  const [search, setSearch] = useState("");
+  const [query, setQuery] = useState("");
+  useEffect(() => {
+    const t = setTimeout(() => {
+      setQuery(search.trim());
+      setPage(1);
+    }, 350);
+    return () => clearTimeout(t);
+  }, [search]);
 
   const adminMarketURL = `${process.env.REACT_APP_API_URL}/api/admin/products/market`;
 
@@ -39,22 +49,29 @@ export default function AdminBrands() {
     setLoading(true);
     try {
       const res = await fetch(
-        `${adminMarketURL}?page=${page}&pageSize=${pageSize}`,
+        `${adminMarketURL}?page=${page}&pageSize=${pageSize}${query ? `&q=${encodeURIComponent(query)}` : ""}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
 
       const json = await res.json();
+      if (!res.ok) throw new Error(json.error);
+      const total = json.total || 0;
+      // إن أصبحت الصفحة فارغة نرجع للصفحة الأخيرة المتاحة
+      if (page > 1 && (page - 1) * pageSize >= total) {
+        setPage(Math.max(1, Math.ceil(total / pageSize)));
+        return;
+      }
       setMaterials(json.items || []);
-      setTotalItems(json.total || 0);
+      setTotalItems(total);
     } catch (err) {
       showToast(`Failed to fetch brands: ${err}`, "danger");
 
     } finally {
       setLoading(false);
     }
-  }, [token, page, pageSize, adminMarketURL]);
+  }, [token, page, pageSize, adminMarketURL, query]);
 
   useEffect(() => {
     if (token) fetchBrands();
@@ -224,12 +241,13 @@ export default function AdminBrands() {
 
       <hr />
 
-      {loading ? (
-        <p>⏳ Loading...</p>
-      ) : (
+      {(
         <div className="br-gray-l p-2 brr">
           <PreviewAdminContent
-            materials={materials}
+            materials={loading ? [] : materials}
+            loading={loading}
+            search={search}
+            onSearch={setSearch}
             editingId={editingId}
             startEditing={startEditing}
             deleteMaterial={deleteMaterial}
@@ -238,14 +256,14 @@ export default function AdminBrands() {
 
           <div className="d-flex justify-content-between  align-items-center mt-3">
             <small className="text-light">
-              Page {page} • Total brands: {totalItems}
+              Page {page} of {Math.max(1, Math.ceil(totalItems / pageSize))} • {query ? "Results" : "Total brands"}: {totalItems}
             </small>
 
             <div className="d-flex gap-2">
               <Button
                 size="sm"
                 variant="outline-primary"
-                disabled={page <= 1}
+                disabled={page <= 1 || loading}
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
               >
                 Previous
@@ -254,7 +272,7 @@ export default function AdminBrands() {
               <Button
                 size="sm"
                 variant="outline-primary"
-                disabled={page * pageSize >= totalItems}
+                disabled={page * pageSize >= totalItems || loading}
                 onClick={() => setPage((p) => p + 1)}
               >
                 Next

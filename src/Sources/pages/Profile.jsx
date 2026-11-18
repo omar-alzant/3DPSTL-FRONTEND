@@ -4,6 +4,9 @@ import Image from 'react-bootstrap/Image';
 import { Tabs, Tab } from "react-bootstrap";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { useToast } from "../context/ToastProvider";
+import { useSearchParams } from "react-router-dom";
+import MyStudioOrders from "../studio/components/MyStudioOrders";
+import "../Style/Studio.css";
 
 export default function ProfilePage() {
     const [profile, setProfile] = useState({ full_name: "", phone: "", avatar: "" });
@@ -16,7 +19,8 @@ export default function ProfilePage() {
     const token = sessionStorage.getItem('token');
     const fileInputRef = useRef(null);
     const [orders, setOrders] = useState([]);
-    const [activeTab, setActiveTab] = useState("profile");
+    const [searchParams] = useSearchParams();
+    const [activeTab, setActiveTab] = useState(searchParams.get("tab") === "orders" ? "orders" : "profile");
     const [showPassword, setShowPassword] = useState(false);
     const [currentEmail, setCurrentEmail] = useState("");
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -38,6 +42,7 @@ export default function ProfilePage() {
             if (!res.ok) {
               const err = await res.json();
               showToast(`${err.error || "Failed to load orders"}`, "danger");
+              return;
             }
       
             const data = await res.json();
@@ -285,6 +290,8 @@ export default function ProfilePage() {
     {/* ================= ORDERS TAB ================= */}
     <Tab eventKey="orders" title="My Orders">
 
+      <h6 className="mt-3 mb-2">Shop orders</h6>
+
       {orders.length === 0 ? (
         <p>No orders found.</p>
       ) : (
@@ -313,6 +320,9 @@ export default function ProfilePage() {
           </Card>
         ))
       )}
+
+      <h6 className="mt-4 mb-2">Studio orders (custom designs)</h6>
+      <MyStudioOrders />
 
     </Tab>
   </Tabs>

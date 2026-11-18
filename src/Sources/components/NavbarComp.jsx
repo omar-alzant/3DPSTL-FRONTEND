@@ -40,7 +40,7 @@ function NavbarComp() {
                 height={"45px"}
                 style={{
                   objectFit: "contain",
-                  filter: "drop-shadow(0 0 8px rgba(108,99,255,0.4))"
+                  filter: "drop-shadow(0 0 8px rgba(106, 77, 255,0.4))"
                 }}
               />            
             </Navbar.Brand>
@@ -55,15 +55,15 @@ function NavbarComp() {
              <Navbar.Offcanvas
               show={showOffcanvas}
               style={{
-                background: "#0B0F2A",
-                borderLeft: "1px solid #1E245C"
+                background: "var(--brand-bg)",
+                borderLeft: "1px solid var(--brand-border)"
               }}
               onHide={() => setShowOffcanvas(false)}
               id={`offcanvasNavbar-expand-${expand}`}
               aria-labelledby={`offcanvasNavbarLabel-expand-${expand}`}
               placement="end"
             >
-              <Offcanvas.Header closeButton style={{borderBottom: "1px solid #1E245C"}}>
+              <Offcanvas.Header closeButton style={{borderBottom: "1px solid var(--brand-border)"}}>
                 <Offcanvas.Title id={`offcanvasNavbarLabel-expand-${expand}`} className='d-flex align-items-center justify-items-between'>
                   <Image src="/logo.png" height={"30px"} style={{objectFit: "cover"}}/>
                  
@@ -112,6 +112,18 @@ function NavbarComp() {
                       as={NavLink}
                       onClick={() => setShowOffcanvas(false)}
 
+                      to="/studio"
+                      className="kids-nav-link m-1 align-items-center justify-content-center text-center"
+                      style={{
+                        textDecoration: "none",
+                      }}
+                    >
+                      Studio
+                    </Nav.Link>
+                  <Nav.Link
+                      as={NavLink}
+                      onClick={() => setShowOffcanvas(false)}
+
                       to="/filamentColors"
                       className="kids-nav-link m-1 align-items-center justify-content-center text-center"
                       style={{
@@ -154,7 +166,7 @@ function NavbarComp() {
                     <CiShoppingCart size="1.5rem" />
                     <Badge
                       style={{
-                        background: "linear-gradient(90deg,#6C63FF,#4F46E5)",
+                        background: "var(--brand-gradient)",
                         border: "none"
                       }}
                     >
