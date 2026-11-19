@@ -19,10 +19,12 @@ import ProfilePage from './Sources/pages/Profile';
 import AdminCategories from './Sources/pages/AdminCategories';
 import AdminBrands from './Sources/pages/AdminBrands';
 import TermsPage from './Sources/components/TermsPage';
+import PrivacyPage from './Sources/components/PrivacyPage';
 import AdminOrders from './Sources/pages/AdminOrders';
 import OrderSummary from './Sources/pages/OrderSummary';
 import OrderSuccess from './Sources/pages/OrderSuccess';
 import AuthCallback from './Sources/components/AuthCallback';
+import { GoogleCallback } from './Sources/components/GoogleSignIn';
 import AdminColors from './Sources/pages/AdminColors';
 import FilamentColors from './Sources/pages/FilamentColors';
 import AboutUs from './Sources/pages/AboutUs';
@@ -51,6 +53,7 @@ export default function AppRoutes() {
         <Route path="/update-password" element={<MainLayout><UpdatePassword /></MainLayout>} />
         <Route path="/update-password" element={<MainLayout><UpdatePassword /></MainLayout>} />
         <Route path="/auth/callback" element={<AuthCallback />} />
+        <Route path="/auth/google" element={<MainLayout><GoogleCallback /></MainLayout>} />
 
         <Route path="/" element={<MainLayout><Home /></MainLayout>} />
         <Route path="/shop" element={<MainLayout><Shop /></MainLayout>} />
@@ -59,6 +62,7 @@ export default function AppRoutes() {
         <Route path="/cart" element={<MainLayout><CartPage /></MainLayout>} />
         <Route path="/profile" element={<MainLayout><ProfilePage /></MainLayout>} />
         <Route path="/terms" element={<MainLayout><TermsPage /></MainLayout>} />
+        <Route path="/privacy" element={<MainLayout><PrivacyPage /></MainLayout>} />
         <Route path="/aboutUs" element={<MainLayout><AboutUs /></MainLayout>} />
         <Route path="/filamentColors" element={<MainLayout><FilamentColors /></MainLayout>} />
         <Route path="/item/:id" element={ <MainLayout> <ItemPage /> </MainLayout>} />

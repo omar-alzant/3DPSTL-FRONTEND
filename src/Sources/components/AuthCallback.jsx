@@ -2,10 +2,12 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../supabase';
 import { useToast } from '../context/ToastProvider';
+import { useAuth } from '../context/AuthContext';
 
 export default function AuthCallback() {
   const navigate = useNavigate();
   const { showToast } = useToast();
+  const { completeLogin } = useAuth();
 
   useEffect(() => {
     const finalizeAuth = async () => {
@@ -38,16 +40,10 @@ export default function AuthCallback() {
         return;
       }
 
-      // Store YOUR app token (not Supabase)
-      sessionStorage.setItem('token', result.token);
-      sessionStorage.setItem('email', result.email);
-      sessionStorage.setItem('isAdmin', result.isAdmin);
-      showToast("Confirmation successfully");
-
-      // Clean URL
-      window.history.replaceState({}, document.title, '/login');
-
-      navigate('/login', { replace: true });
+      // Email confirmed → the user is logged in straight away
+      supabase.auth.signOut({ scope: 'local' }).catch(() => {});
+      showToast("Email confirmed — welcome!");
+      completeLogin(result);
     };
 
     finalizeAuth();

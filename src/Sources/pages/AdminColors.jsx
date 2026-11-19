@@ -4,7 +4,7 @@ import { useToast } from "../context/ToastProvider";
 
 export default function AdminColors() {
 
-  const token = sessionStorage.getItem("token");
+  const token = localStorage.getItem('token');
   const { showToast } = useToast();
 
   const colorsURL =

@@ -8,7 +8,7 @@ import AdminForm from "../components/AdminForm";
 import PreviewAdminContent from "../components/PreviewAdminContent";
 
 export default function AdminTypes() {
-  const token = sessionStorage.getItem("token");
+  const token = localStorage.getItem('token');
 
   /* ===================== STATE ===================== */
   const [materials, setMaterials] = useState([]);

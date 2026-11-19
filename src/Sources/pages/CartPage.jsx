@@ -51,8 +51,8 @@ const CartPage = () => {
 
   // STEP 1: Validation and Triggering the Popup
 const handleCheckout = () => {
-  const token = sessionStorage.getItem("token");
-  const email = sessionStorage.getItem("email");
+  const token = localStorage.getItem('token');
+  const email = localStorage.getItem('email');
 
   // User not logged in
   if (!token || !email) {
@@ -77,7 +77,7 @@ const processOrder = async () => {
   setLoading(true);
 
   try {
-    const token = sessionStorage.getItem("token");
+    const token = localStorage.getItem('token');
     const lineItems = [];
 
     cart.forEach(item => {

@@ -16,6 +16,7 @@ import {
 
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastProvider';
+import { GoogleButton } from '../components/GoogleSignIn';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -232,6 +233,11 @@ export default function Login() {
             )}
           </Button>
         </Form>
+
+        <div className="d-flex align-items-center my-3 text-muted small">
+          <hr className="flex-grow-1" /><span className="mx-2">or</span><hr className="flex-grow-1" />
+        </div>
+        <GoogleButton />
       </Card>
 
       <p className="mt-3">

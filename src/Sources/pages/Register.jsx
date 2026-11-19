@@ -15,6 +15,7 @@ import {
 
 } from 'react-bootstrap';
 import AppToast from '../components/AppToast';
+import { GoogleButton } from '../components/GoogleSignIn';
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai'; // Import icons
 
 export default function Register() {
@@ -128,6 +129,11 @@ export default function Register() {
             )}
           </Button>
         </Form>
+
+        <div className="d-flex align-items-center my-3 text-muted small">
+          <hr className="flex-grow-1" /><span className="mx-2">or</span><hr className="flex-grow-1" />
+        </div>
+        <GoogleButton label="Sign up with Google" />
       </Card>
 
       {/* Link to Login */}

@@ -99,8 +99,8 @@ export default function ItemPage() {
   }, [item, variants, selectedSize, selectedColor]);
     
 
-  const token = sessionStorage.getItem("token");
-  const email = sessionStorage.getItem("email");
+  const token = localStorage.getItem('token');
+  const email = localStorage.getItem('email');
 
   useEffect(() => {
     if (item) {

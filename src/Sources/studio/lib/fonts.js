@@ -1,12 +1,26 @@
 // تحميل الخطوط وتشكيل النص العربي (HarfBuzz) وتحويله إلى مضلّعات بالمليمتر
-// HarfBuzz (WASM) يُحمَّل من public/studio-lib كوحدة ES أصلية، لأن react-scripts لا يستطيع تجميعه
-// (يحتوي await على المستوى الأعلى واستيراد 'module' الخاص بـ Node). المصدر: حزمة harfbuzzjs 1.6.4 (MIT).
+// HarfBuzz (WASM) يُحمَّل من public/studio-lib كوحدة ES مستقلة، لأن react-scripts لا يستطيع تجميعه.
+// المصدر: حزمة harfbuzzjs 1.6.4 (MIT). hb-legacy.mjs = نفس المكتبة محوَّلة لتعمل على Safari/iOS القديم
+// (بلا await على المستوى الأعلى وبلا صياغة حديثة)؛ تنتظر جاهزية الـ WASM عبر m.ready.
 let hb = null;
 let hbLoading = null;
 export function loadHarfBuzz() {
   if (!hbLoading) {
-    const url = `${window.location.origin}${process.env.PUBLIC_URL || ''}/studio-lib/harfbuzzjs/index.mjs`;
-    hbLoading = import(/* webpackIgnore: true */ url).then((m) => (hb = m));
+    const url = `${window.location.origin}${process.env.PUBLIC_URL || ''}/studio-lib/harfbuzzjs/hb-legacy.mjs`;
+    hbLoading = import(/* webpackIgnore: true */ url)
+      .then(async (m) => {
+        await m.ready;
+        hb = m;
+        return m;
+      })
+      .catch((e) => {
+        hbLoading = null; // نسمح بمحاولة ثانية
+        console.error('HarfBuzz load failed:', e);
+        const old = typeof WebAssembly === 'undefined' || /CompileError|WebAssembly|wasm/i.test(String(e));
+        throw new Error(old
+          ? 'متصفحك قديم ولا يدعم معاينة الـ Studio — حدّث الجهاز إلى iOS 15 أو أحدث، أو جرّب Chrome'
+          : 'تعذّر تحميل محرّك الخطوط — حدّث الصفحة وحاول مجدداً');
+      });
   }
   return hbLoading;
 }

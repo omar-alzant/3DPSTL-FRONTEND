@@ -9,7 +9,7 @@ import PreviewAdminContent from "../components/PreviewAdminContent";
 
 export default function AdminBrands() {
   /* ===================== AUTH ===================== */
-  const token = sessionStorage.getItem("token");
+  const token = localStorage.getItem('token');
   const { showToast } = useToast();
 
   /* ===================== STATE ===================== */

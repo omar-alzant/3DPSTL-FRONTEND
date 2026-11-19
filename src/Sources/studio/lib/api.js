@@ -13,7 +13,7 @@ export const DEFAULT_CONFIG = {
 
 const authHeader = () => {
   try {
-    const t = sessionStorage.getItem('token');
+    const t = localStorage.getItem('token');
     return t ? { Authorization: `Bearer ${t}` } : {};
   } catch {
     return {};

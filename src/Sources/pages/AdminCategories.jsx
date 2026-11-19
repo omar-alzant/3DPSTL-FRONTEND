@@ -9,7 +9,7 @@ import { useToast } from "../context/ToastProvider";
 
 export default function AdminCategories() {
   /* ===================== STATE ===================== */
-  const token = sessionStorage.getItem("token");
+  const token = localStorage.getItem('token');
 
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);

@@ -7,7 +7,7 @@
 import { textBox } from '../lib/fonts.js';
 import { imageShape } from '../lib/colors.js';
 import { union, difference, intersection, offset, roundRect, circle, bounds2, extrude, merge } from '../lib/geo.js';
-import { PHONES, BRANDS, manualPhone, resolveKeys } from '../lib/phones.js';
+import { PHONES, BRANDS, manualPhone, resolveKeys, camList } from '../lib/phones.js';
 
 const BED = 250;
 const absArea = (cs) => cs.reduce((s, c) => {
@@ -19,7 +19,7 @@ const rect = (x0, y0, x1, y1, r = 0) => roundRect((x0 + x1) / 2, (y0 + y1) / 2, 
 const rot90 = (cs, cx, cy) => cs.map((c) => c.map(([x, y]) => [cx - (y - cy), cy + (x - cx)]));
 
 const phoneOptions = [
-  ...BRANDS.flatMap((b) => PHONES.filter((ph) => ph.brand === b).map((ph) => ({ value: ph.id, label: ph.name, group: b }))),
+  ...BRANDS.flatMap((b) => PHONES.filter((ph) => ph.brand === b).map((ph) => ({ value: ph.id, label: ph.ref ? `${ph.name} ✓` : ph.name, group: b }))),
   { value: 'manual', label: 'مقاس يدوي…', group: 'أخرى' },
 ];
 
@@ -81,7 +81,8 @@ export default {
   description: 'اختر موديل هاتفك فيُبنى كفر على مقاسه: إطار TPU مرن يحمي الأطراف والشاشة، وظهر قاسٍ يحمل اسمك أو صورتك أو نقشاً.',
   category: 'إكسسوارات',
   params: [
-    { key: 'phone', label: 'الهاتف', type: 'select', dropdown: true, default: 'ip16', group: 'الهاتف', options: phoneOptions },
+    { key: 'phone', label: 'الهاتف', type: 'select', dropdown: true, default: 'ip16', group: 'الهاتف', options: phoneOptions,
+      help: '✓ = أماكن الكاميرا والأزرار مقيسة من كفرات مجرَّبة. الباقي تقديري — جرّب «قطعة تجربة» أولاً' },
 
     { key: 'mH', label: 'الطول', type: 'number', min: 100, max: 190, step: 0.1, unit: 'مم', default: 150, group: 'الهاتف', show: (p) => p.phone === 'manual' },
     { key: 'mW', label: 'العرض', type: 'number', min: 55, max: 95, step: 0.1, unit: 'مم', default: 72, group: 'الهاتف', show: (p) => p.phone === 'manual' },
@@ -121,8 +122,8 @@ export default {
     { key: 'patternColor', label: 'لون النقش', type: 'color', default: '#9ec5e8', group: 'الألوان', show: (p) => p.design === 'pattern' && p.patternText },
 
     { key: 'parts', label: 'القطع', type: 'select', default: 'both', group: 'الطباعة',
-      options: [{ value: 'both', label: 'الاثنتان' }, { value: 'frame', label: 'الإطار فقط' }, { value: 'back', label: 'الظهر فقط' }],
-      help: 'الإطار TPU والظهر PLA — اطبع كل واحدة بمهمة منفصلة' },
+      options: [{ value: 'both', label: 'الاثنتان' }, { value: 'frame', label: 'الإطار فقط' }, { value: 'back', label: 'الظهر فقط' }, { value: 'test', label: 'قطعة تجربة' }],
+      help: 'الإطار TPU والظهر PLA — اطبع كل واحدة بمهمة منفصلة. «قطعة تجربة»: قالب رفيع يُطبع بدقائق، ضعه على ظهر الهاتف لتتأكد من مكان الكاميرا والأزرار قبل طباعة الكفر' },
     { key: 'tol', label: 'خلوص الإطار', type: 'number', min: -0.4, max: 0.8, step: 0.05, unit: 'مم', default: 0.1, group: 'تعديل دقيق',
       help: 'زِد إذا كان الكفر ضيقاً، وأنقص إذا كان رخواً' },
     { key: 'camDX', label: 'تحريك فتحة الكاميرا أفقياً', type: 'number', min: -15, max: 15, step: 0.5, unit: 'مم', default: 0, group: 'تعديل دقيق' },
@@ -130,7 +131,7 @@ export default {
     { key: 'camGrow', label: 'توسيع فتحة الكاميرا', type: 'number', min: 0, max: 6, step: 0.25, unit: 'مم', default: 1, group: 'تعديل دقيق' },
     { key: 'keyShift', label: 'تحريك فتحات الأزرار', type: 'number', min: -20, max: 20, step: 0.5, unit: 'مم', default: 0, group: 'تعديل دقيق', help: 'موجب = للأسفل' },
     { key: 'keyGrow', label: 'إطالة فتحات الأزرار', type: 'number', min: 0, max: 15, step: 0.5, unit: 'مم', default: 2, group: 'تعديل دقيق' },
-    { key: 'portW', label: 'عرض فتحة الشاحن والسماعة', type: 'number', min: 0, max: 60, step: 1, unit: 'مم', default: 24, group: 'تعديل دقيق', help: '0 = بلا فتحة' },
+    { key: 'portW', label: 'توسيع فتحات الشاحن والسماعة', type: 'number', min: -20, max: 30, step: 0.5, unit: 'مم', default: 2, group: 'تعديل دقيق', help: '-20 = بلا فتحات' },
     { key: 'wall', label: 'سماكة الإطار', type: 'number', min: 1.2, max: 3, step: 0.1, unit: 'مم', default: 1.6, group: 'تعديل دقيق' },
     { key: 'lip', label: 'شفة الشاشة', type: 'number', min: 0.4, max: 2.5, step: 0.1, unit: 'مم', default: 1.0, group: 'تعديل دقيق', help: 'كم تغطي الحافة الأمامية من أطراف الشاشة' },
     { key: 'backT', label: 'سماكة الظهر', type: 'number', min: 1.2, max: 3, step: 0.2, unit: 'مم', default: 1.6, group: 'تعديل دقيق' },
@@ -150,14 +151,13 @@ export default {
     const backOpen = offset(cavity, -backLip);
 
     // الكاميرا
-    const [cx0, cy0, cw, ch, cr] = ph.cam;
-    let cam;
-    if (cw === 'full') cam = rect(-w / 2 - 10, h / 2 - ch - p.camDY, w / 2 + 10, h / 2 + 10, 0);
-    else {
+    const cam = union(...camList(ph).map(([cx0, cy0, cw, ch, cr]) => {
+      if (cw === 'full') return rect(-w / 2 - 10, h / 2 - ch - p.camDY, w / 2 + 10, h / 2 + 10, 0);
       const cx = -w / 2 + cx0 + cw / 2 + p.camDX, cy = h / 2 - cy0 - ch / 2 - p.camDY;
-      cam = roundRect(cx, cy, cw, ch, Math.min(cr, cw / 2, ch / 2), 10);
-    }
-    const camHole = offset(cam, p.camGrow);
+      return roundRect(cx, cy, cw, ch, Math.min(cr, cw / 2, ch / 2), 10);
+    }));
+    // عدسات متقاربة: نُدمجها بفتحة واحدة ناعمة (لا جسور رفيعة بينها)
+    const camHole = offset(offset(cam, p.camGrow + 1.5), -1.5);
     const camB = bounds2(camHole);
 
     // فتحات الأزرار (الجهة كما تُرى من الأمام؛ من الخلف تنعكس)
@@ -166,7 +166,10 @@ export default {
       const top = h / 2 - y0 - p.keyShift + p.keyGrow / 2, bot = top - len - p.keyGrow;
       return rect(x - wall - 4, bot, x + wall + 4, top, 0);
     });
-    const port = p.portW > 0 ? rect(-p.portW / 2, -h / 2 - wall - 5, p.portW / 2, -h / 2 + 3, 0) : [];
+    const ports = ph.port || [[0, 20]];
+    const port = p.portW > -20
+      ? union(...ports.map(([pcx, pw]) => { const ww = Math.max(2, pw + p.portW); return rect(pcx - ww / 2, -h / 2 - wall - 5, pcx + ww / 2, -h / 2 + 3, 0); }))
+      : [];
 
     // ٢) الإطار (طبقات على ارتفاعات)
     const z1 = lipT, sb = 0.9, z2 = z1 + sb, z4 = z1 + d, z3 = z4 - sb, z5 = z4 + backT;
@@ -252,6 +255,15 @@ export default {
     const designParts = layers
       .filter((L) => L.shape.length)
       .map((L) => ({ name: L.name, color: L.color, geometry: raised ? extrude(L.shape, 0.8, backT) : extrude(L.shape, inlay, backT - inlay) }));
+
+    // قطعة تجربة: قالب رفيع بشكل الظهر، فيه فتحة الكاميرا وحزّات على الأطراف عند كل زر وعند الشاحن
+    if (p.parts === 'test') {
+      const tpl = difference(cavity, camHole, ...slots.map((s) => intersection(s, difference(offset(cavity, wall + 1), offset(cavity, -2)))), port);
+      // سهم صغير يدلّ على أعلى الهاتف
+      const arrow = [[[-5, -6], [5, -6], [0, 4]]]; // في الوسط، يشير للأعلى
+      const g = extrude(difference(tpl, arrow), 0.6, 0);
+      return [{ name: 'قالب التجربة', color: p.frameColor, geometry: g }];
+    }
 
     // ٤) ترتيب القطع على السطح
     const gap = 8;

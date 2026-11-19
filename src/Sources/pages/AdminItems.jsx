@@ -6,7 +6,7 @@ import "../Style/AdminLayout.css";
 import { useToast } from "../context/ToastProvider";
 
 export default function AdminItems() {
-  const token = sessionStorage.getItem('token');
+  const token = localStorage.getItem('token');
 
   /* ---------------- STATE ---------------- */
   const [materials, setMaterials] = useState([]);

@@ -107,6 +107,9 @@ const Footer = () => {
               <li className="mb-2">
                 <a href="/terms" className="text-decoration-none ">Terms & Conditions</a>
                 </li>
+              <li className="mb-2">
+                <a href="/privacy" className="text-decoration-none ">Privacy Policy</a>
+              </li>
             </ul>
           </Col>
 

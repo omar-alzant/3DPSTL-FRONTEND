@@ -46,7 +46,7 @@ function AdminLayout() {
   const isActive = (path) => location.pathname.includes(path);
 
   const runBackupAsync = async () => {
-    const token = sessionStorage.getItem("token");
+    const token = localStorage.getItem('token');
     setIsBackingUp(true);
     setProgress(10);
 

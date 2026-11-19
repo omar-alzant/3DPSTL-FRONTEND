@@ -14,7 +14,7 @@ export default function AdminModels() {
   const [types, settypes] = useState([]);
   const [editingId, setEditingId] = useState(null);
   const [loading, setLoading] = useState(false);
-  const token = sessionStorage.getItem('token');
+  const token = localStorage.getItem('token');
   const [isSaving, setIsSaving] = useState(false);
   const adminTypesURL = `${process.env.REACT_APP_API_URL}/api/admin/products/type` 
   const adminModelsURL = `${process.env.REACT_APP_API_URL}/api/admin/products/model` 

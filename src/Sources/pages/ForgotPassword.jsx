@@ -26,7 +26,7 @@ export default function ForgotPassword() {
   const handleReset = async (e) => {
     e.preventDefault();
     setLoading(true);
-    const token = sessionStorage.getItem('token');
+    const token = localStorage.getItem('token');
     
     // Clear previous messages
     setError('');

@@ -42,7 +42,7 @@ export default function AdminCarousel() {
   const [materials, setMaterials] = useState([]);
   const [editingId, setEditingId] = useState(null);
   const [loading, setLoading] = useState(false);
-  const token = sessionStorage.getItem('token');
+  const token = localStorage.getItem('token');
   const [types, setTypes] = useState([]);
   const [models, setModels] = useState([]);
   const [brands, setBrands] = useState([]);

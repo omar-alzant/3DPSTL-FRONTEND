@@ -4,7 +4,7 @@ import '../Style/FilamentColors.css'
 
 export default function FilamentColors() {
 
-  const token = sessionStorage.getItem("token");
+  const token = localStorage.getItem('token');
 
   const colorsURL =
     `${process.env.REACT_APP_API_URL}/api/admin/filament/colors`;

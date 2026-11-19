@@ -3,7 +3,7 @@ import { Button } from 'react-bootstrap';
 import { useToast } from '../context/ToastProvider';
 
 const LogoutButton = ({ onClose }) => {
-  const token = sessionStorage.getItem("token");
+  const token = localStorage.getItem('token');
   const apiAuthUrl = `${process.env.REACT_APP_API_URL}/api/auth` 
   const { showToast } = useToast();
 
@@ -11,7 +11,7 @@ const LogoutButton = ({ onClose }) => {
     onClose?.(); 
 
     try {
-        const email = sessionStorage.getItem("email")?.replace(/^"|"$/g, '');
+        const email = localStorage.getItem('email')?.replace(/^"|"$/g, '');
         const response = await fetch(`${apiAuthUrl}/logout`, {
             method: 'POST',
             headers: {

@@ -18,7 +18,7 @@ const OrderSummary = () => {
     // }
   
     const fetchOrder = async () => {
-      const token = sessionStorage.getItem("token");
+      const token = localStorage.getItem('token');
   
       const res = await fetch(
         `${process.env.REACT_APP_API_URL}/api/orders/${state.orderId}`,

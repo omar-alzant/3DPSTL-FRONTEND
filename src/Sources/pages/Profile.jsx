@@ -5,6 +5,7 @@ import { Tabs, Tab } from "react-bootstrap";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { useToast } from "../context/ToastProvider";
 import { useSearchParams } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import MyStudioOrders from "../studio/components/MyStudioOrders";
 import "../Style/Studio.css";
 
@@ -16,7 +17,7 @@ export default function ProfilePage() {
 
     const [preview, setPreview] = useState(null);
     const authUrl = `${process.env.REACT_APP_API_URL}/api/auth`
-    const token = sessionStorage.getItem('token');
+    const token = localStorage.getItem('token');
     const fileInputRef = useRef(null);
     const [orders, setOrders] = useState([]);
     const [searchParams] = useSearchParams();
@@ -25,6 +26,7 @@ export default function ProfilePage() {
     const [currentEmail, setCurrentEmail] = useState("");
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const { showToast } = useToast();
+    const { saveToken } = useAuth();
   
       useEffect(() => {
         const loadOrders = async () => {
@@ -136,6 +138,9 @@ export default function ProfilePage() {
   
 
   const changePassword = async () => {
+    if (!currentEmail.trim()) return showToast("Please type your email to confirm.", "danger");
+    if (password.length < 6) return showToast("Password must be at least 6 characters.", "danger");
+    if (password !== confirmPassword) return showToast("The two passwords don't match.", "danger");
     const res = await fetch(
       `${authUrl}/updatePwd`,
       {
@@ -149,7 +154,9 @@ export default function ProfilePage() {
     );
 
     const data = await res.json();
-    if (!data.error) {
+    if (res.ok && !data.error) {
+        // the server issues a new session token — keep it, otherwise the next request logs the user out
+        if (data.token) saveToken(data.token);
         showToast("Password updated successfully!", "success");
         setPassword("")
         setConfirmPassword("")
