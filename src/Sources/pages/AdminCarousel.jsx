@@ -31,9 +31,9 @@ export function selectValueToPath(value) {
 
   const [level, id] = value.split(':');
 
-  if (level === 'type') return `/shop?type_id=${id}`;
-  if (level === 'model') return `/shop?model_id=${id}`;
-  if (level === 'brand') return `/shop?brand_id=${id}`;
+  if (level === 'type') return `/our-works?type_id=${id}`;
+  if (level === 'model') return `/our-works?model_id=${id}`;
+  if (level === 'brand') return `/our-works?brand_id=${id}`;
 
   return '';
 }

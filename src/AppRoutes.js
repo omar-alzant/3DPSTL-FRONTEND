@@ -1,5 +1,5 @@
-import React, { Suspense, lazy } from 'react';
-import { Navigate } from "react-router-dom";
+import React, { Suspense } from 'react';
+import { Navigate, useLocation } from "react-router-dom";
 import { Routes, Route } from 'react-router-dom';
 import AdminLayout from './Sources/layouts/AdminLayout';
 import AdminTypes from './Sources/pages/AdminTypes';
@@ -32,14 +32,24 @@ import AdminStudioOrders from './Sources/pages/AdminStudioOrders';
 import AdminStudioPricing from './Sources/pages/AdminStudioPricing';
 import AdminCredits from './Sources/pages/AdminCredits';
 import Credits from './Sources/pages/Credits';
+import ErrorBoundary, { lazyWithReload } from './Sources/components/ErrorBoundary';
+import { CART_ENABLED, WORKS_PATH } from './Sources/config/site';
+
+// old /shop links (Google, shared links) keep working, with their filters
+function ToWorks() {
+  const { search } = useLocation();
+  return <Navigate to={`${WORKS_PATH}${search}`} replace />;
+}
 
 // Studio (Three.js + HarfBuzz) is loaded on demand so the rest of the site stays light
-const Studio = lazy(() => import('./Sources/pages/Studio'));
+const Studio = lazyWithReload(() => import('./Sources/pages/Studio'));
 const studioPage = (
   <MainLayout>
-    <Suspense fallback={<div className="text-center py-5" style={{ color: '#A5B4FC' }}>Loading Studio…</div>}>
-      <Studio />
-    </Suspense>
+    <ErrorBoundary>
+      <Suspense fallback={<div className="text-center py-5" style={{ color: '#A5B4FC' }}>Loading Studio…</div>}>
+        <Studio />
+      </Suspense>
+    </ErrorBoundary>
   </MainLayout>
 );
 
@@ -56,10 +66,11 @@ export default function AppRoutes() {
         <Route path="/auth/google" element={<MainLayout><GoogleCallback /></MainLayout>} />
 
         <Route path="/" element={<MainLayout><Home /></MainLayout>} />
-        <Route path="/shop" element={<MainLayout><Shop /></MainLayout>} />
-        <Route path="/order-summary" element={<MainLayout><OrderSummary /></MainLayout>} />
+        <Route path={WORKS_PATH} element={<MainLayout><Shop /></MainLayout>} />
+        <Route path="/shop" element={<ToWorks />} />
+        <Route path="/order-summary" element={CART_ENABLED ? <MainLayout><OrderSummary /></MainLayout> : <Navigate to={WORKS_PATH} replace />} />
         <Route path="/order-success/:orderId" element={<MainLayout><OrderSuccess /></MainLayout>} />
-        <Route path="/cart" element={<MainLayout><CartPage /></MainLayout>} />
+        <Route path="/cart" element={CART_ENABLED ? <MainLayout><CartPage /></MainLayout> : <Navigate to={WORKS_PATH} replace />} />
         <Route path="/profile" element={<MainLayout><ProfilePage /></MainLayout>} />
         <Route path="/terms" element={<MainLayout><TermsPage /></MainLayout>} />
         <Route path="/privacy" element={<MainLayout><PrivacyPage /></MainLayout>} />

@@ -325,7 +325,7 @@ return (
     />
       <RelatedItemsSlider 
         items={relatedItemsSameType} 
-        onSeeMore={() => navigate(`/shop?type_id=${typeId}`)}
+        onSeeMore={() => navigate(`/our-works?type_id=${typeId}`)}
       />
   
 

@@ -8,6 +8,7 @@ import CartItem from "../components/CartItem";
 import RelatedItemsSlider from "../components/RelatedItemsSlider";
 import MultiImageInput from "../components/MultiImageInput";
 import { useToast } from "../context/ToastProvider";
+import { CART_ENABLED } from '../config/site';
 
 // Helper for localStorage JSON
 const saveLS = (k, v) => localStorage.setItem(k, JSON.stringify(v));
@@ -144,7 +145,7 @@ export default function Home() {
   
 
   const handleMarketClick = (marketId) => {
-    navigate(`/shop?brand_id=${marketId}`);
+    navigate(`/our-works?brand_id=${marketId}`);
   };
  
   const handleCarouselClick = (path) => {    
@@ -212,7 +213,7 @@ export default function Home() {
 
     <Nav.Link
       as={NavLink}
-      to="/Shop"
+      to="/our-works"
       className="d-inline-block"
       style={{
         background: "var(--brand-gradient)",
@@ -225,7 +226,7 @@ export default function Home() {
         boxShadow: "0 4px 20px rgba(106, 77, 255,0.35)"
       }}
     >
-      Shop Now
+      {CART_ENABLED ? "Shop Now" : "See Our Works"}
     </Nav.Link>
   </Col>
 </Row>
@@ -240,7 +241,7 @@ export default function Home() {
         letterSpacing: "1px"
       }}
     >
-      Shop by Types
+      {CART_ENABLED ? "Shop by Types" : "Browse Our Works"}
     </h2>
     <Row >
       {loading ? (
@@ -266,14 +267,14 @@ export default function Home() {
                 controlId={type.id + "-img"}
                 formData={type}
                 readOnly={true}
-                seeMore={() => navigate(`/shop?type_id=${type.id}`)}
+                seeMore={() => navigate(`/our-works?type_id=${type.id}`)}
                 ratio='16x9'
             />
 
             {/* ITEMS SLIDER */}
             <RelatedItemsSlider
               items={type.items}
-              onSeeMore={() => navigate(`/shop?type_id=${type.id}`)}
+              onSeeMore={() => navigate(`/our-works?type_id=${type.id}`)}
             />
           {/* <hr /> */}
           </section>
@@ -311,7 +312,7 @@ export default function Home() {
           e.target.style.background = "transparent";
           e.target.style.color = "var(--brand-primary)";
         }}
-        onClick={() => navigate(`/shop?onsale=true`)}
+        onClick={() => navigate(`/our-works?onsale=true`)}
        >
          See more 
        </Button>

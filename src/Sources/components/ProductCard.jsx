@@ -1,3 +1,4 @@
+import { CART_ENABLED } from '../config/site';
 import React, { useState, useMemo, useEffect } from "react";
 import { Card, Badge, Button, Modal, Image, Ratio } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
@@ -78,7 +79,7 @@ function ProductCard({ product, cart, onAddToCart }) {
         <hr className="m-0" />
         <Card.Body className={`
               d-flex flex-column
-              ${(allOutOfStock && !itemExistInCart) ? "bg-red-light" : ""}
+              ${(CART_ENABLED && allOutOfStock && !itemExistInCart) ? "bg-red-light" : ""}
           `}>
           <Card.Title className="fs-6 text-truncate">{product?.name}</Card.Title>
           <div className="d-flex flex-wrap gap-1 mb-2">
@@ -93,7 +94,11 @@ function ProductCard({ product, cart, onAddToCart }) {
                 <small className="ms-1 text-muted text-decoration-line-through">${resolvedVariant.oldprice}</small>
               )}
             </div>
-            {itemExistInCart ? (
+            {!CART_ENABLED ? (
+              <Button variant="outline-success" size="sm" onClick={(e) => { e.stopPropagation(); navigate(`/item/${product.id}`); }}>
+                Order similar
+              </Button>
+            ) : itemExistInCart ? (
               <Button variant="outline-info" size="sm" onClick={(e) => { e.stopPropagation(); navigate(`/cart`); }}>
                 In Cart
               </Button>

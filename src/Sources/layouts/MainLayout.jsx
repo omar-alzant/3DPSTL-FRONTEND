@@ -3,6 +3,7 @@ import NavbarComp from '../components/NavbarComp';
 import Footer from '../components/Footer';
 import WhatsAppButton from '../components/WhatsAppButton';
 import FloatingCart from '../components/FloatingCart';
+import { CART_ENABLED } from '../config/site';
 
 
 export default function MainLayout({ children }) {
@@ -13,7 +14,7 @@ export default function MainLayout({ children }) {
       <main className="page-content">{children}</main>
       <Footer />
       <div className="fab-container">
-        <FloatingCart />
+        {CART_ENABLED && <FloatingCart />}
         <WhatsAppButton />
       </div>      
     </div>

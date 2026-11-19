@@ -9,8 +9,25 @@
   status = 200
   force = true
 
-# 2. قاعدة الـ React Router (لضمان عمل الروابط عند عمل Refresh)
+# 2. ملفات JS/CSS القديمة (بعد deploy جديد) ترجع 404 بدل index.html — حتى يقدر الموقع يعيد التحميل
+[[redirects]]
+  from = "/static/*"
+  to = "/404.html"
+  status = 404
+
+# 3. قاعدة الـ React Router (لضمان عمل الروابط عند عمل Refresh)
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
+
+# index.html لا يُخزَّن — كل زيارة تجيب أحدث نسخة. ملفات static عليها hash فتتخزّن للأبد
+[[headers]]
+  for = "/index.html"
+  [headers.values]
+    Cache-Control = "no-cache"
+
+[[headers]]
+  for = "/static/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

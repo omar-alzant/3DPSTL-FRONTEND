@@ -3,6 +3,8 @@ import { Row, Col, Button, Badge, Form, Ratio, Image } from "react-bootstrap";
 import { useCart } from "../context/CartContext";
 import { CiStar } from "react-icons/ci";
 import BreadcrumbNav from "./BreadcrumbNav";
+import { CART_ENABLED } from '../config/site';
+import OrderLikeThis from './OrderLikeThis';
 
 
 const ReadMore = ({ htmlContent, maxChars = 250 }) => {
@@ -226,14 +228,16 @@ export default function ItemDetails({
           <label className="fw-bold mb-2 border-bottom w-100 pb-1">Product Description</label>
           <ReadMore htmlContent={item.description ?? ""} maxChars={100} />
         </div>
-        <div className={`d-flex flex-row gap-2 mb-2 ${resolvedVariant.stock < 3 ? 'text-danger' : ''} ? `}>
+        {CART_ENABLED && <div className={`d-flex flex-row gap-2 mb-2 ${resolvedVariant.stock < 3 ? 'text-danger' : ''} ? `}>
           <label className="fw-bold mb-2 ">On Stock: </label>
             <p>{resolvedVariant.stock}</p>
-        </div>
+        </div>}
 
         {/* QUANTITY / ADD TO CART */}
         <div className="mt-auto">
-          {!variantInCart ? (
+          {!CART_ENABLED ? (
+            <OrderLikeThis item={item} variant={resolvedVariant} />
+          ) : !variantInCart ? (
             <Button
               size="lg"
               className={`w-100 fw-bold py-3 ${!canAddToCart ? 'bg-danger' : ''}`}

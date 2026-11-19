@@ -1,3 +1,4 @@
+import { CART_ENABLED, WORKS_LABEL } from "../config/site";
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
@@ -110,13 +111,13 @@ function NavbarComp() {
                       as={NavLink}
                       onClick={() => setShowOffcanvas(false)}
 
-                      to="/shop"
+                      to="/our-works"
                       className="kids-nav-link m-1 align-items-center justify-content-center text-center"
                       style={{
                         textDecoration: "none",
                       }}
                     >
-                      Shop
+                      {WORKS_LABEL}
                     </Nav.Link>
                   <Nav.Link
                       as={NavLink}
@@ -166,7 +167,7 @@ function NavbarComp() {
                     >
                       About Us
                     </Nav.Link>
-                  <Nav.Link
+                  {CART_ENABLED && <Nav.Link
                     as={NavLink}
                     to="/cart"
                     onClick={() => setShowOffcanvas(false)}
@@ -181,7 +182,7 @@ function NavbarComp() {
                       }}
                     >
                       {cart.length}
-                    </Badge>                  </Nav.Link>
+                    </Badge>                  </Nav.Link>}
                       <hr />
                       <div 
                   className=" m-1 text-center"

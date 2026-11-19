@@ -184,7 +184,7 @@ const processOrder = async () => {
       ) : (
         <Card className="p-5 text-center">
           <h5>Your cart is empty</h5>
-          <Button variant="primary" className="mt-3" onClick={() => navigate('/shop')}>
+          <Button variant="primary" className="mt-3" onClick={() => navigate('/our-works')}>
             Go Shopping
           </Button>
         </Card>

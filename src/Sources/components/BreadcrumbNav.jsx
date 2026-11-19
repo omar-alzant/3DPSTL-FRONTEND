@@ -25,7 +25,7 @@ export default function BreadcrumbNav({ type, model }) {
             <Button
               variant="link"
               className="p-0 text-decoration-none"
-              onClick={() => navigate(`/shop?type_id=${type.id}`)}
+              onClick={() => navigate(`/our-works?type_id=${type.id}`)}
             >
               {type.name}
             </Button>
@@ -38,7 +38,7 @@ export default function BreadcrumbNav({ type, model }) {
             <Button
               variant="link"
               className="p-0 text-decoration-none"
-              onClick={() => navigate(`/shop?model_id=${model.id}`)}
+              onClick={() => navigate(`/our-works?model_id=${model.id}`)}
             >
               {model.name}
             </Button>

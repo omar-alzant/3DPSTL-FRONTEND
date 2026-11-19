@@ -3,7 +3,7 @@ import { MdWhatsapp } from "react-icons/md";
 
 const WhatsAppButton = () => {
   const phoneNumber = "96176118290"; // 🔑 Replace with your actual number (International format, no +)
-  const message = encodeURIComponent("Hello! I'm shopping at 3DSTL and have a question about an item.");
+  const message = encodeURIComponent("Hello 3DSTL! I saw your work and I'd like to ask about a piece.");
 
   const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
 

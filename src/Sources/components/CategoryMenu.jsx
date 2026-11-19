@@ -113,7 +113,7 @@ function CategoryMenu({ onNavigate }) {
                               key={model.id}
                               className="modelInCategory cursor py-1 text-secondary"
                               onClick={() => {
-                                navigate(`/shop?model_id=${model.id}`);
+                                navigate(`/our-works?model_id=${model.id}`);
                                 onNavigate && onNavigate();
                               }}
                             >
@@ -125,7 +125,7 @@ function CategoryMenu({ onNavigate }) {
                         <div
                           className="mt-2 text-primary fw-semibold cursor"
                           onClick={() => {
-                            navigate(`/shop?type_id=${type.id}`);
+                            navigate(`/our-works?type_id=${type.id}`);
                             onNavigate && onNavigate();
                           }}
                         >
@@ -215,7 +215,7 @@ function CategoryMenu({ onNavigate }) {
                       key={model.id}
                       className="py-2 border-bottom cursor"
                       onClick={() => {
-                        navigate(`/shop?model_id=${model.id}`);
+                        navigate(`/our-works?model_id=${model.id}`);
                         onNavigate && onNavigate();
                       }}
                     >
@@ -227,7 +227,7 @@ function CategoryMenu({ onNavigate }) {
                 <div
                   className="mt-2 text-primary fw-semibold cursor"
                   onClick={() => {
-                    navigate(`/shop?type_id=${mobileType.id}`);
+                    navigate(`/our-works?type_id=${mobileType.id}`);
                     onNavigate && onNavigate();
                   }}
                 >

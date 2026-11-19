@@ -27,7 +27,7 @@ export default function GlobalSearch({ onClose }) {
       params.delete("q");
     }
 
-    navigate(`/shop?${params.toString()}`);
+    navigate(`/our-works?${params.toString()}`);
     onClose?.();
   };
 
@@ -36,7 +36,7 @@ export default function GlobalSearch({ onClose }) {
     params.delete("q");
     params.set("page", "1");
 
-    navigate(`/shop?${params.toString()}`);
+    navigate(`/our-works?${params.toString()}`);
     setQuery("");
   };
 

@@ -9,7 +9,7 @@ import MapLocation from './MapLocation';
 
 const Footer = () => {
   const programedByContact = `https://wa.me/96176118290?text=Hello, How are you?`;
-  const message = encodeURIComponent("Hello! I'm shopping at 3DSTL and have a question about an item.");
+  const message = encodeURIComponent("Hello 3DSTL! I saw your work and I'd like to ask about a piece.");
   const phoneNumber = "96176118290";
 
   const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
@@ -101,7 +101,7 @@ const Footer = () => {
           <Col >
             <h6 className="fw-bold mb-3">Pages</h6>
             <ul className="list-unstyled small">
-              <li className="mb-2"><a href="/Shop" className="text-decoration-none ">Shop</a></li>
+              <li className="mb-2"><a href="/our-works" className="text-decoration-none ">Our Works</a></li>
               <li className="mb-2"><a href="/" className="text-decoration-none ">Home</a></li>
               {/* <li className="mb-2"><a href="/" className="text-decoration-none ">Size Guide</a></li> */}
               <li className="mb-2">

@@ -4,6 +4,7 @@ import { MdDeleteForever } from "react-icons/md";
 import ConfirmationModal from "./ConfirmationModal";
 import { useAccordionButton } from 'react-bootstrap/AccordionButton';
 import "../Style/CartItem.css";
+import { CART_ENABLED } from '../config/site';
 
 function CustomToggle({ children, eventKey }) {
   const decoratedOnClick = useAccordionButton(eventKey);
@@ -40,7 +41,7 @@ const CartItem = ({
   const itemContent = (
     <div className="d-flex align-items-center">
       <div className="d-flex flex-column gap-1 justify-content-center align-items-center">
-        {allOutOfStock && <Badge bg="danger" className="ms-2">OOS</Badge>}
+        {CART_ENABLED && allOutOfStock && <Badge bg="danger" className="ms-2">OOS</Badge>}
         <Image src={item.image || "/thumbnail.png"} width={50} height={50} rounded />
       </div>
       <h6 className="mb-0 ms-2 text-dark">{item.name}</h6>
@@ -66,7 +67,7 @@ const CartItem = ({
   return (
     <>
       <Card className={"cart-item-card mb-2"}>
-        <Card.Body className={`"p-2" ${allOutOfStock ? "bg-red-light" : ""}`}>
+        <Card.Body className={`"p-2" ${CART_ENABLED && allOutOfStock ? "bg-red-light" : ""}`}>
           <Accordion
             className={`cart-item-accordion ${
               !showDetails ? "hide-accordion-toggle" : ""
