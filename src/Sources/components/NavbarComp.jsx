@@ -14,6 +14,7 @@ import { useAuth } from '../context/AuthContext';
 import CategoryMenu from './CategoryMenu';
 import CreditBadge from './CreditBadge';
 import { CiShoppingCart } from "react-icons/ci";
+import useAdminSummary from "../hooks/useAdminSummary";
 import '../Style/Navbar.css'
 
 
@@ -25,6 +26,7 @@ function NavbarComp() {
   const [showOffcanvas, setShowOffcanvas] = useState(false);
 
   const { email, isAdmin, profile, loading } = useAuth();
+  const adminSummary = useAdminSummary(!!isAdmin);
   if (loading) {
           return null; 
       }
@@ -100,6 +102,9 @@ function NavbarComp() {
                       }}
                     >
                       Admin
+                      {adminSummary.total > 0 && (
+                        <span className="admin-count ms-1" title="طلبات بانتظار المراجعة">{adminSummary.total}</span>
+                      )}
                     </Nav.Link>}
                   <Nav.Link
                       as={NavLink}

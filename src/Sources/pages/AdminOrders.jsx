@@ -7,6 +7,7 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { IoLogoWhatsapp } from 'react-icons/io5';
 import { useToast } from "../context/ToastProvider";
+import { refreshAdminSummary } from '../hooks/useAdminSummary';
 
 /* ---------- COPY TO CLIPBOARD ---------- */
 /* ---------- COPY TO CLIPBOARD ---------- */
@@ -209,6 +210,7 @@ const AdminOrders = () => {
       }
   
       fetchOrders();
+      refreshAdminSummary();
   
     } catch (err) {
       showToast(`"Stock error:"  ${err.message}`, "danger");

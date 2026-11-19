@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { refreshAdminSummary } from '../hooks/useAdminSummary';
 import {
   adminRequests, approveRequest, rejectRequest, adminPackages, createPackage, updatePackage, deletePackage,
   adminUsers, adminUserLedger, adjustCredits, KIND_LABEL, METHOD_LABEL,
@@ -30,6 +31,7 @@ function Requests() {
     try {
       await (approve ? approveRequest(r.id, note) : rejectRequest(r.id, note));
       load();
+      refreshAdminSummary();
     } catch (e) {
       setErr(e.message);
     } finally {

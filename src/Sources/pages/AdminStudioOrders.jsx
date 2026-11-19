@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { listOrders, updateOrder, designPath } from '../studio/lib/api.js';
 import '../Style/Studio.css';
+import { refreshAdminSummary } from '../hooks/useAdminSummary';
 
 const STATUSES = [
   { value: 'new', label: 'New' },
@@ -34,6 +35,7 @@ export default function AdminStudioOrders() {
   const setStatus = async (id, status) => {
     try {
       const o = await updateOrder(id, { status });
+      refreshAdminSummary();
       setOrders((list) => list.map((x) => (x.id === id ? o : x)));
     } catch (e) {
       setError(e.message);

@@ -20,6 +20,7 @@ import {
 } from "react-icons/bs";
 
 import "../Style/AdminLayout.css";
+import useAdminSummary from "../hooks/useAdminSummary";
 
 const ADMIN_MENU = [
   { label: "Brands", path: "brands", icon: <BsTags />, activeClass: "active-brands" },
@@ -28,17 +29,18 @@ const ADMIN_MENU = [
   { label: "Models", path: "models", icon: <BsBoxes />, activeClass: "active-models" },
   { label: "Items", path: "items", icon: <BsBoxSeam />, activeClass: "active-items" },
   { label: "Carousel", path: "carousel", icon: <BsImages />, activeClass: "active-carousel" },
-  { label: "Orders", path: "orders", icon: <BsCart3 />, activeClass: "active-orders" },
+  { label: "Orders", path: "orders", icon: <BsCart3 />, activeClass: "active-orders", count: "orders" },
   { label: "Colors", path: "colors", icon: <BsDisc />, activeClass: "active-colors" },
-  { label: "Studio Orders", path: "studio", icon: <BsBadge3D />, activeClass: "active-studio-orders" },
+  { label: "Studio Orders", path: "studio", icon: <BsBadge3D />, activeClass: "active-studio-orders", count: "studio" },
   { label: "Studio Pricing", path: "pricing", icon: <BsCurrencyDollar />, activeClass: "active-studio-pricing" },
-  { label: "Credits", path: "credits", icon: <BsCoin />, activeClass: "active-credits" },
+  { label: "Credits", path: "credits", icon: <BsCoin />, activeClass: "active-credits", count: "credits" },
 ];
 
 function AdminLayout() {
   const location = useLocation();
 
   const [isOpen, setIsOpen] = useState(true);
+  const summary = useAdminSummary(true);
   const [isBackingUp, setIsBackingUp] = useState(false);
   const [progress, setProgress] = useState(0);
 
@@ -108,7 +110,7 @@ function AdminLayout() {
 
         <div className="sidebar-content d-flex flex-column h-100">
           <Nav className="flex-grow-1 d-flex flex-column px-2 pt-2 gap-1">
-            {ADMIN_MENU.map(({ label, path, icon, activeClass }) => (
+            {ADMIN_MENU.map(({ label, path, icon, activeClass, count }) => (
               <Nav.Item key={path}>
                 <Link
                   to={path}
@@ -116,8 +118,14 @@ function AdminLayout() {
                     isActive(path) ? `active-link ${activeClass}` : ""
                   }`}
                 >
-                  <span>{icon}</span>
-                  {isOpen && <span>{label}</span>}
+                  <span className="position-relative">
+                    {icon}
+                    {!isOpen && count && summary[count] > 0 && <span className="admin-dot" />}
+                  </span>
+                  {isOpen && <span className="flex-grow-1">{label}</span>}
+                  {isOpen && count && summary[count] > 0 && (
+                    <span className="admin-count" title="بانتظار المراجعة">{summary[count]}</span>
+                  )}
                 </Link>
               </Nav.Item>
             ))}
