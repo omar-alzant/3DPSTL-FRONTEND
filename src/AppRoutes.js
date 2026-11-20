@@ -32,8 +32,11 @@ import AdminStudioOrders from './Sources/pages/AdminStudioOrders';
 import AdminStudioPricing from './Sources/pages/AdminStudioPricing';
 import AdminCredits from './Sources/pages/AdminCredits';
 import Credits from './Sources/pages/Credits';
+import AdminSystem from './Sources/pages/AdminSystem';
+import AdminGuard from './Sources/components/AdminGuard';
 import ErrorBoundary, { lazyWithReload } from './Sources/components/ErrorBoundary';
 import { CART_ENABLED, WORKS_PATH } from './Sources/config/site';
+import { PageLoader } from './Sources/components/BrandSpinner';
 
 // old /shop links (Google, shared links) keep working, with their filters
 function ToWorks() {
@@ -46,7 +49,7 @@ const Studio = lazyWithReload(() => import('./Sources/pages/Studio'));
 const studioPage = (
   <MainLayout>
     <ErrorBoundary>
-      <Suspense fallback={<div className="text-center py-5" style={{ color: '#A5B4FC' }}>Loading Studio…</div>}>
+      <Suspense fallback={<PageLoader text="Loading Studio…" />}>
         <Studio />
       </Suspense>
     </ErrorBoundary>
@@ -82,7 +85,7 @@ export default function AppRoutes() {
         <Route path="/credits" element={<MainLayout><Credits /></MainLayout>} />
 
         {/* Admin Section */}
-        <Route path="admin" element={<MainLayout><AdminLayout /></MainLayout>} >
+        <Route path="admin" element={<AdminGuard><MainLayout><AdminLayout /></MainLayout></AdminGuard>} >
           <Route index element={<Navigate to="brands" replace />} />
            <Route path="category" element={<AdminCategories />} />
            <Route path="brands" element={<AdminBrands />} />
@@ -95,6 +98,7 @@ export default function AppRoutes() {
            <Route path="studio" element={<AdminStudioOrders />} />
            <Route path="pricing" element={<AdminStudioPricing />} />
            <Route path="credits" element={<AdminCredits />} />
+           <Route path="system" element={<AdminSystem />} />
           {/*<Route path="benefits" element={<AdminBenefits />} />
           <Route path="home" element={<AdminHome />} />
           <Route path="shop" element={<AdminShop />} />

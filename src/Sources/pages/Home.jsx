@@ -9,6 +9,7 @@ import RelatedItemsSlider from "../components/RelatedItemsSlider";
 import MultiImageInput from "../components/MultiImageInput";
 import { useToast } from "../context/ToastProvider";
 import { CART_ENABLED } from '../config/site';
+import { PageLoader } from '../components/BrandSpinner';
 
 // Helper for localStorage JSON
 const saveLS = (k, v) => localStorage.setItem(k, JSON.stringify(v));
@@ -204,7 +205,7 @@ export default function Home() {
 {/* CAROUSEL */}
 <Row className="mb-4">
   {loading ? (
-    <div className="text-center py-5">Loading...</div>
+    <PageLoader text="" size={44} />
   ) : (
     <CarouselComp items={carouselItems} label="Carousel"/>
   )}
@@ -245,7 +246,7 @@ export default function Home() {
     </h2>
     <Row >
       {loading ? (
-        <div className="text-center py-5">Loading...</div>
+        <PageLoader text="" size={44} />
       ) : (
         Array.isArray(homeTypes) && homeTypes.map(type => (  
         <section
@@ -322,7 +323,7 @@ export default function Home() {
 <Row className="g-4 mb-5">
   {
   loading ? (
-      <div className="text-center py-5">Loading...</div>
+      <PageLoader text="" size={44} />
     ) : 
     Array.isArray(items) ?
      (items
@@ -354,7 +355,7 @@ export default function Home() {
 <h3 className="mb-3 fw-bold" style={{ color: "var(--brand-primary)" }}>Our Brands</h3>
 <Row className="mb-4">
   {loading ? (
-    <div className="text-center py-5">Loading...</div>
+    <PageLoader text="" size={44} />
   ) : (
     <CarouselComp 
       withDetails={false} 

@@ -17,6 +17,7 @@ import {
   BsBadge3D,
   BsCurrencyDollar,
   BsCoin,
+  BsActivity,
 } from "react-icons/bs";
 
 import "../Style/AdminLayout.css";
@@ -34,6 +35,7 @@ const ADMIN_MENU = [
   { label: "Studio Orders", path: "studio", icon: <BsBadge3D />, activeClass: "active-studio-orders", count: "studio" },
   { label: "Studio Pricing", path: "pricing", icon: <BsCurrencyDollar />, activeClass: "active-studio-pricing" },
   { label: "Credits", path: "credits", icon: <BsCoin />, activeClass: "active-credits", count: "credits" },
+  { label: "System", path: "system", icon: <BsActivity />, activeClass: "active-system", count: "errors" },
 ];
 
 function AdminLayout() {

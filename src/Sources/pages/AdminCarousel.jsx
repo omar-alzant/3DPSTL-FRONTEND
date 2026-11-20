@@ -6,6 +6,7 @@ import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Spinner from 'react-bootstrap/Spinner';
 import { useToast } from "../context/ToastProvider";
+import { PageLoader } from '../components/BrandSpinner';
 
 // Converts stored path → select value
 export function pathToSelectValue(path) {
@@ -367,7 +368,7 @@ export default function AdminCarousel() {
 {/* *************************** All Existed materials list *************************** */}
     {loading 
     ?
-    <p>⏳ Loading...</p>
+    <PageLoader />
     :
     (
       <div className="br-gray-l p-2 brr">

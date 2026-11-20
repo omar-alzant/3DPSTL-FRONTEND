@@ -1,0 +1,53 @@
+/* ───── 3DSTL spinner ───── */
+.brand-spinner { display: block; overflow: visible; filter: drop-shadow(0 0 10px rgba(106, 77, 255, .45)); }
+.brand-spinner-inline { display: inline-block; vertical-align: -0.2em; filter: none; }
+.brand-spinner .bs-track { fill: none; stroke: rgba(179, 168, 255, .16); stroke-width: 7; stroke-linejoin: round; }
+.brand-spinner .bs-run {
+  fill: none; stroke: #6e5fff; stroke-width: 7; stroke-linejoin: round; stroke-linecap: round;
+  stroke-dasharray: 70 194; /* perimeter ≈ 264 */
+  animation: bs-run 1.1s linear infinite;
+}
+.brand-spinner .bs-cube { transform-origin: 50px 50px; animation: bs-cube 1.1s ease-in-out infinite; }
+@keyframes bs-run { to { stroke-dashoffset: -264; } }
+@keyframes bs-cube { 0%, 100% { transform: scale(.82); opacity: .75; } 50% { transform: scale(1); opacity: 1; } }
+
+/* ───── full-area loader (pages, Suspense) ───── */
+.page-loader {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 14px; padding: 72px 16px; min-height: 40vh;
+}
+.page-loader-text { color: var(--brand-light, #b3a8ff); font-weight: 600; letter-spacing: .3px; }
+
+/* ───── top progress bar ───── */
+.gl-bar {
+  position: fixed; top: 0; left: 0; right: 0; height: 3px; z-index: 3000;
+  pointer-events: none; opacity: 0; transition: opacity .2s;
+}
+.gl-bar.on { opacity: 1; }
+.gl-bar span {
+  position: absolute; top: 0; bottom: 0; width: 35%;
+  background: linear-gradient(90deg, transparent, #6e5fff, #b3a8ff, #6e5fff, transparent);
+  box-shadow: 0 0 10px rgba(106, 77, 255, .8);
+  animation: gl-bar 1.1s ease-in-out infinite;
+}
+@keyframes gl-bar { from { left: -35%; } to { left: 100%; } }
+
+/* ───── "Saving…" card ───── */
+.gl-overlay {
+  position: fixed; inset: 0; z-index: 2999;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(13, 13, 51, .35); backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px);
+  animation: gl-fade .15s ease-out;
+}
+.gl-card {
+  display: flex; flex-direction: column; align-items: center; gap: 12px;
+  min-width: 150px; padding: 22px 28px; border-radius: 16px;
+  background: var(--brand-card, #16164a); border: 1px solid var(--brand-border, #2a2a72);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, .45), 0 0 0 1px rgba(106, 77, 255, .15);
+}
+.gl-text { color: var(--brand-text, #f2f0ff); font-weight: 600; }
+@keyframes gl-fade { from { opacity: 0; } to { opacity: 1; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .brand-spinner .bs-run, .brand-spinner .bs-cube, .gl-bar span { animation-duration: 2.5s; }
+}

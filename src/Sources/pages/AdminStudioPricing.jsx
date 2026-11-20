@@ -3,6 +3,7 @@ import { getSettings, saveSettings } from '../studio/lib/api.js';
 import { priceFor, TIME_DEFAULTS, formatMinutes } from '../studio/lib/pricing.js';
 import { TOOLS } from '../studio/tools/index.js';
 import '../Style/Studio.css';
+import { PageLoader } from '../components/BrandSpinner';
 
 // Admin → Studio Pricing: global prices + per-tool overrides, saved in Supabase (studio_settings)
 
@@ -92,7 +93,7 @@ export default function AdminStudioPricing() {
   if (!form)
     return (
       <div className="sd-admin">
-        {state.error ? <p className="sd-error">{state.error}</p> : <p className="sd-muted">Loading…</p>}
+        {state.error ? <p className="sd-error">{state.error}</p> : <PageLoader />}
       </div>
     );
 

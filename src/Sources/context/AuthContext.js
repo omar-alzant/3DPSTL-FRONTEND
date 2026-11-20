@@ -72,6 +72,22 @@ useEffect(() => {
 
 
 
+// The "isAdmin" flag in the browser can be edited by hand, so we confirm it with the server
+// (which checks the database). If the server says no, the flag is turned off and the Admin link disappears.
+useEffect(() => {
+  if (!token || !isAdmin) return undefined;
+  let alive = true;
+  fetch(`${process.env.REACT_APP_API_URL}/api/credits/admin/summary`, { headers: { Authorization: `Bearer ${token}` } })
+    .then((r) => {
+      if (alive && (r.status === 401 || r.status === 403)) {
+        setIsAdmin(false);
+        localStorage.setItem('isAdmin', 'false');
+      }
+    })
+    .catch(() => {}); // offline: leave it, the server refuses admin requests anyway
+  return () => { alive = false; };
+}, [token, isAdmin]);
+
   // ✅ Centralized register
   // AuthContext.jsx
   const registerUser = async (email, password) => {

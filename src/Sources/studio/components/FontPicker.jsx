@@ -1,5 +1,5 @@
 // قائمة خطوط بمعاينة حيّة: كل خط يعرض نص الزبون نفسه، ويُحمَّل الخط فقط عند ظهوره في القائمة
-import { useEffect, useRef, useState } from 'react';
+import { useDeferredValue, useEffect, useRef, useState } from 'react';
 import { FONTS, fontStyle, fontSupports, hasArabic } from '../lib/fonts.js';
 
 const TABS = [
@@ -45,7 +45,9 @@ function Item({ def, sample, active, onPick, root }) {
   );
 }
 
-export default function FontPicker({ value, onChange, sample }) {
+export default function FontPicker({ value, onChange, sample: liveSample }) {
+  // the font previews follow the typed text without slowing the typing itself
+  const sample = useDeferredValue(liveSample);
   const [open, setOpen] = useState(false);
   const [tab, setTab] = useState(() => (hasArabic(sample) ? 'ar' : 'all'));
   const wrap = useRef(null);

@@ -1,6 +1,7 @@
 // Catches render errors so a crash shows a message + reload button instead of an empty page.
 // A failed lazy chunk (old cached version after a new deploy) reloads the page once by itself.
 import React from 'react';
+import { reportError } from '../lib/reportError';
 
 const RELOAD_KEY = 'chunk-reload-at';
 const isChunkError = (e) =>
@@ -31,6 +32,7 @@ export default class ErrorBoundary extends React.Component {
 
   componentDidCatch(error, info) {
     console.error('UI crash:', error, info?.componentStack);
+    if (!isChunkError(error)) reportError(error, { prefix: 'Page crash', componentStack: info?.componentStack });
   }
 
   render() {

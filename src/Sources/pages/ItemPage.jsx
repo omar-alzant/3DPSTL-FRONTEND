@@ -8,6 +8,7 @@ import RelatedItemsSlider from "../components/RelatedItemsSlider";
 import ConfirmationModal from "../components/ConfirmationModal";
 import ItemDetails from "../components/ItemDetails";
 import { useToast } from "../context/ToastProvider";
+import { PageLoader } from '../components/BrandSpinner';
 
 
 export default function ItemPage() {
@@ -235,7 +236,7 @@ useEffect(() => {
   };
   
 
-if (!item || !resolvedVariant) return <div className="text-center py-5">Loading…</div>;
+if (!item || !resolvedVariant) return <PageLoader />;
 
 const isSameCartVariant = (cartVariant, targetVariant) => {
   return cartVariant.sku === targetVariant.sku;

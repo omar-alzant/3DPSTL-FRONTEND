@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 
 const API = process.env.REACT_APP_API_URL || '';
-const EMPTY = { orders: 0, studio: 0, credits: 0, total: 0 };
+const EMPTY = { orders: 0, studio: 0, credits: 0, errors: 0, total: 0 };
 
 export default function useAdminSummary(enabled = true) {
   const [summary, setSummary] = useState(EMPTY);

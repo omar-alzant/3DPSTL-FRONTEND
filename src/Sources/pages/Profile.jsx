@@ -26,7 +26,7 @@ export default function ProfilePage() {
     const [currentEmail, setCurrentEmail] = useState("");
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const { showToast } = useToast();
-    const { saveToken } = useAuth();
+    const { saveToken, setProfile: setAuthProfile } = useAuth();
   
       useEffect(() => {
         const loadOrders = async () => {
@@ -98,26 +98,36 @@ export default function ProfilePage() {
   };
   
   const saveProfile = async () => {
-    const res = await fetch(authUrl, {
+    try {
+      const res = await fetch(authUrl, {
         method: "PUT",
-        headers: { 
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-          },
-        body: JSON.stringify(profile)
-    });
-  
-    const data = await res.json();
-  
-    if (data.success) {
-        showToast("Profile updated!", "success");
-        setProfile(prev => ({ ...prev, avatar: data.avatar }));
-        localStorage.setItem("profile", profile)
-    }else{
-      showToast("Failed to update the profile!", "danger");
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ full_name: profile.full_name, phone: profile.phone, avatar: profile.avatar }),
+      });
+      const data = await res.json().catch(() => ({}));
+
+      // the server answers with the saved profile (or { error })
+      if (!res.ok) {
+        showToast(data.error || "Failed to update the profile!", "danger");
+        return;
+      }
+
+      setProfile(data);
+      setOriginalProfile(data);
+      // keep the navbar / other tabs in sync
+      const stored = (() => { try { return JSON.parse(localStorage.getItem("Profile") || "{}"); } catch { return {}; } })();
+      const merged = { ...stored, full_name: data.full_name, phone: data.phone, avatar: data.avatar };
+      localStorage.setItem("Profile", JSON.stringify(merged));
+      localStorage.removeItem("profile"); // old wrong key
+      setAuthProfile(merged);
+      showToast("Profile updated!", "success");
+    } catch (err) {
+      showToast(err.message || "Failed to update the profile!", "danger");
     }
   };
-  
 
   const handleAvatarChange = (e) => {
     const file = e.target.files[0];

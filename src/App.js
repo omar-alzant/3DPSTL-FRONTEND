@@ -7,10 +7,12 @@ import { CartProvider } from './Sources/context/CartContext';
 import { CreditsProvider } from './Sources/context/CreditsContext';
 import HumanGate from './Sources/components/HumanGate';
 import ErrorBoundary from './Sources/components/ErrorBoundary';
+import GlobalLoader from './Sources/components/GlobalLoader';
 
 export default function App() {
   return (
     <ErrorBoundary>
+    <GlobalLoader />
     <HumanGate>
     <BrowserRouter>
       <AuthProvider>

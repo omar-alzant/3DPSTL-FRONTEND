@@ -7,6 +7,7 @@ import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Spinner from 'react-bootstrap/Spinner';
 import { useToast } from "../context/ToastProvider";
+import { PageLoader } from '../components/BrandSpinner';
 
 
 export default function AdminModels() {
@@ -264,7 +265,7 @@ export default function AdminModels() {
 {/* *************************** All Existed materials list *************************** */}
     {loading 
     ?
-    <p>⏳ Loading...</p>
+    <PageLoader />
     :
     (
       <div className="br-gray-l p-2 brr">

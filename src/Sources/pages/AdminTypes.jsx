@@ -6,6 +6,7 @@ import { useToast } from "../context/ToastProvider";
 
 import AdminForm from "../components/AdminForm";
 import PreviewAdminContent from "../components/PreviewAdminContent";
+import { PageLoader } from '../components/BrandSpinner';
 
 export default function AdminTypes() {
   const token = localStorage.getItem('token');
@@ -221,7 +222,7 @@ export default function AdminTypes() {
       <hr />
 
       {loading ? (
-        <p>⏳ Loading...</p>
+        <PageLoader />
       ) : (
         <div className="br-gray-l p-2 brr">
           <PreviewAdminContent

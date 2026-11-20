@@ -127,7 +127,7 @@ export default function Editor({ tool, initial, config, orderId, downloadId }) {
           {stats && (
             <div className="sd-mini">
               <span>
-                <b>{price.toFixed(2)} {config.currency}</b> · {formatMinutes(minutes)}
+                <b>{price.toFixed(2)} {config.currency}</b>{isAdmin && <> · {formatMinutes(minutes)}</>}
               </span>
               <button
                 type="button"
@@ -144,7 +144,7 @@ export default function Editor({ tool, initial, config, orderId, downloadId }) {
             <dl className="sd-stats">
               <div><dt>المقاس</dt><dd dir="ltr">{stats.size.x.toFixed(1)} × {stats.size.y.toFixed(1)} × {stats.size.z.toFixed(1)} mm</dd></div>
               <div><dt>الوزن التقريبي</dt><dd>{stats.grams.toFixed(1)} غ</dd></div>
-              <div><dt>وقت الطباعة التقريبي</dt><dd>{formatMinutes(minutes)}</dd></div>
+              {isAdmin && <div><dt>وقت الطباعة التقريبي <span className="sd-muted">(admin)</span></dt><dd>{formatMinutes(minutes)}</dd></div>}
               <div><dt>الألوان</dt><dd>{colors}</dd></div>
               <div><dt>السعر التقريبي</dt><dd><b>{price.toFixed(2)} {config.currency}</b></dd></div>
             </dl>

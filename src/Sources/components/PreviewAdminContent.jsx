@@ -11,6 +11,7 @@ import MultiImageInput from "./MultiImageInput";
 import ConfirmationModal from "./ConfirmationModal";
 import Form from "react-bootstrap/Form";
 import { Badge, Image, ListGroup } from "react-bootstrap";
+import { PageLoader } from './BrandSpinner';
 
 // search/onSearch اختياريان: إن مرّرتهما الصفحة يصبح البحث على الخادم (لكل العناصر وليس الصفحة الحالية فقط)
 const PreviewAdminContent = ({ materials, editingId, startEditing, deleteMaterial, copyMaterial, canDelete, withVariants = false, flatView = false, search, onSearch, loading = false }) => {
@@ -68,7 +69,7 @@ const PreviewAdminContent = ({ materials, editingId, startEditing, deleteMateria
         />
     </Form>
 
-    {loading && <p className="text-center text-muted">⏳ Loading...</p>}
+    {loading && <PageLoader />}
     {!loading && !filteredMaterials.length && (
       <p className="empty-list text-center">{term ? `No results for “${term}”.` : "No data found."}</p>
     )}

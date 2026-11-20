@@ -80,6 +80,7 @@ export default function AdminStudioOrders() {
               {' · '}{new Date(o.created_at).toLocaleString()}
             </p>
             {o.customer_address && <p dir="auto">📍 <bdi>{o.customer_address}</bdi></p>}
+            {o.customer_location && <p><a href={o.customer_location} target="_blank" rel="noreferrer">🗺️ افتح الموقع على الخريطة</a></p>}
             {o.notes && <p className="sd-notes" dir="auto">{o.notes}</p>}
             <div className="sd-order-foot">
               <select className="sd-select" value={o.status} onChange={(e) => setStatus(o.id, e.target.value)}>

@@ -186,6 +186,9 @@ const getSelectedOptions = (paramKey, metadataArray) => {
               <label className="small fw-semibold mb-1">Type</label>
               <Select
                 isMulti
+                classNamePrefix="react-select"
+                menuPortalTarget={document.body}
+                styles={{ menuPortal: (b) => ({ ...b, zIndex: 2000 }) }}
                 options={types.map(t => ({ value: String(t.id), label: t.name }))}
                 value={getSelectedOptions("type_id", types)}
                 onChange={(val) =>
@@ -199,6 +202,9 @@ const getSelectedOptions = (paramKey, metadataArray) => {
               <label className="small fw-semibold mb-1">Model</label>
               <Select
                 isMulti
+                classNamePrefix="react-select"
+                menuPortalTarget={document.body}
+                styles={{ menuPortal: (b) => ({ ...b, zIndex: 2000 }) }}
                 options={models.map(m => ({ value: String(m.id), label: m.name }))}
                 value={getSelectedOptions("model_id", models)}
                 onChange={(val) =>
@@ -214,6 +220,9 @@ const getSelectedOptions = (paramKey, metadataArray) => {
               <label className="small fw-semibold mb-1">Brand</label>
               <Select
                 isMulti
+                classNamePrefix="react-select"
+                menuPortalTarget={document.body}
+                styles={{ menuPortal: (b) => ({ ...b, zIndex: 2000 }) }}
                 options={brands.map(b => ({ value: String(b.id), label: b.name }))}
                 value={getSelectedOptions("brand_id", brands)}
                 onChange={(val) =>

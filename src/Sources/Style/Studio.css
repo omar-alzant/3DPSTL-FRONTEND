@@ -406,3 +406,11 @@
 .sd-files { margin-bottom: 18px; }
 .sd-files .sd-list li { align-items: center; }
 .sd-pager { justify-content: center; align-items: center; margin-top: 10px; }
+
+/* location on the map (order dialog) */
+.sd-loc { display: flex; gap: 8px; margin-top: 5px; }
+.sd-loc input { flex: 1; min-width: 0; margin-top: 0 !important; }
+.sd-loc .sd-btn { white-space: nowrap; padding-inline: 12px; }
+.sd-loc-ok { display: inline-block; margin-top: 6px; font-size: 13px; color: var(--brand-success, #34d399); text-decoration: none; }
+.sd-loc-ok:hover { text-decoration: underline; }
+@media (max-width: 420px) { .sd-loc { flex-direction: column; } }

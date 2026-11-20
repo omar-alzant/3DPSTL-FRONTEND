@@ -7,6 +7,9 @@ import './index.css';
 import './Sources/Style/theme.css'; // logo colours — keep this last
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import { ToastProvider } from './Sources/context/ToastProvider';
+import { installErrorReporting } from './Sources/lib/reportError';
+
+installErrorReporting();
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

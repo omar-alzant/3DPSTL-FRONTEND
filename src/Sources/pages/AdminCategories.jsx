@@ -6,6 +6,7 @@ import Spinner from "react-bootstrap/Spinner";
 import AdminForm from "../components/AdminForm";
 import PreviewAdminContent from "../components/PreviewAdminContent";
 import { useToast } from "../context/ToastProvider";
+import { PageLoader } from '../components/BrandSpinner';
 
 export default function AdminCategories() {
   /* ===================== STATE ===================== */
@@ -230,7 +231,7 @@ export default function AdminCategories() {
       <hr />
 
       {loading ? (
-        <p>⏳ Loading...</p>
+        <PageLoader />
       ) : (
         <div className="br-gray-l p-2 brr">
           <PreviewAdminContent
