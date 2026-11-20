@@ -1,0 +1,191 @@
+/* ───────────────── Home ─────────────────
+   Brand navy + violet. One loud moment: the hero headline prints itself layer by layer.
+   Everything else is quiet: left-aligned, generous spacing, few borders. */
+
+.hm {
+  --hm-max: 1180px;
+  --hm-gap: clamp(56px, 8vw, 104px);
+  max-width: var(--hm-max);
+  margin: 0 auto;
+  padding: 0 20px 40px;
+  color: var(--brand-text);
+}
+.hm a { color: var(--brand-light); }
+.hm a:focus-visible, .hm-btn:focus-visible { outline: 2px solid var(--brand-light); outline-offset: 3px; border-radius: 10px; }
+
+/* ── type ── */
+.hm-h2 {
+  font-family: 'Fredoka', sans-serif; font-weight: 600;
+  font-size: clamp(1.6rem, 1.2rem + 1.4vw, 2.25rem); line-height: 1.15;
+  margin: 0 0 8px; color: var(--brand-text);
+}
+.hm-h3 { font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 1.35rem; margin: 0 0 8px; }
+.hm-sub { color: var(--brand-muted); margin: 0; max-width: 62ch; }
+.hm p { line-height: 1.65; }
+
+/* ── buttons ── */
+.hm-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+.hm-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 12px 22px; border-radius: 12px; font-weight: 600; text-decoration: none;
+  border: 1px solid transparent; transition: background-color .15s, border-color .15s, color .15s;
+}
+.hm .hm-btn-primary { background: var(--brand-primary); color: #fff; box-shadow: 0 6px 24px var(--brand-glow); }
+.hm .hm-btn-primary:hover { background: var(--brand-primary-3); color: #fff; }
+.hm .hm-btn-ghost { border-color: var(--brand-border); color: var(--brand-text); }
+.hm .hm-btn-ghost:hover { border-color: var(--brand-light); color: #fff; }
+.hm .hm-btn-wa { background: #1faa59; color: #fff; }
+.hm .hm-btn-wa:hover { background: #22c063; color: #fff; }
+.hm-btn-sm { padding: 8px 16px; font-size: .95rem; }
+
+/* ── hero ── */
+.hm-hero {
+  position: relative;
+  display: grid; grid-template-columns: 1fr; gap: 40px; align-items: center;
+  padding: clamp(40px, 7vw, 88px) 0 clamp(32px, 5vw, 56px);
+}
+.hm-hero.has-media { grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); }
+/* print layers: faint horizontal lines behind the hero */
+.hm-hero::before {
+  content: ""; position: absolute; inset: 0 -20px; z-index: -1; pointer-events: none;
+  background: repeating-linear-gradient(to bottom, rgba(179, 168, 255, .05) 0 1px, transparent 1px 7px);
+  -webkit-mask-image: radial-gradient(ellipse at 30% 45%, #000 0%, transparent 70%);
+          mask-image: radial-gradient(ellipse at 30% 45%, #000 0%, transparent 70%);
+}
+.hm-title {
+  position: relative; margin: 0 0 20px;
+  font-family: 'Fredoka', sans-serif; font-weight: 700;
+  font-size: clamp(2.5rem, 1.6rem + 3.6vw, 4.4rem); line-height: 1.02; letter-spacing: -0.01em;
+  color: var(--brand-text);
+  max-width: 13ch;
+}
+.hm-title-text {
+  display: block;
+  /* the visible layers: stepped reveal from the bed upward, like an FDM print */
+  clip-path: inset(100% 0 0 0);
+  animation: hm-print 1.9s steps(18, end) .25s forwards;
+  background-image: repeating-linear-gradient(to bottom, var(--brand-text) 0 5px, #d9d4ff 5px 6px);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.hm-nozzle {
+  position: absolute; left: -4px; right: -4px; height: 3px; bottom: 0;
+  background: linear-gradient(90deg, transparent, var(--brand-primary-3) 15%, #fff 50%, var(--brand-primary-3) 85%, transparent);
+  box-shadow: 0 0 14px var(--brand-primary);
+  opacity: 0;
+  animation: hm-nozzle 1.9s steps(18, end) .25s forwards;
+}
+@keyframes hm-print { to { clip-path: inset(0 0 0 0); } }
+@keyframes hm-nozzle {
+  0% { bottom: 0; opacity: 1; }
+  96% { bottom: calc(100% - 3px); opacity: 1; }
+  100% { bottom: calc(100% - 3px); opacity: 0; }
+}
+.hm-lead { font-size: 1.12rem; color: var(--brand-muted); max-width: 54ch; margin: 0 0 28px; }
+.hm-facts {
+  list-style: none; padding: 0; margin: 28px 0 0;
+  display: flex; flex-wrap: wrap; gap: 8px 22px; color: var(--brand-muted); font-size: .92rem;
+}
+.hm-facts li { display: flex; align-items: center; gap: 8px; }
+.hm-facts li::before { content: ""; width: 7px; height: 7px; border-radius: 2px; background: var(--brand-primary-3); transform: rotate(45deg); }
+.hm-hero-media { border-radius: 20px; overflow: hidden; border: 1px solid var(--brand-border); background: var(--brand-card); }
+.hm-hero-media .row { margin: 0; }
+
+/* ── sections ── */
+.hm-section { margin-top: var(--hm-gap); }
+.hm-section-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 24px; }
+.hm-section > .hm-h2 { margin-bottom: 24px; }
+
+/* ways to order: the Studio leads, the other two support */
+.hm-ways { display: grid; grid-template-columns: 1.3fr 1fr 1fr; gap: 16px; }
+.hm-way {
+  padding: 26px 24px; border-radius: 16px;
+  background: var(--brand-card); border: 1px solid var(--brand-border);
+  display: flex; flex-direction: column;
+}
+.hm-way h3 { font-family: 'Fredoka', sans-serif; font-size: 1.3rem; font-weight: 600; margin: 0 0 8px; }
+.hm-way p { color: var(--brand-muted); margin: 0 0 18px; flex: 1; }
+.hm-way a { font-weight: 600; text-decoration: none; }
+.hm-way a:hover { text-decoration: underline; }
+.hm-way-main {
+  background: linear-gradient(160deg, #2a1f8f 0%, var(--brand-card) 70%);
+  border-color: rgba(110, 95, 255, .55);
+}
+.hm-way-main p { color: #d6d1ff; }
+.hm-way-main a { color: #fff; }
+
+/* studio templates: a dense, scannable list rather than cards */
+.hm-tools {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  border-top: 1px solid var(--brand-border);
+}
+.hm-tools li { border-bottom: 1px solid var(--brand-border); }
+.hm-tool {
+  display: flex; flex-direction: column; gap: 2px; height: 100%;
+  padding: 16px 14px 16px 0; text-decoration: none;
+}
+.hm .hm-tool-name { color: var(--brand-text); font-weight: 600; }
+.hm .hm-tool-text { color: var(--brand-muted); font-size: .92rem; }
+.hm-tool:hover .hm-tool-name { color: var(--brand-light); }
+
+/* works by type */
+.hm-type { margin-bottom: 40px; }
+.hm-type-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+.hm-type-head h3 { font-family: 'Fredoka', sans-serif; font-size: 1.35rem; font-weight: 600; margin: 0; }
+.hm-type-head a { font-size: .95rem; text-decoration: none; }
+.hm-type-head a:hover { text-decoration: underline; }
+
+.hm-sale { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; }
+
+/* steps: a real sequence, so it's numbered */
+.hm-steps {
+  list-style: none; counter-reset: step; margin: 0; padding: 0;
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 28px;
+}
+.hm-steps li { counter-increment: step; position: relative; padding-top: 52px; }
+.hm-steps li::before {
+  content: counter(step);
+  position: absolute; top: 0; left: 0;
+  width: 38px; height: 38px; border-radius: 50%;
+  display: grid; place-items: center;
+  font-family: 'Fredoka', sans-serif; font-weight: 700;
+  color: #fff; background: var(--brand-primary);
+}
+.hm-steps li:not(:last-child)::after {
+  content: ""; position: absolute; top: 19px; left: 50px; right: -16px; height: 1px; background: var(--brand-border);
+}
+.hm-steps h3 { font-size: 1.08rem; font-weight: 600; margin: 0 0 6px; }
+.hm-steps p { color: var(--brand-muted); margin: 0; font-size: .95rem; }
+
+/* two short panels */
+.hm-split { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.hm-panel { padding: 28px; border-radius: 16px; background: var(--brand-bg-2); border: 1px solid var(--brand-border); }
+.hm-panel p { color: var(--brand-muted); margin: 0 0 14px; }
+.hm-link { font-weight: 600; text-decoration: none; }
+.hm-link:hover { text-decoration: underline; }
+
+/* contact */
+.hm-contact {
+  margin-top: var(--hm-gap);
+  display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap;
+  padding: 32px; border-radius: 20px;
+  background: var(--brand-card); border: 1px solid var(--brand-border);
+}
+
+/* ── responsive ── */
+@media (max-width: 991px) {
+  .hm-hero.has-media { grid-template-columns: 1fr; }
+  .hm-ways { grid-template-columns: 1fr; }
+  .hm-steps { grid-template-columns: 1fr 1fr; }
+  .hm-steps li::after { display: none; }
+}
+@media (max-width: 575px) {
+  .hm-steps, .hm-split { grid-template-columns: 1fr; }
+  .hm-contact { padding: 24px; }
+  .hm-actions .hm-btn { flex: 1 1 auto; justify-content: center; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hm-title-text { animation: none; clip-path: none; }
+  .hm-nozzle { display: none; }
+}

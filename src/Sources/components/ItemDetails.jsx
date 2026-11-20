@@ -3,7 +3,7 @@ import { Row, Col, Button, Badge, Form, Ratio, Image } from "react-bootstrap";
 import { useCart } from "../context/CartContext";
 import { CiStar } from "react-icons/ci";
 import BreadcrumbNav from "./BreadcrumbNav";
-import { CART_ENABLED } from '../config/site';
+import { CART_ENABLED, SHOW_SHOP_DETAILS } from '../config/site';
 import OrderLikeThis from './OrderLikeThis';
 
 
@@ -113,12 +113,12 @@ export default function ItemDetails({
       <h3>{item.name}</h3>
       <div className="d-flex flex-row align-items-center justify-content-between">
             <h1 className="fw-bold mb-1">{ }</h1>
-            {resolvedVariant.onsale && (
+            {SHOW_SHOP_DETAILS && resolvedVariant.onsale && (
                 <Badge bg="danger" className=" m-1 fs-6">SALE</Badge>
             )}
         </div>
         { 
-        !resolvedVariant?.sku?.toLowerCase().includes('simple') && (
+        SHOW_SHOP_DETAILS && !resolvedVariant?.sku?.toLowerCase().includes('simple') && (
           <div className="d-flex align-items-center mb-1">
             <small className="text-muted">
               SKU: {resolvedVariant.sku}
@@ -139,7 +139,7 @@ export default function ItemDetails({
           {/* <span className="ms-2 text-muted small">({item.rating_count || 0} reviews)</span> */}
         </div>
 
-        <div className="d-flex flex-row justify-content-between align-content-center gap-3 mb- w-100">
+        {SHOW_SHOP_DETAILS && <div className="d-flex flex-row justify-content-between align-content-center gap-3 mb- w-100">
             <div className="d-flex flex-row gap-1">
                 <h2 className="text-primary fw-bold mb-0">${resolvedVariant.price}</h2>
                 {resolvedVariant.oldprice > 0 && (
@@ -156,10 +156,10 @@ export default function ItemDetails({
                 </p>
             </div>
           }
-        </div>
+        </div>}
 
         {/* ATTRIBUTES: AGE & LENGTH */}
-        {resolvedVariant.age[0] !== null || resolvedVariant.lengthcm[0] !== null && 
+        {SHOW_SHOP_DETAILS && (resolvedVariant.age?.[0] != null || resolvedVariant.lengthcm?.[0] != null) && 
         <div className="bg-light p-3 rounded mb-1 border-start border-primary border-4">
           <Row>
           {resolvedVariant.age[0] !== null && 
@@ -184,7 +184,7 @@ export default function ItemDetails({
 
         {/* VARIANT SELECTORS (Sizes & Colors) */}
         {
-          !sizes.find(s => s.toLowerCase() === "unspecified") &&
+          SHOW_SHOP_DETAILS && !sizes.find(s => s.toLowerCase() === "unspecified") &&
           <div className="mb-1">
           <label className="fw-bold mb-1">Size</label>
           <div className="d-flex gap-2">

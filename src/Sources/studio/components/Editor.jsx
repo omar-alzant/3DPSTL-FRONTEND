@@ -12,6 +12,7 @@ import { useAuth } from '../../context/AuthContext';
 import ParamPanel from './ParamPanel.jsx';
 import Viewer from './Viewer.jsx';
 import OrderDialog from './OrderDialog.jsx';
+import { loadPalette, snapColors } from '../lib/palette.js';
 
 export default function Editor({ tool, initial, config, orderId, downloadId }) {
   const { token, isAdmin } = useAuth();
@@ -32,6 +33,14 @@ export default function Editor({ tool, initial, config, orderId, downloadId }) {
     try { sessionStorage.setItem('studioIntent', 'download'); } catch {}
   };
   const [copied, setCopied] = useState(false);
+  // colours: only the filament colours in stock (admins can still pick any colour)
+  const [palette, setPalette] = useState([]);
+  useEffect(() => { loadPalette().then(setPalette); }, []);
+  useEffect(() => {
+    if (!palette.length || isAdmin) return;
+    setParams((p) => snapColors(tool, p, palette));
+  }, [palette, tool, isAdmin]);
+
   const { parts, stats, error, busy } = useBuild(tool, params);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -115,7 +124,7 @@ export default function Editor({ tool, initial, config, orderId, downloadId }) {
         {orderId && <div className="sd-order-tag">طلب رقم <b dir="ltr">{orderId}</b> — كل الملفات المنزّلة تحمل هذا الرقم</div>}
         <h1>{tool.name}</h1>
         <p className="sd-muted">{tool.description}</p>
-        <ParamPanel tool={tool} params={params} onChange={onChange} />
+        <ParamPanel tool={tool} params={params} onChange={onChange} palette={palette} isAdmin={isAdmin} />
         <button className="sd-btn sd-link" onClick={() => setParams(defaults(tool))}>إعادة الضبط</button>
       </aside>
 

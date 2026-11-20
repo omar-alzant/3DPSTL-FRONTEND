@@ -1,74 +1,49 @@
-:root {
-    --glass: rgba(255, 255, 255, 0.15);
-    --border: rgba(255, 255, 255, 0.2);
-  }
-  
-  
-  
-.glass-card {
-    display: flex;
-    justify-self: center;
-    flex-direction: column;
-    align-items: center;
-    background: var(--glass);
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
-    border: 1px solid var(--border);
-    border-radius: 24px;
-    padding: 10px;
-    width: 90%;
-    max-width: 400px;
-    text-align: center;
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-    color: black;
-  }
-  
-  .profile-img {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    border: 3px solid white;
-    margin-bottom: 10px;
-  }
-  
-  .links-container {
-    margin-top: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-  }
-  
-  .link-item {
-    display: flex;
-    align-items: center;
-    background: white;
-    padding: 15px 20px;
-    border-radius: 12px;
-    text-decoration: none;
-    color: #333;
-    font-weight: 600;
-    transition: transform 0.2s, background 0.2s;
-  }
-  
-  .link-item:hover {
-    transform: translateY(-3px);
-    background: #f0f0f0;
-  }
-  
-  .icon-wrapper {
-    margin-right: 15px;
-    display: flex;
-    align-items: center;
-  }
-  
-  .link-text { flex-grow: 1; text-align: left; }
-  .arrow { opacity: 0.3; }
-  
-  .c-red
-  {
-    color: red;
-  }
-  
-  .mr-1{
-    margin-right: 10px;
-  }
+/* About Us — builds on Style/Home.css (.hm, .hm-h2, .hm-panel, .hm-btn …) */
+
+.ab-intro {
+  display: grid; grid-template-columns: auto 1fr; gap: 32px; align-items: start;
+  padding: clamp(40px, 7vw, 80px) 0 0;
+}
+.ab-logo {
+  width: 112px; height: 112px; border-radius: 24px; object-fit: cover;
+  border: 1px solid var(--brand-border); box-shadow: 0 10px 40px var(--brand-glow);
+}
+.ab-title {
+  font-family: 'Fredoka', sans-serif; font-weight: 700;
+  font-size: clamp(2.2rem, 1.6rem + 2.4vw, 3.4rem); line-height: 1.05; margin: 0 0 16px;
+}
+
+.ab-makes { display: grid; grid-template-columns: repeat(4, 1fr); gap: 28px; }
+.ab-make { border-top: 2px solid var(--brand-primary); padding-top: 16px; }
+.ab-make h3 { font-size: 1.08rem; font-weight: 600; margin: 0 0 6px; }
+.ab-make p { color: var(--brand-muted); margin: 0; font-size: .95rem; }
+
+.ab-small { font-size: .92rem; }
+.ab-list { list-style: none; padding: 0; margin: 0 0 16px; color: var(--brand-muted); }
+.ab-list li { padding: 6px 0; line-height: 1.55; }
+.ab-list strong { color: var(--brand-text); }
+
+.ab-sub { margin-bottom: 20px; }
+.ab-contacts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.hm .ab-contact {
+  display: flex; align-items: center; gap: 14px;
+  padding: 16px 18px; border-radius: 14px; text-decoration: none;
+  background: var(--brand-card); border: 1px solid var(--brand-border); color: var(--brand-text);
+  transition: border-color .15s;
+}
+.hm .ab-contact:hover { border-color: var(--brand-light); }
+.ab-contact-icon {
+  display: grid; place-items: center; width: 42px; height: 42px; flex: none;
+  border-radius: 12px; background: rgba(255, 255, 255, .06); font-size: 1.3rem;
+}
+.ab-contact-name { display: block; font-weight: 600; }
+.ab-contact-detail { display: block; color: var(--brand-muted); font-size: .9rem; }
+
+@media (max-width: 991px) {
+  .ab-makes, .ab-contacts { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 575px) {
+  .ab-intro { grid-template-columns: 1fr; gap: 20px; }
+  .ab-logo { width: 84px; height: 84px; border-radius: 18px; }
+  .ab-makes, .ab-contacts { grid-template-columns: 1fr; }
+}

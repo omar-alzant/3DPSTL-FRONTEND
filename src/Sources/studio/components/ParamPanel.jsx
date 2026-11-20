@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import FontPicker from './FontPicker.jsx';
 import ImagePrep from './ImagePrep.jsx';
+import { colorsFor } from '../lib/palette.js';
 
 function ImageField({ value, set, maxSize }) {
   const [err, setErr] = useState(null);
@@ -44,7 +45,7 @@ function ImageField({ value, set, maxSize }) {
   );
 }
 
-function Field({ def, value, onChange, params, tool }) {
+function Field({ def, value, onChange, params, tool, palette, isAdmin }) {
   const set = (v) => onChange(def.key, v);
   switch (def.type) {
     case 'image':
@@ -96,13 +97,43 @@ function Field({ def, value, onChange, params, tool }) {
           <span />
         </label>
       );
-    case 'color':
+    case 'color': {
+      const list = colorsFor(palette, def);
+      // no stock list yet (offline / loading): the plain picker
+      if (!list.length) {
+        return (
+          <div className="sd-color">
+            <input type="color" value={value} onChange={(e) => set(e.target.value)} />
+            <code>{value}</code>
+          </div>
+        );
+      }
+      const cur = list.find((c) => c.hex === String(value).toLowerCase());
       return (
-        <div className="sd-color">
-          <input type="color" value={value} onChange={(e) => set(e.target.value)} />
-          <code>{value}</code>
+        <div className="sd-swatches-wrap">
+          <div className="sd-swatches" role="radiogroup" aria-label={def.label}>
+            {list.map((c) => (
+              <button
+                key={c.id}
+                type="button"
+                role="radio"
+                aria-checked={cur?.id === c.id}
+                className={`sd-swatch ${cur?.id === c.id ? 'on' : ''}`}
+                style={{ background: c.hex }}
+                title={`${c.name}${c.material ? ` · ${c.material}` : ''}`}
+                onClick={() => set(c.hex)}
+              />
+            ))}
+            {isAdmin && (
+              <label className="sd-swatch sd-swatch-custom" title="Admin: any colour">
+                <input type="color" value={value} onChange={(e) => set(e.target.value)} />
+              </label>
+            )}
+          </div>
+          <small className="sd-swatch-name">{cur ? cur.name : <span dir="ltr">{value} (admin)</span>}</small>
         </div>
       );
+    }
     case 'number':
     default:
       return (
@@ -129,7 +160,7 @@ function Field({ def, value, onChange, params, tool }) {
   }
 }
 
-export default function ParamPanel({ tool, params, onChange }) {
+export default function ParamPanel({ tool, params, onChange, palette = [], isAdmin = false }) {
   const groups = [];
   for (const def of tool.params) {
     if (def.show && !def.show(params)) continue;
@@ -145,7 +176,7 @@ export default function ParamPanel({ tool, params, onChange }) {
           {g.defs.map((def) => (
             <div className={`sd-field sd-field-${def.type}`} key={def.key}>
               <label>{def.label}</label>
-              <Field def={def} value={params[def.key]} onChange={onChange} params={params} tool={tool} />
+              <Field def={def} value={params[def.key]} onChange={onChange} params={params} tool={tool} palette={palette} isAdmin={isAdmin} />
               {def.help && <small>{def.help}</small>}
             </div>
           ))}

@@ -1,371 +1,320 @@
-import React, { useState, useEffect } from "react";
-import { Container, Row, Col, Card, Nav, Image, Button } from "react-bootstrap";
-import { Link, NavLink, useNavigate } from "react-router-dom";
+// Home — what 3DSTL is and everything the site offers, in one page:
+// hero → ways to order → what the Studio makes → our works → how an order goes → print it yourself → contact
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { MdWhatsapp } from "react-icons/md";
+import { FaInstagram } from "react-icons/fa";
 import ImageSlide from "../components/ImageSlide";
 import CarouselComp from "../components/CarouselComp";
-import { useCart } from "../context/CartContext";
 import CartItem from "../components/CartItem";
 import RelatedItemsSlider from "../components/RelatedItemsSlider";
 import MultiImageInput from "../components/MultiImageInput";
+import { PageLoader } from "../components/BrandSpinner";
+import { useCart } from "../context/CartContext";
 import { useToast } from "../context/ToastProvider";
-import { CART_ENABLED } from '../config/site';
-import { PageLoader } from '../components/BrandSpinner';
+import { CART_ENABLED, WORKS_PATH, whatsappLink } from "../config/site";
+import { getConfig } from "../studio/lib/api";
+import { isToolEnabled } from "../studio/lib/pricing";
+import "../Style/Home.css";
 
-// Helper for localStorage JSON
-const saveLS = (k, v) => localStorage.setItem(k, JSON.stringify(v));
+const base = process.env.REACT_APP_API_URL;
+
+const saveLS = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} };
 const loadLS = (key, fallback = []) => {
-  try {
-    const item = localStorage.getItem(key);
-    return item ? JSON.parse(item) : fallback;
-  } catch {
-    return fallback; // In case of corrupted data
-  }
+  try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; } catch { return fallback; }
 };
+const arr = (d) => (Array.isArray(d) ? d : []);
+
+// Studio tools shown on the home page (ids from src/Sources/studio/tools/*). Order = what people ask for most.
+const STUDIO_TOOLS = [
+  { id: "name-keychain", name: "Name keychain", text: "Any name, your font, two colours." },
+  { id: "phone-case", name: "Phone case", text: "Fitted to your model, with a name, photo or pattern." },
+  { id: "birth-sign", name: "Baby birth sign", text: "Name, date, time, weight and length." },
+  { id: "initial-sign", name: "Initial & name sign", text: "A big first letter with the name across it." },
+  { id: "dual-name", name: "Two names, one piece", text: "Reads one name from the front, another from the side." },
+  { id: "lebanese-plate", name: "Lebanese car plate", text: "Cedar, letter and number — or your company logo." },
+  { id: "pencil-topper", name: "Pencil topper", text: "A student's name that slides onto the pencil." },
+  { id: "keycaps", name: "Name keycaps", text: "Mechanical keyboard keys, one letter each." },
+  { id: "flexi-toy", name: "Flexi toy from a photo", text: "Upload a drawing, get a toy that bends." },
+  { id: "tpu-tote", name: "Flexible tote bag", text: "Printed in one piece in soft TPU." },
+  { id: "plate-keychain", name: "Saudi plate keychain", text: "Your plate numbers as a mini keychain." },
+];
+
+const STEPS = [
+  { title: "Choose or design", text: "Make it in the Studio, or pick a piece from our works." },
+  { title: "We confirm with you", text: "On WhatsApp: final price, colours and when it's ready. Nothing is printed before you agree." },
+  { title: "We print it", text: "Hard PLA for gifts and parts, flexible TPU for cases and bags." },
+  { title: "You receive it", text: "We deliver it to the address in your order." },
+];
+
+/** the hero headline "prints" layer by layer once */
+function PrintedHeadline({ children }) {
+  return (
+    <h1 className="hm-title" aria-label={typeof children === "string" ? children : undefined}>
+      <span className="hm-title-text">{children}</span>
+      <span className="hm-nozzle" aria-hidden="true" />
+    </h1>
+  );
+}
 
 export default function Home() {
-  const [types, setTypes] = useState(loadLS("types"));
-  const [carouselItems, setCarouselItems] = useState(loadLS("carousel"));
-  const [homeTypeMapped, setHomeTypeMapped] = useState(loadLS("carousel"));
-  const [carouselMarkets, setCarouselMarkets] = useState(loadLS("markets"));
-  const [items, setItems] = useState(loadLS("items", [])); 
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { updateQuantity, removeFromCart, addTocart, updateVariant } = useCart();
-  const [homeTypes, setHomeTypes] = useState([]);
   const { showToast } = useToast();
+  const { updateQuantity, removeFromCart, addTocart, updateVariant } = useCart();
 
-  const base = process.env.REACT_APP_API_URL;
-  
-  
+  const [carouselItems, setCarouselItems] = useState(() => loadLS("carousel"));
+  const [brands, setBrands] = useState(() => loadLS("markets"));
+  const [saleItems, setSaleItems] = useState(() => loadLS("items"));
+  const [homeTypes, setHomeTypes] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [config, setConfig] = useState(null);
+
   useEffect(() => {
-    fetch(`${base}/api/home/types`)
-      .then(res => res.json())
-      .then(setHomeTypes);
+    window.scrollTo({ top: 0 });
+    getConfig().then(setConfig);
 
-      setHomeTypeMapped(normalizeArray(homeTypes)
-          .filter(c => !c.isDisabled)
-          .map(item => ({
+    const getJSON = async (url) => {
+      const r = await fetch(url);
+      if (!r.ok) throw new Error(`Couldn't load ${url.replace(base, "")}`);
+      return r.json();
+    };
+
+    Promise.all([
+      getJSON(`${base}/api/home/types`).catch(() => []),
+      getJSON(`${base}/api/admin/products/carousel`).catch(() => []),
+      getJSON(`${base}/api/admin/products/market`).catch(() => ({})),
+      CART_ENABLED ? getJSON(`${base}/api/admin/products/item/onsale`).catch(() => []) : Promise.resolve([]),
+    ])
+      .then(([types, carouselRaw, marketsRaw, itemsRaw]) => {
+        setHomeTypes(arr(types));
+
+        const carousel = arr(carouselRaw)
+          .filter((c) => !c.isDisabled)
+          .map((item) => ({
             TemplateComponent: ImageSlide,
             templateProps: {
               src: item.image || "/thumbnail.png",
-              altText: item.name
+              altText: item.name,
+              enableOnClick: true,
+              seeMore: () => navigate(`${item.linkedPath}`),
             },
             title: item.name,
-            description: item.description || ""
-          })))
+            description: item.description || "",
+          }));
+        setCarouselItems(carousel);
+        saveLS("carousel", carousel);
 
-          
-      if (homeTypes) {
-        window.scrollTo({
-          top: 0,
-          behavior: "smooth",
-        });
-      }
-  
+        const markets = arr(marketsRaw?.items)
+          .filter((m) => !m.isdisabled)
+          .map((m) => ({
+            TemplateComponent: ImageSlide,
+            templateProps: {
+              src: m.image?.[0] || "/thumbnail.png",
+              altText: m.name,
+              enableOnClick: true,
+              seeMore: () => navigate(`${WORKS_PATH}?brand_id=${m.id}`),
+            },
+            title: m.name,
+            description: m.description || "",
+          }));
+        setBrands(markets);
+        saveLS("markets", markets);
+
+        setSaleItems(arr(itemsRaw));
+        saveLS("items", arr(itemsRaw));
+      })
+      .catch((e) => showToast(e.message, "danger"))
+      .finally(() => setLoading(false));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  
-  const normalizeArray = (data) =>
-    Array.isArray(data) ? data : [];
-  
-  const safeFetchJSON = async (url) => {
-    const res = await fetch(url);
-    if (!res.ok) showToast(`Failed to fetch: ${url}`, "danger");
-    return res.json();
-  };
-  
-  const fetchAll = async () => {
-    setLoading(true);
-  
-    try {
-      const [
-        carouselRaw,
-        marketsRaw,
-        itemsRaw
-      ] = await Promise.all([
-        safeFetchJSON(`${base}/api/admin/products/carousel`),
-        safeFetchJSON(`${base}/api/admin/products/market`),
-        safeFetchJSON(`${base}/api/admin/products/item/onsale`)
-      ]);
-  
-      /* ---------------- Carousel ---------------- */
-      const carousel = normalizeArray(carouselRaw)
-        .filter(c => !c.isDisabled)
-        .map(item => ({
-          TemplateComponent: ImageSlide,
-          templateProps: {
-            src: item.image || "/thumbnail.png",
-            altText: item.name,
-            enableOnClick: true,
-            seeMore: () => handleCarouselClick(item.linkedPath),
-          },
-          title: item.name,
-          description: item.description || ""
-        }));
-  
-      setCarouselItems(carousel);
-      saveLS("carousel", carousel);
-      // console.log(carouselRaw);
-      
-      /* ---------------- Markets ---------------- */
-      const markets = normalizeArray(marketsRaw.items)
-      .filter(m => !m.isdisabled)
-      .map(market => ({
-        TemplateComponent: ImageSlide,
-        templateProps: {
-          src: market.image?.[0] || "/thumbnail.png",
-          altText: market.name,
-          enableOnClick: true,
-          seeMore: () => handleMarketClick(market.id),
-        },
-        title: market.name,
-        description: market.description || ""
-      }));
-      
 
-      setCarouselMarkets(markets);
-      saveLS("markets", markets);
-  
-      /* ---------------- Items ---------------- */
-      const items = normalizeArray(itemsRaw);
-      setItems(items);
-      saveLS("items", items);
-  
-    } catch (error) {
-      showToast(`Error loading data: ${error}`, "danger")
+  const tools = STUDIO_TOOLS.filter((t) => !config || isToolEnabled(config, t.id));
+  const hasCarousel = carouselItems.length > 0;
 
-    } finally {
-      setLoading(false);
-    }
-  };
-  
-  useEffect(() => {
-    const cached = loadLS("items");
-    if (cached?.length) setItems(cached);
-    fetchAll();
-  }, []);
-  
-
-  const handleMarketClick = (marketId) => {
-    navigate(`/our-works?brand_id=${marketId}`);
-  };
- 
-  const handleCarouselClick = (path) => {    
-    navigate(`${path}`);
-  };
-  
-
-  const formatPrice = (price) => {
-    return Number(price || 0).toFixed(2);
-  }
-
-  // Filter items that are actually on sale and in stock
-  const saleItems = Array.isArray(items) 
-    ? items.filter((item) => item.onSale && !item.isDisabled && !item.outofstock)
-    : [];
-    
-  // Filter items for category display
-  const categories = Array.isArray(types)
-    ? types.filter(t => t.image) // Only show categories with an image
-    : [];
-
-  const updateVariantContext = (itemId, newVariant) => {
-      updateVariant(itemId, newVariant)
-    };
   return (
-    <>
-      <Container className="c-black">
+    <div className="hm">
+      {/* ───────── hero ───────── */}
+      <section className={`hm-hero ${hasCarousel ? "has-media" : ""}`}>
+        <div className="hm-hero-copy">
+          <PrintedHeadline>Your idea, printed layer by layer.</PrintedHeadline>
+          <p className="hm-lead">
+            3DSTL is a 3D printing studio in Tripoli, Lebanon. Design a gift in our online Studio, take a piece from
+            our work and make it yours, or send us your own idea.
+          </p>
+          <div className="hm-actions">
+            <Link to="/studio" className="hm-btn hm-btn-primary">Design in the Studio</Link>
+            <Link to={WORKS_PATH} className="hm-btn hm-btn-ghost">Browse our works</Link>
+          </div>
+          <ul className="hm-facts">
+            <li>Names in Arabic and English</li>
+            <li>See your design in 3D before you order</li>
+            <li>Price confirmed before printing</li>
+          </ul>
+        </div>
+        {hasCarousel && (
+          <div className="hm-hero-media">
+            <CarouselComp items={carouselItems} label="Carousel" />
+          </div>
+        )}
+      </section>
 
-{/* LOGO */}
-{/* <Row className="my-5">
-  <Col className="text-center">
-    <Image src="/logoico.svg" alt="Logo" style={{ maxWidth: 180 }} />
-  </Col>
-</Row> */}
+      {/* ───────── ways to order ───────── */}
+      <section className="hm-section">
+        <h2 className="hm-h2">Three ways to get something printed</h2>
+        <div className="hm-ways">
+          <article className="hm-way hm-way-main">
+            <h3>Design it yourself</h3>
+            <p>Type a name, choose fonts and colours, and turn the 3D model around as you go. Order the print, or download the file.</p>
+            <Link to="/studio">Open the Studio</Link>
+          </article>
+          <article className="hm-way">
+            <h3>Order one like ours</h3>
+            <p>Found a piece you like? Ask for the same with your name, size or colours changed.</p>
+            <Link to={WORKS_PATH}>Browse our works</Link>
+          </article>
+          <article className="hm-way">
+            <h3>Bring your own idea</h3>
+            <p>Send a photo, a sketch or an STL file. We'll tell you if it can be printed and what it costs.</p>
+            <a href={whatsappLink("Hi 3DSTL! I have an idea I'd like to print:")} target="_blank" rel="noopener noreferrer">
+              Message us on WhatsApp
+            </a>
+          </article>
+        </div>
+      </section>
 
-{/* HERO */}
-<Row className="justify-content-center text-center mb-5">
-  <Col lg={8}>
-  <h1
-  style={{
-    fontSize: "3.2rem",
-    fontWeight: "800",
-    background: "var(--brand-gradient)",
-    WebkitBackgroundClip: "text",
-    color: "transparent",
-    textShadow: "0 0 30px rgba(106, 77, 255,0.25)"
-  }}
->
-  Precision 3D Printing & Design
-</h1>
-    <p className="text-muted mb-4">
-    Custom models, business branding, gifts, and functional prints — engineered with accuracy.
-    </p>
+      {/* ───────── studio ───────── */}
+      <section className="hm-section hm-studio">
+        <div className="hm-section-head">
+          <div>
+            <h2 className="hm-h2">What you can make in the Studio</h2>
+            <p className="hm-sub">Each one is a template you fill in — the model updates while you type.</p>
+          </div>
+          <Link to="/studio" className="hm-btn hm-btn-ghost hm-btn-sm">All templates</Link>
+        </div>
+        <ul className="hm-tools">
+          {tools.map((t) => (
+            <li key={t.id}>
+              <Link to={`/studio/${t.id}`} className="hm-tool">
+                <span className="hm-tool-name">{t.name}</span>
+                <span className="hm-tool-text">{t.text}</span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </section>
 
-
-{/* CAROUSEL */}
-<Row className="mb-4">
-  {loading ? (
-    <PageLoader text="" size={44} />
-  ) : (
-    <CarouselComp items={carouselItems} label="Carousel"/>
-  )}
-</Row>
-
-
-    <Nav.Link
-      as={NavLink}
-      to="/our-works"
-      className="d-inline-block"
-      style={{
-        background: "var(--brand-gradient)",
-        border: "none",
-        borderRadius: "8px",
-        padding: "0.6rem 1.6rem",
-        fontSize: "1.125rem",
-        color: "white",
-        fontWeight: "600",
-        boxShadow: "0 4px 20px rgba(106, 77, 255,0.35)"
-      }}
-    >
-      {CART_ENABLED ? "Shop Now" : "See Our Works"}
-    </Nav.Link>
-  </Col>
-</Row>
-
-{/* CATEGORIES */}
-<section className="py-5">
-  <Container>
-    <h2
-      className="text-center fw-bold mb-5"
-      style={{
-        color: "var(--brand-light)",
-        letterSpacing: "1px"
-      }}
-    >
-      {CART_ENABLED ? "Shop by Types" : "Browse Our Works"}
-    </h2>
-    <Row >
-      {loading ? (
-        <PageLoader text="" size={44} />
-      ) : (
-        Array.isArray(homeTypes) && homeTypes.map(type => (  
-        <section
-          key={type.id}
-          className="mb-5 p-4 rounded-4"
-          style={{
-            background: "var(--brand-card)",
-            border: "1px solid var(--brand-border)",
-            boxShadow: "0 0 30px rgba(81, 67, 221,0.08)"
-          }}
-        >            
-            {/* TYPE CAROUSEL */}
-            <h3 className="mb-1">{type.name}
-            < hr />
-            </h3>
-              
-            <MultiImageInput
-                label={""}
-                controlId={type.id + "-img"}
+      {/* ───────── our works ───────── */}
+      <section className="hm-section">
+        <div className="hm-section-head">
+          <div>
+            <h2 className="hm-h2">Our works</h2>
+            <p className="hm-sub">Pieces we've printed. Open one to order something like it.</p>
+          </div>
+          <Link to={WORKS_PATH} className="hm-btn hm-btn-ghost hm-btn-sm">See all</Link>
+        </div>
+        {loading && !homeTypes.length ? (
+          <PageLoader text="" size={44} />
+        ) : homeTypes.length === 0 ? (
+          <p className="hm-sub">New pieces are on the way. Meanwhile, <Link to="/studio">design your own</Link>.</p>
+        ) : (
+          homeTypes.map((type) => (
+            <div key={type.id} className="hm-type">
+              <div className="hm-type-head">
+                <h3>{type.name}</h3>
+                <Link to={`${WORKS_PATH}?type_id=${type.id}`}>See {type.name}</Link>
+              </div>
+              <MultiImageInput
+                label=""
+                controlId={`${type.id}-img`}
                 formData={type}
-                readOnly={true}
-                seeMore={() => navigate(`/our-works?type_id=${type.id}`)}
-                ratio='16x9'
-            />
+                readOnly
+                seeMore={() => navigate(`${WORKS_PATH}?type_id=${type.id}`)}
+                ratio="16x9"
+              />
+              <RelatedItemsSlider items={type.items} onSeeMore={() => navigate(`${WORKS_PATH}?type_id=${type.id}`)} />
+            </div>
+          ))
+        )}
+      </section>
 
-            {/* ITEMS SLIDER */}
-            <RelatedItemsSlider
-              items={type.items}
-              onSeeMore={() => navigate(`/our-works?type_id=${type.id}`)}
-            />
-          {/* <hr /> */}
-          </section>
-        ))
-        
-      )}
-    </Row>
-  </Container>
-</section>
-
-{/* SALE ITEMS */}
-<div className="d-flex align-items-center justify-content-between">
-  <h3
-    className="mb-3 fw-bold"
-    style={{
-      color: "var(--brand-primary)",
-      display: "flex",
-      alignItems: "center",
-      gap: "10px"
-    }}
-  >
-    🔥 On Sale
-  </h3>
-  {items.length !== 0 && 
-         <Button
-         style={{
-          borderColor: "var(--brand-primary)",
-          color: "var(--brand-primary)",
-        }}
-        onMouseOver={(e) => {
-          e.target.style.background = "var(--brand-primary)";
-          e.target.style.color = "white";
-        }}
-        onMouseOut={(e) => {
-          e.target.style.background = "transparent";
-          e.target.style.color = "var(--brand-primary)";
-        }}
-        onClick={() => navigate(`/our-works?onsale=true`)}
-       >
-         See more 
-       </Button>
-  }
-</div>
-
-<Row className="g-4 mb-5">
-  {
-  loading ? (
-      <PageLoader text="" size={44} />
-    ) : 
-    Array.isArray(items) ?
-     (items
-      .map((item) => (
-        <Col xs={6} md={5} lg={3} key={item.id}>
-       
-           <CartItem
+      {/* ───────── on sale (only while the shop/cart is on) ───────── */}
+      {CART_ENABLED && saleItems.length > 0 && (
+        <section className="hm-section">
+          <div className="hm-section-head">
+            <h2 className="hm-h2">On sale</h2>
+            <Link to={`${WORKS_PATH}?onsale=true`} className="hm-btn hm-btn-ghost hm-btn-sm">See more</Link>
+          </div>
+          <div className="hm-sale">
+            {saleItems.map((item) => (
+              <CartItem
                 key={item.id}
                 item={item}
                 updateQuantity={updateQuantity}
                 removeFromCart={removeFromCart}
                 addToCart={addTocart}
                 showDetails={false}
-                addFromExternal={true}
-                updateVariant={updateVariantContext}
+                addFromExternal
+                updateVariant={updateVariant}
                 onClickAction={() => navigate(`/item/${item.id}`)}
               />
-        </Col>
-      )
-    ))
-  :
-  (
-    "No Items available"
-  )
-  }
-</Row>
+            ))}
+          </div>
+        </section>
+      )}
 
-<hr />
-<h3 className="mb-3 fw-bold" style={{ color: "var(--brand-primary)" }}>Our Brands</h3>
-<Row className="mb-4">
-  {loading ? (
-    <PageLoader text="" size={44} />
-  ) : (
-    <CarouselComp 
-      withDetails={false} 
-      items={carouselMarkets} 
-      label="Brands"
-      />
-  )}
-</Row>
-</Container>
+      {/* ───────── how an order goes ───────── */}
+      <section className="hm-section">
+        <h2 className="hm-h2">How an order goes</h2>
+        <ol className="hm-steps">
+          {STEPS.map((s) => (
+            <li key={s.title}>
+              <h3>{s.title}</h3>
+              <p>{s.text}</p>
+            </li>
+          ))}
+        </ol>
+      </section>
 
-    </>
+      {/* ───────── print it yourself + colours ───────── */}
+      <section className="hm-section hm-split">
+        <div className="hm-panel">
+          <h2 className="hm-h3">Have your own printer?</h2>
+          <p>
+            Download any Studio design as a print-ready file using credits. Top up with Whish Money or Neo, and a
+            design you paid for stays free to download again.
+          </p>
+          <Link to="/credits" className="hm-link">Credits and my files</Link>
+        </div>
+        <div className="hm-panel">
+          <h2 className="hm-h3">Pick your colours</h2>
+          <p>See every filament colour we have in stock right now, in PLA and flexible TPU.</p>
+          <Link to="/filamentColors" className="hm-link">See the colours</Link>
+        </div>
+      </section>
+
+      {/* ───────── brands ───────── */}
+      {brands.length > 0 && (
+        <section className="hm-section">
+          <h2 className="hm-h2">Brands</h2>
+          <CarouselComp withDetails={false} items={brands} label="Brands" />
+        </section>
+      )}
+
+      {/* ───────── contact ───────── */}
+      <section className="hm-contact">
+        <div>
+          <h2 className="hm-h2">Have something in mind?</h2>
+          <p className="hm-sub">Send us a photo, a sketch or just the idea on WhatsApp or Instagram.</p>
+        </div>
+        <div className="hm-actions">
+          <a className="hm-btn hm-btn-wa" href={whatsappLink("Hi 3DSTL!")} target="_blank" rel="noopener noreferrer">
+            <MdWhatsapp size={20} /> WhatsApp
+          </a>
+          <a className="hm-btn hm-btn-ghost" href="https://instagram.com/3dpstl" target="_blank" rel="noopener noreferrer">
+            <FaInstagram size={18} /> @3dpstl
+          </a>
+        </div>
+      </section>
+    </div>
   );
 }

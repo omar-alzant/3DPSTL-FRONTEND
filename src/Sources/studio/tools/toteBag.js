@@ -138,7 +138,7 @@ export default {
     { key: 'wall', label: 'سماكة الجدار', type: 'number', min: 0.8, max: 4, step: 0.1, unit: 'مم', default: 1.6, group: 'الطباعة',
       help: 'يُفضّل مضاعفات قطر الفوهة (0.4)' },
     { key: 'floor', label: 'سماكة القاع', type: 'number', min: 0.8, max: 4, step: 0.1, unit: 'مم', default: 1.6, group: 'الطباعة' },
-    { key: 'color', label: 'اللون', type: 'color', default: '#e8638a', group: 'الألوان' },
+    { key: 'color', label: 'اللون', type: 'color', material: 'TPU', default: '#e8638a', group: 'الألوان' },
   ],
   fonts: () => [],
   build(p) {

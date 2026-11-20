@@ -1,4 +1,4 @@
-import { CART_ENABLED } from '../config/site';
+import { CART_ENABLED, SHOW_SHOP_DETAILS } from '../config/site';
 import React, { useState, useMemo, useEffect } from "react";
 import { Card, Badge, Button, Modal, Image, Ratio } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
@@ -89,8 +89,8 @@ function ProductCard({ product, cart, onAddToCart }) {
 
           <div className="d-flex align-items-center justify-content-between mt-auto">
             <div className="fw-bold text-primary">
-              ${resolvedVariant?.price}
-              {resolvedVariant?.oldprice > 0 && (
+              {SHOW_SHOP_DETAILS && <>${resolvedVariant?.price}</>}
+              {SHOW_SHOP_DETAILS && resolvedVariant?.oldprice > 0 && (
                 <small className="ms-1 text-muted text-decoration-line-through">${resolvedVariant.oldprice}</small>
               )}
             </div>

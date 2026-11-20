@@ -4,7 +4,7 @@ import { MdDeleteForever } from "react-icons/md";
 import ConfirmationModal from "./ConfirmationModal";
 import { useAccordionButton } from 'react-bootstrap/AccordionButton';
 import "../Style/CartItem.css";
-import { CART_ENABLED } from '../config/site';
+import { CART_ENABLED, SHOW_SHOP_DETAILS } from '../config/site';
 
 function CustomToggle({ children, eventKey }) {
   const decoratedOnClick = useAccordionButton(eventKey);
@@ -110,7 +110,7 @@ const CartItem = ({
                     {showDetails ? (
                       itemTotal > 0 && <strong>${itemTotal.toFixed(2)}</strong>
                     ) : (
-                      <div className="d-flex ">
+                      SHOW_SHOP_DETAILS && <div className="d-flex ">
                         <strong>${mainVariant.price}</strong>
                         {mainVariant?.oldprice > 0 && (
                       <Badge bg="warning" className="ms-2">Save {(mainVariant.price/mainVariant.oldprice)*100}%</Badge>

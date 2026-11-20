@@ -6,6 +6,7 @@ import ProductCard from "../components/ProductCard";
 import { useCart } from "../context/CartContext";
 import { IoSearch } from "react-icons/io5";
 import { useToast } from "../context/ToastProvider";
+import { SHOW_SHOP_DETAILS } from '../config/site';
 
 // Skeleton Component
 function ProductSkeleton() {
@@ -233,6 +234,7 @@ const getSelectedOptions = (paramKey, metadataArray) => {
 
               />
             </Col>
+              {SHOW_SHOP_DETAILS && (<>
               {/* Age */}
               <Col md={4}>
                 <label className="small fw-semibold">Age Range</label>
@@ -297,6 +299,7 @@ const getSelectedOptions = (paramKey, metadataArray) => {
                 />
               </Col>
 
+              </>)}
             </Row>
           </Accordion.Body>
         </Accordion.Item>

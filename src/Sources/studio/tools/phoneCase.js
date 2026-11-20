@@ -116,7 +116,7 @@ export default {
     { key: 'finish', label: 'شكل التصميم', type: 'select', default: 'flush', group: 'التصميم', show: (p) => p.design !== 'plain',
       options: [{ value: 'flush', label: 'مسطّح (ألوان مدمجة)' }, { value: 'raised', label: 'بارز' }] },
 
-    { key: 'frameColor', label: 'لون الإطار (TPU)', type: 'color', default: '#1f1f24', group: 'الألوان' },
+    { key: 'frameColor', label: 'لون الإطار (TPU)', type: 'color', material: 'TPU', default: '#1f1f24', group: 'الألوان' },
     { key: 'backColor', label: 'لون الظهر', type: 'color', default: '#f4f1ea', group: 'الألوان' },
     { key: 'designColor', label: 'لون التصميم', type: 'color', default: '#d6336c', group: 'الألوان', show: (p) => p.design !== 'plain' && !(p.design === 'image' && p.imageColors > 1) },
     { key: 'patternColor', label: 'لون النقش', type: 'color', default: '#9ec5e8', group: 'الألوان', show: (p) => p.design === 'pattern' && p.patternText },

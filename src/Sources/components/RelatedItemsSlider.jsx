@@ -2,6 +2,7 @@ import { useRef, useMemo } from "react";
 import { Button, Card, Container, Stack } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { IoIosArrowForward, IoIosArrowBack  } from "react-icons/io";
+import { SHOW_SHOP_DETAILS } from '../config/site';
 
 export default function RelatedItemsSlider({ items = [], onSeeMore = () => {} }) {
   const sliderRef = useRef(null);
@@ -100,7 +101,7 @@ export default function RelatedItemsSlider({ items = [], onSeeMore = () => {} })
             </p>
           )}
       
-          {item.min_price && (
+          {SHOW_SHOP_DETAILS && item.min_price && (
             <div className="fw-bold text-primary fs-6">
               ${item.min_price}
             </div>
