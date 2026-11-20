@@ -29,6 +29,13 @@ const arr = (d) => (Array.isArray(d) ? d : []);
 const STUDIO_TOOLS = [
   { id: "name-keychain", name: "Name keychain", text: "Any name, your font, two colours." },
   { id: "phone-case", name: "Phone case", text: "Fitted to your model, with a name, photo or pattern." },
+  { id: "qr-code", name: "3D QR code", text: "Your link, Wi-Fi or WhatsApp on a plate people can scan." },
+  { id: "coaster", name: "Coaster", text: "A photo or a name, flat in the surface so cups sit level." },
+  { id: "cookie-cutter", name: "Cookie cutter & stamp", text: "Your drawing or a shape, with a stamp that prints a name." },
+  { id: "stamp", name: "Name stamp", text: "Up to three lines and your logo, with a handle." },
+  { id: "lebanon-keychain", name: "Lebanon flag keychain", text: "Flag, heart or cedar — in red, white and green." },
+  { id: "ramadan-tray", name: "Ramadan tray", text: "A dates tray with a standing \"Ramadan Kareem\" sign." },
+  { id: "desk-organizer", name: "Name desk organizer", text: "Pens and bits in compartments, your name on the front." },
   { id: "birth-sign", name: "Baby birth sign", text: "Name, date, time, weight and length." },
   { id: "initial-sign", name: "Initial & name sign", text: "A big first letter with the name across it." },
   { id: "dual-name", name: "Two names, one piece", text: "Reads one name from the front, another from the side." },
@@ -201,6 +208,11 @@ export default function Home() {
             </li>
           ))}
         </ul>
+        <p className="hm-sub hm-free">
+          Free tools, no sign-up: <Link to="/tools#fix-3mf">fix a 3MF file WhatsApp turned into .zip</Link> ·{" "}
+          <Link to="/tools#arabic-text">Arabic text for your slicer</Link> ·{" "}
+          <Link to="/tools#cost">print cost & profit calculators</Link>
+        </p>
       </section>
 
       {/* ───────── our works ───────── */}

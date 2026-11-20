@@ -103,6 +103,8 @@ const Footer = () => {
             <ul className="list-unstyled small">
               <li className="mb-2"><a href="/our-works" className="text-decoration-none ">Our Works</a></li>
               <li className="mb-2"><a href="/" className="text-decoration-none ">Home</a></li>
+              <li className="mb-2"><a href="/studio" className="text-decoration-none ">Studio</a></li>
+              <li className="mb-2"><a href="/tools" className="text-decoration-none ">Free tools</a></li>
               {/* <li className="mb-2"><a href="/" className="text-decoration-none ">Size Guide</a></li> */}
               <li className="mb-2">
                 <a href="/terms" className="text-decoration-none ">Terms & Conditions</a>

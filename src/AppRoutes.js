@@ -34,6 +34,7 @@ import AdminCredits from './Sources/pages/AdminCredits';
 import Credits from './Sources/pages/Credits';
 import AdminSystem from './Sources/pages/AdminSystem';
 import AdminGuard from './Sources/components/AdminGuard';
+import FreeTools from './Sources/pages/FreeTools';
 import ErrorBoundary, { lazyWithReload } from './Sources/components/ErrorBoundary';
 import { CART_ENABLED, WORKS_PATH } from './Sources/config/site';
 import { PageLoader } from './Sources/components/BrandSpinner';
@@ -82,6 +83,7 @@ export default function AppRoutes() {
         <Route path="/item/:id" element={ <MainLayout> <ItemPage /> </MainLayout>} />
         <Route path="/studio" element={studioPage} />
         <Route path="/studio/:toolId" element={studioPage} />
+        <Route path="/tools" element={<MainLayout><FreeTools /></MainLayout>} />
         <Route path="/credits" element={<MainLayout><Credits /></MainLayout>} />
 
         {/* Admin Section */}

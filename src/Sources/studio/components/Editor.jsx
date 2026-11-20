@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { defaults } from '../tools/index.js';
 import { useBuild } from '../lib/useBuild.js';
@@ -12,7 +12,7 @@ import { useAuth } from '../../context/AuthContext';
 import ParamPanel from './ParamPanel.jsx';
 import Viewer from './Viewer.jsx';
 import OrderDialog from './OrderDialog.jsx';
-import { loadPalette, snapColors } from '../lib/palette.js';
+import { loadPalette, snapColors, setStockPalette } from '../lib/palette.js';
 
 export default function Editor({ tool, initial, config, orderId, downloadId }) {
   const { token, isAdmin } = useAuth();
@@ -41,7 +41,10 @@ export default function Editor({ tool, initial, config, orderId, downloadId }) {
     setParams((p) => snapColors(tool, p, palette));
   }, [palette, tool, isAdmin]);
 
-  const { parts, stats, error, busy } = useBuild(tool, params);
+  // photo colours snap to the stock list too, so rebuild once it arrives
+  useEffect(() => { setStockPalette(palette); }, [palette]);
+  const buildParams = useMemo(() => (palette.length ? { ...params, _stock: palette.length } : params), [params, palette.length]);
+  const { parts, stats, error, busy } = useBuild(tool, buildParams);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => setParams({ ...defaults(tool), ...(initial || {}), ...(pending || {}) }), [tool]);

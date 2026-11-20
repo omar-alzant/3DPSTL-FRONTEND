@@ -10,8 +10,18 @@ import toteBag from './toteBag.js';
 import flexiToy from './flexiToy.js';
 import birthSign from './birthSign.js';
 import phoneCase from './phoneCase.js';
+import qrCode from './qrCode.js';
+import coaster from './coaster.js';
+import cookieCutter from './cookieCutter.js';
+import stamp from './stamp.js';
+import ramadanTray from './ramadanTray.js';
+import deskOrganizer from './deskOrganizer.js';
+import lebanonKeychain from './lebanonKeychain.js';
 
-export const TOOLS = [keychain, pencilTopper, initialSign, dualName, lbPlate, plate, keycaps, toteBag, flexiToy, birthSign, phoneCase];
+export const TOOLS = [
+  keychain, qrCode, phoneCase, coaster, cookieCutter, stamp, ramadanTray, deskOrganizer, lebanonKeychain, initialSign, birthSign,
+  dualName, lbPlate, plate, keycaps, pencilTopper, toteBag, flexiToy,
+];
 
 export const getTool = (id) => TOOLS.find((t) => t.id === id);
 

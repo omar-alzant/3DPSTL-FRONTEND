@@ -189,3 +189,6 @@
   .hm-title-text { animation: none; clip-path: none; }
   .hm-nozzle { display: none; }
 }
+
+.hm-free { margin-top: 18px; }
+.hm-free a { font-weight: 600; }

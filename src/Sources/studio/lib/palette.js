@@ -68,3 +68,15 @@ export function snapColors(tool, params, palette) {
   }
   return out;
 }
+
+// ── colours that come from a photo (multi-colour image designs) ──
+// The Editor registers the stock list here; tools call stockColor() so a photo's colours become real filaments.
+let stock = [];
+export function setStockPalette(list) {
+  stock = Array.isArray(list) ? list : [];
+}
+/** closest filament colour in stock (non-TPU unless material is given); the colour itself if no list yet */
+export function stockColor(hex, material) {
+  const list = colorsFor(stock, material ? { material } : {});
+  return list.length ? nearestColor(hex, list) : hex;
+}

@@ -8,6 +8,7 @@ import { textBox } from '../lib/fonts.js';
 import { imageShape } from '../lib/colors.js';
 import { union, difference, intersection, offset, roundRect, circle, bounds2, extrude, merge } from '../lib/geo.js';
 import { PHONES, BRANDS, manualPhone, resolveKeys, camList } from '../lib/phones.js';
+import { stockColor } from '../lib/palette.js';
 
 const BED = 250;
 const absArea = (cs) => cs.reduce((s, c) => {
@@ -235,7 +236,7 @@ export default {
           const own = difference(sh, taken);
           if (!own.length) continue;
           taken = union(taken, own);
-          out.push({ name: `لون ${i + 1}`, color: im.palette[i], shape: own });
+          out.push({ name: `لون ${i + 1}`, color: stockColor(im.palette[i]), shape: own });
         }
         const rest = difference(shape, taken);
         if (rest.length && out.length) out[out.length - 1].shape = union(out[out.length - 1].shape, rest);

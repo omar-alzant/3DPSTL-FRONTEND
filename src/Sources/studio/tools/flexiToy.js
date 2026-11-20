@@ -14,6 +14,7 @@
 // وبينها «الطبقة الوسطى» بلون واحد. مع إطار ملوّن اختياري وحواف مشطوفة وحلقة أو ثقب تعليق.
 import { imageShape } from '../lib/colors.js';
 import { union, difference, intersection, offset, circle, bounds2, extrude, subtract, merge, components, inside } from '../lib/geo.js';
+import { stockColor } from '../lib/palette.js';
 
 const HINGE = { thin: 2.2, medium: 3.2, thick: 4.6 }; // نصف قطر القرص المطلوب (يُصغَّر إن لم يتّسع المكان)
 
@@ -323,7 +324,7 @@ export default {
     if (regions)
       regions.forEach((rg, i) => {
         const sh = clean(intersection(tf(rg), inner));
-        if (sh.length) layers.push({ name: `لون ${i + 1}`, color: palette[i], shape: sh });
+        if (sh.length) layers.push({ name: `لون ${i + 1}`, color: stockColor(palette[i]), shape: sh });
       });
     const allLayers = layers.length ? union(...layers.map((l) => l.shape)) : [];
 

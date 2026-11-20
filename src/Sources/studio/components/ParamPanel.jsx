@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import FontPicker from './FontPicker.jsx';
 import ImagePrep from './ImagePrep.jsx';
 import { colorsFor } from '../lib/palette.js';
@@ -40,6 +40,76 @@ function ImageField({ value, set, maxSize }) {
             close();
           }}
         />
+      )}
+    </div>
+  );
+}
+
+/** colour dropdown: the chosen colour + name; opens a list of the colours in stock */
+function ColorSelect({ list, value, onChange, label, isAdmin }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+  const cur = list.find((c) => c.hex === String(value).toLowerCase());
+  // materials the admin entered (Admin → Colors), only those with colours in stock for this field
+  const materials = [...new Set(list.map((c) => c.material).filter(Boolean))];
+  const [mat, setMat] = useState('all');
+  useEffect(() => { if (open) setMat(cur?.material && materials.length > 1 ? cur.material : 'all'); }, [open]); // eslint-disable-line react-hooks/exhaustive-deps
+  const shown = mat === 'all' ? list : list.filter((c) => c.material === mat);
+
+  useEffect(() => {
+    if (!open) return undefined;
+    const close = (e) => { if (!ref.current?.contains(e.target)) setOpen(false); };
+    const esc = (e) => { if (e.key === 'Escape') setOpen(false); };
+    document.addEventListener('pointerdown', close);
+    document.addEventListener('keydown', esc);
+    return () => {
+      document.removeEventListener('pointerdown', close);
+      document.removeEventListener('keydown', esc);
+    };
+  }, [open]);
+
+  const pick = (hex) => {
+    onChange(hex);
+    setOpen(false);
+  };
+
+  return (
+    <div className="sd-csel" ref={ref}>
+      <button type="button" className="sd-csel-btn" aria-haspopup="listbox" aria-expanded={open} aria-label={label} onClick={() => setOpen((o) => !o)}>
+        <span className="sd-csel-dot" style={{ background: value }} />
+        <span className="sd-csel-name">{cur ? cur.name : <span dir="ltr">{value}</span>}</span>
+        {cur?.material && <span className="sd-csel-mat">{cur.material}</span>}
+        <span className="sd-csel-caret" aria-hidden="true">▾</span>
+      </button>
+      {open && (
+        <ul className="sd-csel-list" role="listbox" aria-label={label}>
+          {materials.length > 1 && (
+            <li className="sd-csel-mats" role="presentation">
+              {['all', ...materials].map((m) => (
+                <button key={m} type="button" className={mat === m ? 'on' : ''} aria-pressed={mat === m} onClick={() => setMat(m)}>
+                  {m === 'all' ? 'الكل' : m}
+                </button>
+              ))}
+            </li>
+          )}
+          {shown.map((c) => (
+            <li key={c.id}>
+              <button type="button" role="option" aria-selected={cur?.id === c.id} className={cur?.id === c.id ? 'on' : ''} onClick={() => pick(c.hex)}>
+                <span className="sd-csel-dot" style={{ background: c.hex }} />
+                <span className="sd-csel-name">{c.name}</span>
+                {c.material && <span className="sd-csel-mat">{c.material}</span>}
+              </button>
+            </li>
+          ))}
+          {isAdmin && (
+            <li className="sd-csel-admin">
+              <label>
+                <input type="color" value={value} onChange={(e) => onChange(e.target.value)} />
+                <span>لون آخر (للأدمن فقط)</span>
+              </label>
+            </li>
+          )}
+        </ul>
       )}
     </div>
   );
@@ -108,31 +178,7 @@ function Field({ def, value, onChange, params, tool, palette, isAdmin }) {
           </div>
         );
       }
-      const cur = list.find((c) => c.hex === String(value).toLowerCase());
-      return (
-        <div className="sd-swatches-wrap">
-          <div className="sd-swatches" role="radiogroup" aria-label={def.label}>
-            {list.map((c) => (
-              <button
-                key={c.id}
-                type="button"
-                role="radio"
-                aria-checked={cur?.id === c.id}
-                className={`sd-swatch ${cur?.id === c.id ? 'on' : ''}`}
-                style={{ background: c.hex }}
-                title={`${c.name}${c.material ? ` · ${c.material}` : ''}`}
-                onClick={() => set(c.hex)}
-              />
-            ))}
-            {isAdmin && (
-              <label className="sd-swatch sd-swatch-custom" title="Admin: any colour">
-                <input type="color" value={value} onChange={(e) => set(e.target.value)} />
-              </label>
-            )}
-          </div>
-          <small className="sd-swatch-name">{cur ? cur.name : <span dir="ltr">{value} (admin)</span>}</small>
-        </div>
-      );
+      return <ColorSelect list={list} value={value} onChange={set} label={def.label} isAdmin={isAdmin} />;
     }
     case 'number':
     default:

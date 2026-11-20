@@ -35,7 +35,10 @@ export default function Gallery({ config }) {
         <span className="sd-kicker" dir="ltr">3DSTL Studio</span>
         <h1>صمّم قطعتك… واطبعها</h1>
         <p>اختر قالباً جاهزاً، اكتب اسمك وعدّل المقاسات والألوان، شاهد النتيجة ثلاثية الأبعاد فوراً، ثم حمّل الملف أو اطلب الطباعة.</p>
-        <Link className="sd-btn sd-ghost" to="/credits">رصيد الكريدت</Link>
+        <div className="sd-row">
+          <Link className="sd-btn sd-ghost" to="/credits">رصيد الكريدت</Link>
+          <Link className="sd-btn sd-ghost" to="/tools">أدوات مجانية</Link>
+        </div>
       </section>
       <h2 className="sd-section-title">الأدوات</h2>
       <div className="sd-grid">
