@@ -3,8 +3,10 @@ import { Button, Card, Container, Stack } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { IoIosArrowForward, IoIosArrowBack  } from "react-icons/io";
 import { SHOW_SHOP_DETAILS } from '../config/site';
+import { useLang } from '../i18n/LanguageContext';
 
 export default function RelatedItemsSlider({ items = [], onSeeMore = () => {} }) {
+  const { tx } = useLang();
   const sliderRef = useRef(null);
   const navigate = useNavigate();
 
@@ -36,22 +38,22 @@ export default function RelatedItemsSlider({ items = [], onSeeMore = () => {} })
   return (
     <Container fluid className="mt-5 position-relative">
       <Stack direction="horizontal" className="d-flex justify-content-between mb-3">
-        <h5 className="fw-bold mb-0">Related Items</h5>
+        <h5 className="fw-bold mb-0">{tx('Related Items', 'قطع مشابهة')}</h5>
         <Button
           variant="outline-warning"
           onClick={onSeeMore}
         >
-          See more 
+          {tx('See more', 'شوف أكتر')}
         </Button>
       </Stack>
 
-      {/* Left Button */}
+      {/* Left Button (physical left in Arabic too, so the arrows always point outwards) */}
       <Button
         variant="light"
-        className="position-absolute top-50 start-0 translate-middle-y shadow-sm rounded-circle d-none d-md-flex align-items-center justify-content-center"
-        style={{ width: 40, height: 40, zIndex: 2 }}
+        className="position-absolute top-50 translate-middle-y shadow-sm rounded-circle d-none d-md-flex align-items-center justify-content-center"
+        style={{ width: 40, height: 40, zIndex: 2, left: 0 }}
         onClick={() => scroll("left")}
-        aria-label="Scroll left"
+        aria-label={tx('Scroll left', 'لليسار')}
       >
         <IoIosArrowBack />
 
@@ -115,10 +117,10 @@ export default function RelatedItemsSlider({ items = [], onSeeMore = () => {} })
       {/* Right Button */}
       <Button
         variant="light"
-        className="position-absolute top-50 end-0 translate-middle-y shadow-sm rounded-circle d-none d-md-flex align-items-center justify-content-center"
-        style={{ width: 40, height: 40, zIndex: 2 }}
+        className="position-absolute top-50 translate-middle-y shadow-sm rounded-circle d-none d-md-flex align-items-center justify-content-center"
+        style={{ width: 40, height: 40, zIndex: 2, right: 0 }}
         onClick={() => scroll("right")}
-        aria-label="Scroll right"
+        aria-label={tx('Scroll right', 'لليمين')}
       >
         <IoIosArrowForward />
       </Button>

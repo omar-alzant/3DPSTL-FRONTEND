@@ -3,8 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '../supabase';
 import { useToast } from '../context/ToastProvider';
 import { useAuth } from '../context/AuthContext';
+import { useLang } from '../i18n/LanguageContext';
 
 export default function AuthCallback() {
+  const { tx } = useLang();
   const navigate = useNavigate();
   const { showToast } = useToast();
   const { completeLogin } = useAuth();
@@ -35,14 +37,14 @@ export default function AuthCallback() {
       const result = await res.json();
 
       if (!res.ok) {
-        showToast(`Confirmation Failed!`, "danger");
+        showToast(tx('Confirmation Failed!', 'فشل التأكيد!'), "danger");
         navigate('/login');
         return;
       }
 
       // Email confirmed → the user is logged in straight away
       supabase.auth.signOut({ scope: 'local' }).catch(() => {});
-      showToast("Email confirmed — welcome!");
+      showToast(tx('Email confirmed — welcome!', 'تأكّد الإيميل — أهلا وسهلا!'));
       completeLogin(result);
     };
 

@@ -1,10 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
-import { Button, Nav } from "react-bootstrap";
 
 import {
   BsTags,
-  BsDatabaseDown,
   BsListUl,
   BsGrid,
   BsBoxes,
@@ -12,7 +10,6 @@ import {
   BsImages,
   BsCart3,
   BsChevronLeft,
-  BsList,
   BsDisc,
   BsBadge3D,
   BsCurrencyDollar,
@@ -22,150 +19,120 @@ import {
 
 import "../Style/AdminLayout.css";
 import useAdminSummary from "../hooks/useAdminSummary";
+import { useLang } from '../i18n/LanguageContext';
 
+// Grouped by what you do there. `count` = which waiting-items badge to show (useAdminSummary).
 const ADMIN_MENU = [
-  { label: "Brands", path: "brands", icon: <BsTags />, activeClass: "active-brands" },
-  { label: "Categories", path: "category", icon: <BsGrid />, activeClass: "active-category" },
-  { label: "Types", path: "types", icon: <BsListUl />, activeClass: "active-types" },
-  { label: "Models", path: "models", icon: <BsBoxes />, activeClass: "active-models" },
-  { label: "Items", path: "items", icon: <BsBoxSeam />, activeClass: "active-items" },
-  { label: "Carousel", path: "carousel", icon: <BsImages />, activeClass: "active-carousel" },
-  { label: "Orders", path: "orders", icon: <BsCart3 />, activeClass: "active-orders", count: "orders" },
-  { label: "Colors", path: "colors", icon: <BsDisc />, activeClass: "active-colors" },
-  { label: "Studio Orders", path: "studio", icon: <BsBadge3D />, activeClass: "active-studio-orders", count: "studio" },
-  { label: "Studio Pricing", path: "pricing", icon: <BsCurrencyDollar />, activeClass: "active-studio-pricing" },
-  { label: "Credits", path: "credits", icon: <BsCoin />, activeClass: "active-credits", count: "credits" },
-  { label: "System", path: "system", icon: <BsActivity />, activeClass: "active-system", count: "errors" },
+  {
+    title: ["Orders", "الطلبات"],
+    items: [
+      { label: "Studio Orders", ar: "طلبات الاستوديو", path: "studio", icon: <BsBadge3D />, count: "studio" },
+      { label: "Orders", ar: "الطلبات", path: "orders", icon: <BsCart3 />, count: "orders" },
+      { label: "Credits", ar: "الكريدت", path: "credits", icon: <BsCoin />, count: "credits" },
+    ],
+  },
+  {
+    title: ["Our works", "شغلنا"],
+    items: [
+      { label: "Items", ar: "القطع", path: "items", icon: <BsBoxSeam /> },
+      { label: "Categories", ar: "الفئات", path: "category", icon: <BsGrid /> },
+      { label: "Types", ar: "الأنواع", path: "types", icon: <BsListUl /> },
+      { label: "Models", ar: "الموديلات", path: "models", icon: <BsBoxes /> },
+      { label: "Brands", ar: "الماركات", path: "brands", icon: <BsTags /> },
+      { label: "Carousel", ar: "الصور المتحركة", path: "carousel", icon: <BsImages /> },
+    ],
+  },
+  {
+    title: ["Studio", "الاستوديو"],
+    items: [
+      { label: "Studio Pricing", ar: "تسعير الاستوديو", path: "pricing", icon: <BsCurrencyDollar /> },
+      { label: "Colors", ar: "الألوان", path: "colors", icon: <BsDisc /> },
+    ],
+  },
+  {
+    title: ["Site", "الموقع"],
+    items: [{ label: "System", ar: "النظام", path: "system", icon: <BsActivity />, count: "errors" }],
+  },
 ];
+const ALL_ITEMS = ADMIN_MENU.flatMap((g) => g.items);
+
+// narrow screens start with the icon-only sidebar; the choice is remembered
+function initialOpen() {
+  try {
+    const saved = localStorage.getItem("adminSidebar");
+    if (saved === "open" || saved === "closed") return saved === "open";
+  } catch {}
+  return window.innerWidth >= 992;
+}
 
 function AdminLayout() {
   const location = useLocation();
-
-  const [isOpen, setIsOpen] = useState(true);
+  const { tx } = useLang();
+  const [isOpen, setIsOpen] = useState(initialOpen);
   const summary = useAdminSummary(true);
-  const [isBackingUp, setIsBackingUp] = useState(false);
-  const [progress, setProgress] = useState(0);
 
-  const toggleSidebar = () => setIsOpen((prev) => !prev);
-  const isActive = (path) => location.pathname.includes(path);
+  useEffect(() => {
+    try { localStorage.setItem("adminSidebar", isOpen ? "open" : "closed"); } catch {}
+  }, [isOpen]);
 
-  const runBackupAsync = async () => {
-    const token = localStorage.getItem('token');
-    setIsBackingUp(true);
-    setProgress(10);
-
-    try {
-      const res = await fetch(
-        `${process.env.REACT_APP_API_URL}/api/admin/backup`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.error || "Backup failed");
-      }
-
-      setProgress(40);
-
-      const blob = await res.blob();
-      setProgress(80);
-
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `3dpstl-db-${new Date().toISOString().split("T")[0]}.sql`;
-      document.body.appendChild(a);
-      a.click();
-
-      document.body.removeChild(a);
-      window.URL.revokeObjectURL(url);
-
-      setProgress(100);
-    } catch (err) {
-      alert(err.message);
-    } finally {
-      setTimeout(() => {
-        setIsBackingUp(false);
-        setProgress(0);
-      }, 800);
-    }
-  };
+  const segment = location.pathname.replace(/\/+$/, "").split("/")[2] || "";
+  const current = ALL_ITEMS.find((x) => x.path === segment);
 
   return (
-    <div className=" admin-wrapper">
-      {/* Sidebar */}
-      <aside className={`admin-sidebar  shadow ${isOpen ? "open" : "closed"}`}>
-        <div
-          onClick={toggleSidebar}
-          className="cursor sidebar-header d-flex align-items-start justify-content-start px-3 py-4"
-        >
-          <Button variant="link" className="text-white p-0 mb-5 border-0">
-            {isOpen ? <BsChevronLeft size={20} /> : <BsList size={24} />}
-          </Button>
-          {isOpen && <strong className="mb-0 text-white">⚙️ Admin Panel</strong>}
+    <div className={`admin-wrapper ${isOpen ? "is-open" : "is-closed"}`}>
+      <aside className="admin-sidebar" aria-label={tx("Admin menu", "قائمة الإدارة")}>
+        <div className="admin-sidebar-head">
+          {isOpen && <strong className="admin-sidebar-title">{tx("Admin", "الإدارة")}</strong>}
+          <button
+            type="button"
+            className="admin-collapse"
+            onClick={() => setIsOpen((v) => !v)}
+            aria-expanded={isOpen}
+            aria-label={isOpen ? tx("Collapse menu", "صغّر القائمة") : tx("Expand menu", "كبّر القائمة")}
+            title={isOpen ? tx("Collapse menu", "صغّر القائمة") : tx("Expand menu", "كبّر القائمة")}
+          >
+            <BsChevronLeft size={16} className={`flip-rtl admin-collapse-icon ${isOpen ? "" : "is-closed"}`} />
+          </button>
         </div>
 
-        <div className="sidebar-content d-flex flex-column h-100">
-          <Nav className="flex-grow-1 d-flex flex-column px-2 pt-2 gap-1">
-            {ADMIN_MENU.map(({ label, path, icon, activeClass, count }) => (
-              <Nav.Item key={path}>
-                <Link
-                  to={path}
-                  className={`nav-link admin-nav-item d-flex align-items-center gap-3 rounded px-3 py-2 text-white ${
-                    isActive(path) ? `active-link ${activeClass}` : ""
-                  }`}
-                >
-                  <span className="position-relative">
-                    {icon}
-                    {!isOpen && count && summary[count] > 0 && <span className="admin-dot" />}
-                  </span>
-                  {isOpen && <span className="flex-grow-1">{label}</span>}
-                  {isOpen && count && summary[count] > 0 && (
-                    <span className="admin-count" title="بانتظار المراجعة">{summary[count]}</span>
-                  )}
-                </Link>
-              </Nav.Item>
-            ))}
-
-            {/* Backup */}
-            <div className="sidebar-footer px-3 pb-3">
-              <Button
-                variant="outline-warning"
-                className="w-100"
-                onClick={runBackupAsync}
-                disabled={isBackingUp}
-              >
-                {isBackingUp ? "Backing up..." : <><BsDatabaseDown /> {isOpen && "Backup"}</>}
-              </Button>
-
-              {isBackingUp && (
-                <div className="mt-2 progress">
-                  <div
-                    className="progress-bar progress-bar-striped progress-bar-animated"
-                    style={{ width: `${progress}%` }}
+        <nav className="admin-nav">
+          {ADMIN_MENU.map((group) => (
+            <div key={group.title[0]} className="admin-nav-group">
+              {isOpen ? <div className="admin-nav-title">{tx(group.title[0], group.title[1])}</div> : <hr className="admin-nav-sep" />}
+              {group.items.map(({ label, ar, path, icon, count }) => {
+                const name = tx(label, ar);
+                const waiting = count ? summary[count] || 0 : 0;
+                return (
+                  <Link
+                    key={path}
+                    to={path}
+                    className={`admin-nav-item ${segment === path ? "active" : ""}`}
+                    aria-current={segment === path ? "page" : undefined}
+                    title={isOpen ? undefined : name}
                   >
-                    {progress}%
-                  </div>
-                </div>
-              )}
+                    <span className="admin-nav-icon">
+                      {icon}
+                      {!isOpen && waiting > 0 && <span className="admin-dot" />}
+                    </span>
+                    {isOpen && <span className="admin-nav-label">{name}</span>}
+                    {isOpen && waiting > 0 && (
+                      <span className="admin-count" title={tx("Waiting for review", "بانتظار المراجعة")}>{waiting}</span>
+                    )}
+                  </Link>
+                );
+              })}
             </div>
-          </Nav>
-        </div>
+          ))}
+        </nav>
       </aside>
 
-      {/* Main */}
-      <main className={`admin-main ${isOpen ? "expanded" : "collapsed"}`}>
-        <header className="content-header border-bottom py-2 px-4">
-          <h4 className="fw-bold">
-            Management / {location.pathname.split("/").pop()}
-          </h4>
+      <main className="admin-main">
+        <header className="admin-page-head">
+          <h1 className="admin-page-title">
+            {current ? <>{current.icon} {tx(current.label, current.ar)}</> : tx("Admin", "الإدارة")}
+          </h1>
         </header>
-        <div className="p-4">
+        <div className="admin-page-body">
           <Outlet />
         </div>
       </main>

@@ -8,6 +8,7 @@ import autoTable from "jspdf-autotable";
 import { IoLogoWhatsapp } from 'react-icons/io5';
 import { useToast } from "../context/ToastProvider";
 import { refreshAdminSummary } from '../hooks/useAdminSummary';
+import { useLang } from '../i18n/LanguageContext';
 
 /* ---------- COPY TO CLIPBOARD ---------- */
 /* ---------- COPY TO CLIPBOARD ---------- */
@@ -165,6 +166,7 @@ const sendWhatsappMessage = (clientPhoneNumber) => {
 }
 
 const AdminOrders = () => {
+  const { tx } = useLang();
   const { showToast } = useToast();
 
   const [orders, setOrders] = useState([]);
@@ -206,7 +208,7 @@ const AdminOrders = () => {
       const data = await res.json();
   
       if (!res.ok) {
-        showToast(`${data.error || "Stock update failed"}`, "danger");
+        showToast(`${data.error || tx('Stock update failed', 'فشل تحديث المخزون')}`, "danger");
       }
   
       fetchOrders();
@@ -226,7 +228,7 @@ const AdminOrders = () => {
         <Button
           size="sm"
           variant="outline-secondary"
-          title="Copy order details"
+          title={tx('Copy order details', 'نسخ تفاصيل الطلب')}
           onClick={() => copyOrderDetails(order)}
         >
           <FiClipboard size={16} />
@@ -235,7 +237,7 @@ const AdminOrders = () => {
         <Button
           size="sm"
           variant="outline-primary"
-          title="Download PDF"
+          title={tx('Download PDF', 'تحميل PDF')}
           onClick={() => downloadOrderPDF(order)}
         >
           <FiFileText size={16} />
@@ -244,7 +246,7 @@ const AdminOrders = () => {
         <Button
           size="sm"
           variant="outline-success"
-          title="Send Whatsapp message"
+          title={tx('Send Whatsapp message', 'إرسال رسالة واتساب')}
           onClick={() => sendWhatsappMessage(order.shipping_phone)}
         >
           <IoLogoWhatsapp size={16} />
@@ -311,10 +313,10 @@ const AdminOrders = () => {
       const data = await res.json();
   
       if (!res.ok) {
-        throw new Error(data.error || "Failed to remove item");
+        throw new Error(data.error || tx('Failed to remove item', 'فشل حذف القطعة'));
       }
   
-      showToast("Item removed and stock restored.", "success");
+      showToast(tx('Item removed and stock restored.', 'تم حذف القطعة وإرجاع المخزون.'), "success");
       fetchOrders();
   
     } catch (err) {
@@ -325,7 +327,7 @@ const AdminOrders = () => {
   };
   
   const formatDate = (ts) => {
-    return new Date(ts).toLocaleString("en-GB", {
+    return new Date(ts).toLocaleString(document.documentElement.lang === 'ar' ? 'ar-LB' : "en-GB", {
       day: "2-digit", month: "2-digit", year: "numeric",
       hour: "2-digit", minute: "2-digit", hour12: false,
     });
@@ -336,8 +338,8 @@ const AdminOrders = () => {
       {/* Page Header */}
       <div className="row mb-4 br-gray-l p-2 align-items-center">
         <div className="col-md-5">
-          <h2 className="fw-bold  tracking-tight mb-1">Orders Overview</h2>
-          <p className=" mb-0">Manage customer transactions and shipping updates.</p>
+          <h2 className="fw-bold  tracking-tight mb-1">{tx('Orders Overview', 'نظرة على الطلبات')}</h2>
+          <p className=" mb-0">{tx('Manage customer transactions and shipping updates.', 'إدارة عمليات الزبائن وتحديثات الشحن.')}</p>
         </div>
         
         <div className="col-md-7 d-flex flex-wrap gap-2 justify-content-md-end mt-3 mt-md-0">
@@ -346,7 +348,7 @@ const AdminOrders = () => {
               <i className="bi bi-search"></i>
             </InputGroup.Text>
             <Form.Control
-              placeholder="Search Customer, ID, or Item..."
+              placeholder={tx('Search Customer, ID, or Item...', 'ابحث عن زبون أو رقم أو قطعة…')}
               className="border-start-0"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -354,7 +356,7 @@ const AdminOrders = () => {
           </InputGroup>
 
           <button onClick={fetchOrders} className="btn btn-success border shadow-sm px-3">
-            <i className="bi bi-arrow-clockwise me-1"></i> Refresh
+            <i className="bi bi-arrow-clockwise me-1"></i> {tx('Refresh', 'تحديث')}
           </button>
         </div>
       </div>
@@ -380,15 +382,15 @@ const AdminOrders = () => {
             <thead className="bg-dark">
               <tr className="text-muted small text-uppercase fw-bold">
                 <th className="px-4 py-3 cursor" onClick={() => requestSort('shipping_name')}>
-                  Customer {sortConfig.key === 'shipping_name' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : ''}
+                  {tx('Customer', 'الزبون')} {sortConfig.key === 'shipping_name' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : ''}
                 </th>
-                <th className="py-3">Address</th>
-                <th className="py-3">Items Summary</th>
-                <th className="py-3">Total</th>
+                <th className="py-3">{tx('Address', 'العنوان')}</th>
+                <th className="py-3">{tx('Items Summary', 'ملخص القطع')}</th>
+                <th className="py-3">{tx('Total', 'المجموع')}</th>
                 <th className="py-3 cursor" onClick={() => requestSort('status')}>
-                  Status {sortConfig.key === 'status' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : ''}
+                  {tx('Status', 'الحالة')} {sortConfig.key === 'status' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : ''}
                 </th>
-                <th className="py-3 text-end">Actions</th>
+                <th className="py-3 text-end">{tx('Actions', 'إجراءات')}</th>
 
                 <th className="px-4 py-3 text-end cursor" onClick={() => requestSort('updated_at')}>
                   Last Updated {sortConfig.key === 'updated_at' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : ''}
@@ -481,9 +483,9 @@ const AdminOrders = () => {
                         onChange={(e) => handleStatusUpdate(order.id, e.target.value)}
                       >
 
-                        <option value="pending">Pending</option>
-                        <option value="confirmed">Confirmed</option>
-                        <option value="delivered">Delivered</option>
+                        <option value="pending">{tx('Pending', 'قيد الانتظار')}</option>
+                        <option value="confirmed">{tx('Confirmed', 'مؤكد')}</option>
+                        <option value="delivered">{tx('Delivered', 'تم التسليم')}</option>
                       </select>
                     </div>
                   </td>
@@ -502,7 +504,7 @@ const AdminOrders = () => {
               {processedOrders.length === 0 && (
                 <tr>
                   <td colSpan="6" className="text-center py-5 text-muted">
-                    No orders found matching your search criteria.
+                    {tx('No orders found matching your search criteria.', 'لا توجد طلبات تطابق بحثك.')}
                   </td>
                 </tr>
               )}

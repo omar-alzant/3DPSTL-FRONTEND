@@ -9,9 +9,11 @@ import ConfirmationModal from "../components/ConfirmationModal";
 import ItemDetails from "../components/ItemDetails";
 import { useToast } from "../context/ToastProvider";
 import { PageLoader } from '../components/BrandSpinner';
+import { useLang } from '../i18n/LanguageContext';
 
 
 export default function ItemPage() {
+  const { tx } = useLang();
   const { id } = useParams();
   const [decoded, setDecoded] = useState([]);
   const [showLoginModal, setShowLoginModal] = useState(false);
@@ -208,7 +210,7 @@ useEffect(() => {
       }
     });
   
-    showToast("Item added to cart", "success");
+    showToast(tx('Added to cart', 'انزادت عالسلة'), "success");
   };
 
 
@@ -252,7 +254,7 @@ const renderAddToCartButton = (targetVariant, cartItems) => {
   const variantInCart = productInCart?.variants?.find(v =>
     isSameCartVariant(v, targetVariant)
   );
-  if (!item) return <div className="text-center py-5">Loading item...</div>;
+  if (!item) return <div className="text-center py-5">{tx('Loading…', 'عم يحمّل…')}</div>;
   if (!variantInCart) {
     return (
       <Button
@@ -260,7 +262,7 @@ const renderAddToCartButton = (targetVariant, cartItems) => {
         onClick={handleAddToCart}
         disabled={!canAddToCart}
       >
-        Add to Cart
+        {tx('Add to Cart', 'زيد عالسلة')}
       </Button>
     );
   }
@@ -335,10 +337,10 @@ return (
     <ConfirmationModal
         show={showLoginModal}
         onHide={() => setShowLoginModal(false)}
-        title="Login Required"
-        message="You must be logged in."
+        title={tx('Login required', 'لازم تسجّل دخول')}
+        message={tx('You must be logged in.', 'لازم تكون مسجّل دخول.')}
         primaryButton={{
-          text: "Go to Login",
+          text: tx('Go to Login', 'روح لتسجيل الدخول'),
           variant: "primary",
           onClick: handleGoToLogin,
         }}

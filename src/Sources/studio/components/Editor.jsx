@@ -9,6 +9,8 @@ import { spendCredits, designHash } from '../lib/credits.js';
 import { useCredits } from '../../context/CreditsContext';
 import { peekPending, clearPending, savePending } from '../lib/pending.js';
 import { useAuth } from '../../context/AuthContext';
+import { useLang } from '../../i18n/LanguageContext';
+import { useT } from '../i18n/index.js';
 import ParamPanel from './ParamPanel.jsx';
 import Viewer from './Viewer.jsx';
 import OrderDialog from './OrderDialog.jsx';
@@ -16,6 +18,8 @@ import { loadPalette, snapColors, setStockPalette } from '../lib/palette.js';
 
 export default function Editor({ tool, initial, config, orderId, downloadId }) {
   const { token, isAdmin } = useAuth();
+  const { tx } = useLang();
+  const t = useT();
   // a design saved before the customer went to log in comes back here (with its logo)
   const [pending] = useState(() => peekPending(tool.id));
   useEffect(() => {
@@ -110,7 +114,7 @@ export default function Editor({ tool, initial, config, orderId, downloadId }) {
       } else setGate({ ...g, step: 'confirm', error: e.message });
     }
   };
-  const tag = cost > 0 ? <small className="sd-cost"> · {cost} كريدت</small> : null;
+  const tag = cost > 0 ? <small className="sd-cost"> · {cost} {tx('credits', 'كريدت')}</small> : null;
 
   const copyLink = async () => {
     try {
@@ -123,19 +127,19 @@ export default function Editor({ tool, initial, config, orderId, downloadId }) {
   return (
     <div className="sd-editor">
       <aside className="sd-panel">
-        <Link className="sd-back" to="/studio">→ كل الأدوات</Link>
-        {orderId && <div className="sd-order-tag">طلب رقم <b dir="ltr">{orderId}</b> — كل الملفات المنزّلة تحمل هذا الرقم</div>}
-        <h1>{tool.name}</h1>
-        <p className="sd-muted">{tool.description}</p>
+        <Link className="sd-back" to="/studio">{tx('← All templates', '→ كل الأدوات')}</Link>
+        {orderId && <div className="sd-order-tag">{tx('Order', 'طلب رقم')} <b dir="ltr">{orderId}</b> — {tx('every downloaded file carries this number', 'كل الملفات المنزّلة تحمل هذا الرقم')}</div>}
+        <h1>{t(tool.name)}</h1>
+        <p className="sd-muted">{t(tool.description)}</p>
         <ParamPanel tool={tool} params={params} onChange={onChange} palette={palette} isAdmin={isAdmin} />
-        <button className="sd-btn sd-link" onClick={() => setParams(defaults(tool))}>إعادة الضبط</button>
+        <button className="sd-btn sd-link" onClick={() => setParams(defaults(tool))}>{tx('Reset', 'إعادة الضبط')}</button>
       </aside>
 
       <section className="sd-stage">
         <div className="sd-canvas-wrap">
           <Viewer parts={parts} fitKey={tool.id} />
-          {busy && <div className="sd-badge">جارٍ التحديث…</div>}
-          {error && <div className="sd-badge sd-err">خطأ: {error}</div>}
+          {busy && <div className="sd-badge">{tx('Updating…', 'جارٍ التحديث…')}</div>}
+          {error && <div className="sd-badge sd-err">{tx('Error:', 'خطأ:')} {t(error)}</div>}
           {stats && (
             <div className="sd-mini">
               <span>
@@ -146,7 +150,7 @@ export default function Editor({ tool, initial, config, orderId, downloadId }) {
                 className="sd-btn sd-primary"
                 onClick={() => document.querySelector('.sd-bar')?.scrollIntoView({ behavior: 'smooth', block: 'end' })}
               >
-                اطلب ↓
+                {tx('Order ↓', 'اطلب ↓')}
               </button>
             </div>
           )}
@@ -154,24 +158,24 @@ export default function Editor({ tool, initial, config, orderId, downloadId }) {
         <div className="sd-bar">
           {stats && (
             <dl className="sd-stats">
-              <div><dt>المقاس</dt><dd dir="ltr">{stats.size.x.toFixed(1)} × {stats.size.y.toFixed(1)} × {stats.size.z.toFixed(1)} mm</dd></div>
-              <div><dt>الوزن التقريبي</dt><dd>{stats.grams.toFixed(1)} غ</dd></div>
-              {isAdmin && <div><dt>وقت الطباعة التقريبي <span className="sd-muted">(admin)</span></dt><dd>{formatMinutes(minutes)}</dd></div>}
-              <div><dt>الألوان</dt><dd>{colors}</dd></div>
-              <div><dt>السعر التقريبي</dt><dd><b>{price.toFixed(2)} {config.currency}</b></dd></div>
+              <div><dt>{tx('Size', 'المقاس')}</dt><dd dir="ltr">{stats.size.x.toFixed(1)} × {stats.size.y.toFixed(1)} × {stats.size.z.toFixed(1)} mm</dd></div>
+              <div><dt>{tx('Approx. weight', 'الوزن التقريبي')}</dt><dd>{stats.grams.toFixed(1)} {tx('g', 'غ')}</dd></div>
+              {isAdmin && <div><dt>{tx('Approx. print time', 'وقت الطباعة التقريبي')} <span className="sd-muted">(admin)</span></dt><dd>{formatMinutes(minutes)}</dd></div>}
+              <div><dt>{tx('Colours', 'الألوان')}</dt><dd>{colors}</dd></div>
+              <div><dt>{tx('Approx. price', 'السعر التقريبي')}</dt><dd><b>{price.toFixed(2)} {config.currency}</b></dd></div>
             </dl>
           )}
           <div className="sd-actions">
-            <button className="sd-btn sd-primary" disabled={!parts?.length} onClick={() => setOrder(true)}>اطلب الطباعة</button>
-            <button className="sd-btn" disabled={!parts?.length} onClick={() => download(() => exportSTL(parts, name))}>تحميل STL{tag}</button>
-            <button className="sd-btn" disabled={!parts?.length} onClick={() => download(() => exportBambu3MF(parts, name))} title="مشروع Bambu Studio (طابعة A1) يفتح بنفس الألوان التي اخترتها">3MF ملف{tag}</button>
-            <button className="sd-btn" disabled={!parts?.length} onClick={() => download(() => exportSTLByColor(parts, name))}>STL لكل لون{tag}</button>
-            <button className="sd-btn sd-link" onClick={copyLink}>{copied ? 'تم النسخ ✓' : 'نسخ رابط التصميم'}</button>
+            <button className="sd-btn sd-primary" disabled={!parts?.length} onClick={() => setOrder(true)}>{tx('Order the print', 'اطلب الطباعة')}</button>
+            <button className="sd-btn" disabled={!parts?.length} onClick={() => download(() => exportSTL(parts, name))}>{tx('Download STL', 'تحميل STL')}{tag}</button>
+            <button className="sd-btn" disabled={!parts?.length} onClick={() => download(() => exportBambu3MF(parts, name))} title={tx('Bambu Studio project (A1 printer) that opens with the colours you chose', 'مشروع Bambu Studio (طابعة A1) يفتح بنفس الألوان التي اخترتها')}>{tx('3MF file', '3MF ملف')}{tag}</button>
+            <button className="sd-btn" disabled={!parts?.length} onClick={() => download(() => exportSTLByColor(parts, name))}>{tx('STL per colour', 'STL لكل لون')}{tag}</button>
+            <button className="sd-btn sd-link" onClick={copyLink}>{copied ? tx('Copied ✓', 'تم النسخ ✓') : tx('Copy design link', 'نسخ رابط التصميم')}</button>
           </div>
           {cost > 0 && (
             <p className="sd-credit-line">
-              تنزيل ملفات هذا التصميم يكلّف <b>{cost} كريدت</b> (مرة واحدة لكل الصيغ).
-              {token && balance !== null && <> رصيدك: <b>{balance}</b>.</>} <Link to="/credits">اشحن رصيدك</Link>
+              {tx('Downloading this design costs', 'تنزيل ملفات هذا التصميم يكلّف')} <b>{cost} {tx('credits', 'كريدت')}</b> {tx('(once, for every format).', '(مرة واحدة لكل الصيغ).')}
+              {token && balance !== null && <> {tx('Your balance:', 'رصيدك:')} <b>{balance}</b>.</>} <Link to="/credits">{tx('Top up', 'اشحن رصيدك')}</Link>
             </p>
           )}
         </div>
@@ -180,36 +184,36 @@ export default function Editor({ tool, initial, config, orderId, downloadId }) {
       {gate && (
         <div className="sd-modal-bg" onClick={() => gate.step !== 'busy' && setGate(null)}>
           <div className="sd-modal sd-gate" onClick={(e) => e.stopPropagation()}>
-            <button className="sd-x" onClick={() => setGate(null)} aria-label="إغلاق">×</button>
+            <button className="sd-x" onClick={() => setGate(null)} aria-label={tx('Close', 'إغلاق')}>×</button>
             {gate.step === 'login' ? (
               <>
-                <h3>سجّل الدخول لتنزيل الملف</h3>
-                <p className="sd-muted">تنزيل الملفات يكلّف <b>{cost} كريدت</b> من رصيد حسابك. تصميمك محفوظ وسنعيدك إليه بعد تسجيل الدخول.</p>
+                <h3>{tx('Log in to download the file', 'سجّل الدخول لتنزيل الملف')}</h3>
+                <p className="sd-muted">{tx('Downloading costs', 'تنزيل الملفات يكلّف')} <b>{cost} {tx('credits', 'كريدت')}</b> {tx('from your balance. Your design is saved and we’ll bring you back to it after you log in.', 'من رصيد حسابك. تصميمك محفوظ وسنعيدك إليه بعد تسجيل الدخول.')}</p>
                 <div className="sd-row">
-                  <Link className="sd-btn sd-primary" to="/login" onClick={keepForDownload}>تسجيل الدخول</Link>
-                  <Link className="sd-btn" to="/register" onClick={keepForDownload}>إنشاء حساب</Link>
+                  <Link className="sd-btn sd-primary" to="/login" onClick={keepForDownload}>{tx('Log in', 'تسجيل الدخول')}</Link>
+                  <Link className="sd-btn" to="/register" onClick={keepForDownload}>{tx('Create account', 'إنشاء حساب')}</Link>
                 </div>
               </>
             ) : gate.step === 'low' ? (
               <>
-                <h3>رصيدك لا يكفي</h3>
-                <p className="sd-muted">تنزيل هذا التصميم يحتاج <b>{cost} كريدت</b>، ورصيدك <b>{balance ?? 0}</b>.</p>
+                <h3>{tx('Not enough credits', 'رصيدك لا يكفي')}</h3>
+                <p className="sd-muted">{tx('This design needs', 'تنزيل هذا التصميم يحتاج')} <b>{cost} {tx('credits', 'كريدت')}</b>{tx(', and you have', '، ورصيدك')} <b>{balance ?? 0}</b>.</p>
                 <div className="sd-row">
-                  <Link className="sd-btn sd-primary" to="/credits" onClick={keepForDownload}>اشحن رصيدك</Link>
-                  <button className="sd-btn" onClick={() => setGate(null)}>لاحقاً</button>
+                  <Link className="sd-btn sd-primary" to="/credits" onClick={keepForDownload}>{tx('Top up', 'اشحن رصيدك')}</Link>
+                  <button className="sd-btn" onClick={() => setGate(null)}>{tx('Later', 'لاحقاً')}</button>
                 </div>
               </>
             ) : (
               <>
-                <h3>تنزيل الملف</h3>
-                <p>سيُخصم <b>{cost} كريدت</b> من رصيدك{balance !== null && <> ({balance} ← {Math.max(0, balance - cost)})</>}.</p>
-                <p className="sd-muted small">بعدها تقدر تنزّل نفس التصميم بكل الصيغ (STL و3MF) بدون خصم إضافي خلال 24 ساعة. أي تعديل على التصميم = تصميم جديد.</p>
-                {gate.error && <p className="sd-error">{gate.error}</p>}
+                <h3>{tx('Download the file', 'تنزيل الملف')}</h3>
+                <p>{tx('This uses', 'سيُخصم')} <b>{cost} {tx('credits', 'كريدت')}</b> {tx('from your balance', 'من رصيدك')}{balance !== null && <> (<span dir="ltr">{balance} → {Math.max(0, balance - cost)}</span>)</>}.</p>
+                <p className="sd-muted small">{tx('After that you can download this same design in every format (STL and 3MF) again for free, from “My files” too. Any change to the design = a new design.', 'بعدها تقدر تنزّل نفس التصميم بكل الصيغ (STL و3MF) مرة تانية ببلاش، كمان من «ملفاتي». أي تعديل على التصميم = تصميم جديد.')}</p>
+                {gate.error && <p className="sd-error">{t(gate.error)}</p>}
                 <div className="sd-row">
                   <button className="sd-btn sd-primary" disabled={gate.step === 'busy'} onClick={confirmDownload}>
-                    {gate.step === 'busy' ? 'جارٍ…' : 'تأكيد وتنزيل'}
+                    {gate.step === 'busy' ? tx('Working…', 'جارٍ…') : tx('Confirm & download', 'تأكيد وتنزيل')}
                   </button>
-                  <button className="sd-btn" disabled={gate.step === 'busy'} onClick={() => setGate(null)}>إلغاء</button>
+                  <button className="sd-btn" disabled={gate.step === 'busy'} onClick={() => setGate(null)}>{tx('Cancel', 'إلغاء')}</button>
                 </div>
               </>
             )}

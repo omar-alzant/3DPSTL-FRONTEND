@@ -7,6 +7,7 @@ import { useCart } from "../context/CartContext";
 import { IoSearch } from "react-icons/io5";
 import { useToast } from "../context/ToastProvider";
 import { SHOW_SHOP_DETAILS } from '../config/site';
+import { useLang } from '../i18n/LanguageContext';
 
 // Skeleton Component
 function ProductSkeleton() {
@@ -30,6 +31,7 @@ function ProductSkeleton() {
 
 
 export default function Items() {
+  const { tx } = useLang();
   const { cart, addToCart, removeFromCart } = useCart();
   const [searchParams, setSearchParams] = useSearchParams();
   const [items, setItems] = useState([]);
@@ -127,7 +129,7 @@ const getSelectedOptions = (paramKey, metadataArray) => {
           brands: marketsRes.items || [] 
         });
       } catch (err) {
-        showToast(`Failed to fetch filter metadata: ${err}`, "danger")
+        showToast(`${tx('Couldn’t load the filters', 'تعذّر تحميل الفلاتر')}: ${err}`, "danger")
       }
     };
     fetchMeta();
@@ -161,14 +163,14 @@ const getSelectedOptions = (paramKey, metadataArray) => {
 
             <Form.Control
               key={searchParams.get("q") || "empty"}
-              placeholder="Search products, models, or descriptions..."
+              placeholder={tx('Search our works…', 'دوّر بشغلنا…')}
               defaultValue={searchParams.get("q") || ""}
               onChange={(e) => updateFilters({ q: e.target.value })}
               className="border-start-0"
             />
 
             <Button variant="outline-secondary" onClick={resetSearch}>
-              Reset
+              {tx('Reset', 'مسح')}
             </Button>
           </InputGroup>
         </Card.Body>
@@ -180,11 +182,11 @@ const getSelectedOptions = (paramKey, metadataArray) => {
       {/* ===================== */}
       <Accordion className="shadow-sm rounded-4 border-0 mb-3">
         <Accordion.Item eventKey="0">
-          <Accordion.Header>Advanced Filters</Accordion.Header>
+          <Accordion.Header>{tx('Filters', 'الفلاتر')}</Accordion.Header>
           <Accordion.Body>
             <Row className="g-3">
             <Col md={4} >
-              <label className="small fw-semibold mb-1">Type</label>
+              <label className="small fw-semibold mb-1">{tx('Type', 'النوع')}</label>
               <Select
                 isMulti
                 classNamePrefix="react-select"
@@ -195,12 +197,12 @@ const getSelectedOptions = (paramKey, metadataArray) => {
                 onChange={(val) =>
                   updateFilters({ type_id: val?.map(v => v.value) || [] })
                 }
-                placeholder="All Categories"
+                placeholder={tx('All types', 'كل الأنواع')}
               />
             </Col>
 
             <Col md={4}>
-              <label className="small fw-semibold mb-1">Model</label>
+              <label className="small fw-semibold mb-1">{tx('Model', 'الموديل')}</label>
               <Select
                 isMulti
                 classNamePrefix="react-select"
@@ -211,14 +213,14 @@ const getSelectedOptions = (paramKey, metadataArray) => {
                 onChange={(val) =>
                   updateFilters({ model_id: val?.map(v => v.value) || [] })
                 }
-                placeholder="All Models"
+                placeholder={tx('All models', 'كل الموديلات')}
                 className="z-9999"
 
               />
             </Col>
 
             <Col md={4}>
-              <label className="small fw-semibold mb-1">Brand</label>
+              <label className="small fw-semibold mb-1">{tx('Brand', 'الماركة')}</label>
               <Select
                 isMulti
                 classNamePrefix="react-select"
@@ -229,7 +231,7 @@ const getSelectedOptions = (paramKey, metadataArray) => {
                 onChange={(val) =>
                   updateFilters({ brand_id: val?.map(v => v.value) || [] })
                 }
-                placeholder="All Brands"
+                placeholder={tx('All brands', 'كل الماركات')}
                 className="z-9999"
 
               />
@@ -237,15 +239,15 @@ const getSelectedOptions = (paramKey, metadataArray) => {
               {SHOW_SHOP_DETAILS && (<>
               {/* Age */}
               <Col md={4}>
-                <label className="small fw-semibold">Age Range</label>
+                <label className="small fw-semibold">{tx('Age range', 'العمر')}</label>
                 <InputGroup>
                   <Form.Control
-                    placeholder="Min"
+                    placeholder={tx('Min', 'من')}
                     defaultValue={searchParams.get("minAge") || ""}
                     onBlur={(e) => updateFilters({ minAge: e.target.value })}
                   />
                   <Form.Control
-                    placeholder="Max"
+                    placeholder={tx('Max', 'لـ')}
                     defaultValue={searchParams.get("maxAge") || ""}
                     onBlur={(e) => updateFilters({ maxAge: e.target.value })}
                   />
@@ -254,15 +256,15 @@ const getSelectedOptions = (paramKey, metadataArray) => {
 
               {/* Price */}
               <Col md={4}>
-                <label className="small fw-semibold">Price Range</label>
+                <label className="small fw-semibold">{tx('Price range', 'السعر')}</label>
                 <InputGroup>
                   <Form.Control
-                    placeholder="Min"
+                    placeholder={tx('Min', 'من')}
                     defaultValue={searchParams.get("minPrice") || ""}
                     onBlur={(e) => updateFilters({ minPrice: e.target.value })}
                   />
                   <Form.Control
-                    placeholder="Max"
+                    placeholder={tx('Max', 'لـ')}
                     defaultValue={searchParams.get("maxPrice") || ""}
                     onBlur={(e) => updateFilters({ maxPrice: e.target.value })}
                   />
@@ -271,15 +273,15 @@ const getSelectedOptions = (paramKey, metadataArray) => {
 
               {/* Length */}
               <Col md={4}>
-                <label className="small fw-semibold">Length</label>
+                <label className="small fw-semibold">{tx('Length', 'الطول')}</label>
                 <InputGroup>
                   <Form.Control
-                    placeholder="Min"
+                    placeholder={tx('Min', 'من')}
                     defaultValue={searchParams.get("minLen") || ""}
                     onBlur={(e) => updateFilters({ minLen: e.target.value })}
                   />
                   <Form.Control
-                    placeholder="Max"
+                    placeholder={tx('Max', 'لـ')}
                     defaultValue={searchParams.get("maxLen") || ""}
                     onBlur={(e) => updateFilters({ maxLen: e.target.value })}
                   />
@@ -290,7 +292,7 @@ const getSelectedOptions = (paramKey, metadataArray) => {
               <Col md={3}>
                 <Form.Check
                   type="switch"
-                  label="On Sale Only"
+                  label={tx('On sale only', 'العروض بس')}
                   className="mt-2"
                   checked={searchParams.get("onsale") === "true"}
                   onChange={(e) =>
@@ -319,7 +321,7 @@ const getSelectedOptions = (paramKey, metadataArray) => {
             </Col>
           ))
         ) : (
-          <Col className="text-muted text-center py-5"><h5>No products found matching these filters.</h5></Col>
+          <Col className="text-muted text-center py-5"><h5>{tx('Nothing matches these filters.', 'ما في شي بيطابق هالفلاتر.')}</h5></Col>
         )}
       </Row>
 
@@ -328,10 +330,10 @@ const getSelectedOptions = (paramKey, metadataArray) => {
         <small className="text-muted">Total: {totalItems} items</small>
         <div className="d-flex gap-2">
           <Button variant="outline-primary" size="sm" disabled={currentPage <= 1}
-            onClick={() => updateFilters({ page: currentPage - 1 })}>Previous</Button>
+            onClick={() => updateFilters({ page: currentPage - 1 })}>{tx('Previous', 'السابق')}</Button>
           <span className="btn btn-primary px-3 py-1 rounded">Page {currentPage}</span>
           <Button variant="outline-primary" size="sm" disabled={items.length < pageSize}
-            onClick={() => updateFilters({ page: currentPage + 1 })}>Next</Button>
+            onClick={() => updateFilters({ page: currentPage + 1 })}>{tx('Next', 'التالي')}</Button>
         </div>
       </div>
     </Container>

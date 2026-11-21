@@ -6,10 +6,12 @@ import { FiRotateCcw } from "react-icons/fi";
 import { FaFacebookF, FaInstagram, FaWhatsapp } from 'react-icons/fa';
 import SocialButtons from './SocialButtons';
 import MapLocation from './MapLocation';
+import { useLang } from '../i18n/LanguageContext';
 
 const Footer = () => {
+  const { tx } = useLang();
   const programedByContact = `https://wa.me/96176118290?text=Hello, How are you?`;
-  const message = encodeURIComponent("Hello 3DSTL! I saw your work and I'd like to ask about a piece.");
+  const message = encodeURIComponent(tx("Hello 3DSTL! I saw your work and I'd like to ask about a piece.", 'مرحبا 3DSTL! شفت شغلكن وحابب إسأل عن قطعة.'));
   const phoneNumber = "96176118290";
 
   const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
@@ -48,25 +50,25 @@ const Footer = () => {
         <Row className="text-center mb-5 g-4">
           <Col md={4}>
             <GoShieldCheck size={32} style={{ color: "var(--brand-primary)" }} />
-            <h6 className="fw-bold mt-2">Precision Quality</h6>
+            <h6 className="fw-bold mt-2">{tx('Precision Quality', 'جودة ودقّة')}</h6>
             <p className="small ">
-              High-accuracy 3D prints with professional finishing.
+              {tx('High-accuracy 3D prints with professional finishing.', 'طباعة دقيقة بتشطيب احترافي.')}
             </p>
           </Col>
 
           <Col md={4}>
             <AiOutlineTruck size={32} style={{ color: "var(--brand-primary)" }} />
-            <h6 className="fw-bold mt-2">Fast Production</h6>
+            <h6 className="fw-bold mt-2">{tx('Fast Production', 'تسليم سريع')}</h6>
             <p className="small ">
-              Efficient turnaround for custom and business orders.
+              {tx('Efficient turnaround for custom and business orders.', 'منسلّم الطلبات الخاصة وطلبات الشركات بوقت قصير.')}
             </p>
           </Col>
 
           <Col md={4}>
             <FiRotateCcw size={32} style={{ color: "var(--brand-primary)" }} />
-            <h6 className="fw-bold mt-2">Custom Solutions</h6>
+            <h6 className="fw-bold mt-2">{tx('Custom Solutions', 'حسب طلبك')}</h6>
             <p className="small ">
-              From prototypes to branding pieces — tailored to your needs.
+              {tx('From prototypes to branding pieces — tailored to your needs.', 'من النماذج الأولية لقطع الهوية التجارية — على قياس حاجتك.')}
             </p>
           </Col>
         </Row>
@@ -86,46 +88,45 @@ const Footer = () => {
             3DSTL
           </h4>         
           <p>
-            Precision 3D printing & digital fabrication.
-            Custom models, branding pieces, mechanical parts,
-            and creative designs engineered with detail.
+            {tx('Precision 3D printing & digital fabrication. Custom models, branding pieces, mechanical parts, and creative designs engineered with detail.',
+              'طباعة ثلاثية الأبعاد دقيقة وتصنيع رقمي: مجسّمات حسب الطلب، قطع للهوية التجارية، قطع ميكانيكية، وتصاميم مبدعة بأدق التفاصيل.')}
           </p>
             <SocialButtons />
           </Col>
 
           <Col >
-            <h6 className="fw-bold mb-3">Location</h6>
+            <h6 className="fw-bold mb-3">{tx('Location', 'موقعنا')}</h6>
             <MapLocation />
           </Col>
 
           <Col >
-            <h6 className="fw-bold mb-3">Pages</h6>
+            <h6 className="fw-bold mb-3">{tx('Pages', 'الصفحات')}</h6>
             <ul className="list-unstyled small">
-              <li className="mb-2"><a href="/our-works" className="text-decoration-none ">Our Works</a></li>
-              <li className="mb-2"><a href="/" className="text-decoration-none ">Home</a></li>
-              <li className="mb-2"><a href="/studio" className="text-decoration-none ">Studio</a></li>
-              <li className="mb-2"><a href="/tools" className="text-decoration-none ">Free tools</a></li>
+              <li className="mb-2"><a href="/our-works" className="text-decoration-none ">{tx('Our Works', 'شغلنا')}</a></li>
+              <li className="mb-2"><a href="/" className="text-decoration-none ">{tx('Home', 'الرئيسية')}</a></li>
+              <li className="mb-2"><a href="/studio" className="text-decoration-none ">{tx('Studio', 'الاستوديو')}</a></li>
+              <li className="mb-2"><a href="/tools" className="text-decoration-none ">{tx('Free tools', 'أدوات مجانية')}</a></li>
               {/* <li className="mb-2"><a href="/" className="text-decoration-none ">Size Guide</a></li> */}
               <li className="mb-2">
-                <a href="/terms" className="text-decoration-none ">Terms & Conditions</a>
+                <a href="/terms" className="text-decoration-none ">{tx('Terms & Conditions', 'الشروط والأحكام')}</a>
                 </li>
               <li className="mb-2">
-                <a href="/privacy" className="text-decoration-none ">Privacy Policy</a>
+                <a href="/privacy" className="text-decoration-none ">{tx('Privacy Policy', 'سياسة الخصوصية')}</a>
               </li>
             </ul>
           </Col>
 
           {/* <Col lg={4} md={4}>
-            <h6 className="fw-bold mb-3">Be on contact</h6>
-            <p className="small ">Communicate with e-mail</p>
+            <h6 className="fw-bold mb-3">{tx('Stay in touch', 'خلّينا على تواصل')}</h6>
+            <p className="small ">{tx('Get news by email', 'وصلك جديدنا عالإيميل')}</p>
             <Form>
               <InputGroup className="mb-3">
                 <Form.Control
-                  placeholder="Email address"
+                  placeholder={tx('Email address', 'البريد الإلكتروني')}
                   aria-label="Email address"
                   className="border-success"
                 />
-                <Button variant="success">Join</Button>
+                <Button variant="success">{tx('Join', 'اشترك')}</Button>
               </InputGroup>
             </Form>
           </Col> */}
@@ -134,12 +135,12 @@ const Footer = () => {
         {/* Section 3: Bottom Bar */}
         <div className="mt-5 pt-3 border-top d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
           <p className="small  mb-0">
-            © {year} 3DSTL. Engineered with precision.
+            © {year} 3DSTL. {tx('Engineered with precision.', 'مصمّم بدقّة.')}
           </p>
           <div className="d-flex gap-3">
           <div className="d-flex align-items-center gap-2 mt-3 mt-md-0">
             <small className="" style={{ fontSize: '0.75rem' }}>
-              Developped by:
+              {tx('Developed by:', 'تطوير:')}
             </small>
             <Button 
               variant="link" 

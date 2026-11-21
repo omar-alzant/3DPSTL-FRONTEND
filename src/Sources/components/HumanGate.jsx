@@ -5,6 +5,10 @@
 // - بدون REACT_APP_TURNSTILE_SITE_KEY تكون الصفحة متوقفة.
 import { useCallback, useEffect, useRef, useState } from 'react';
 import '../Style/HumanGate.css';
+// page language, set by index.html before React starts
+const pageAr = () => (typeof document !== 'undefined' ? document.documentElement.lang === 'ar' : false);
+const L = (en, ar) => (pageAr() ? ar : en);
+
 
 const SITE_KEY = process.env.REACT_APP_TURNSTILE_SITE_KEY;
 const API = process.env.REACT_APP_API_URL || '';
@@ -89,11 +93,11 @@ function Gate({ onPass }) {
           body: JSON.stringify({ token }),
         });
         const data = await r.json().catch(() => ({}));
-        if (!r.ok || !data.pass) throw new Error(data.message || 'فشل التحقق، حاول مجدداً');
+        if (!r.ok || !data.pass) throw new Error(data.message || L('Verification failed — please try again', 'فشل التحقق، حاول مجدداً'));
         savePass(data);
         onPass();
       } catch (e) {
-        setMsg(e.message || 'فشل التحقق، حاول مجدداً');
+        setMsg(e.message || L('Verification failed — please try again', 'فشل التحقق، حاول مجدداً'));
         setState('error');
         if (widget.current !== null) window.turnstile?.reset(widget.current);
       }
@@ -108,11 +112,11 @@ function Gate({ onPass }) {
         if (!alive || !box.current) return;
         widget.current = ts.render(box.current, {
           sitekey: SITE_KEY,
-          language: 'ar',
+          language: pageAr() ? 'ar' : 'en',
           theme: 'auto',
           callback: (token) => verify(token),
           'error-callback': () => {
-            setMsg('تعذّر التحقق. تأكد من اتصالك ثم حاول مجدداً');
+            setMsg(L('Couldn’t verify. Check your connection and try again', 'تعذّر التحقق. تأكد من اتصالك ثم حاول مجدداً'));
             setState('error');
           },
           'expired-callback': () => window.turnstile?.reset(widget.current),
@@ -120,7 +124,7 @@ function Gate({ onPass }) {
         setState('ready');
       })
       .catch(() => {
-        setMsg('تعذّر تحميل التحقق. تأكد من اتصالك أو عطّل مانع الإعلانات ثم أعد تحميل الصفحة');
+        setMsg(L('Couldn’t load the check. Check your connection or turn off your ad blocker, then reload the page', 'تعذّر تحميل التحقق. تأكد من اتصالك أو عطّل مانع الإعلانات ثم أعد تحميل الصفحة'));
         setState('error');
       });
     return () => {
@@ -130,22 +134,22 @@ function Gate({ onPass }) {
   }, [verify]);
 
   return (
-    <div className="hv-page" dir="rtl">
+    <div className="hv-page" dir={pageAr() ? 'rtl' : 'ltr'}>
       <div className="hv-card">
         <img className="hv-logo" src={`${process.env.PUBLIC_URL || ''}/logoIco.svg`} alt="3DSTL" onError={(e) => (e.currentTarget.style.display = 'none')} />
-        <h1>التحقق البشري</h1>
-        <p>نعتذر عن الإزعاج، لكن نحتاج التأكد أنك شخص حقيقي لحماية موقعنا من البرامج الضارة.</p>
-        <p>أكمل التحقق أدناه، وستتمكن من الدخول مباشرة.</p>
+        <h1>{L('Quick check', 'التحقق البشري')}</h1>
+        <p>{L('Sorry for the extra step — we need to make sure you’re a real person, to protect the site from bots.', 'نعتذر عن الإزعاج، لكن نحتاج التأكد أنك شخص حقيقي لحماية موقعنا من البرامج الضارة.')}</p>
+        <p>{L('Complete the check below and you’ll go straight in.', 'أكمل التحقق أدناه، وستتمكن من الدخول مباشرة.')}</p>
         <div className="hv-widget" ref={box} />
-        {state === 'checking' && <p className="hv-status">جارٍ التحقق…</p>}
+        {state === 'checking' && <p className="hv-status">{L('Checking…', 'جارٍ التحقق…')}</p>}
         {state === 'error' && (
           <p className="hv-error">
-            {msg} <button type="button" onClick={() => window.location.reload()}>إعادة المحاولة</button>
+            {msg} <button type="button" onClick={() => window.location.reload()}>{L('Try again', 'إعادة المحاولة')}</button>
           </p>
         )}
         <hr />
-        <p className="hv-foot">يبقى التحقق صالحاً لمدة 24 ساعة على هذا الجهاز.</p>
-        <img className="hv-wordmark" src={`${process.env.PUBLIC_URL || ''}/logo.png`} alt="3DSTL" onError={(e) => (e.currentTarget.style.display = 'none')} />
+        <p className="hv-foot">{L('The check stays valid for 24 hours on this device.', 'يبقى التحقق صالحاً لمدة 24 ساعة على هذا الجهاز.')}</p>
+        <img className="hv-wordmark" src={`${process.env.PUBLIC_URL || ''}/${document.documentElement.dataset.theme === 'light' ? 'logo-light' : 'logo'}.png`} alt="3DSTL" onError={(e) => (e.currentTarget.style.display = 'none')} />
       </div>
     </div>
   );

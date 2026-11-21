@@ -16,9 +16,11 @@ import {
 } from 'react-bootstrap';
 import AppToast from '../components/AppToast';
 import { GoogleButton } from '../components/GoogleSignIn';
+import { useLang } from '../i18n/LanguageContext';
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai'; // Import icons
 
 export default function Register() {
+  const { tx } = useLang();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -43,12 +45,12 @@ export default function Register() {
       // Optionally clear fields on success
       // setEmail('');
       // setPassword('');
-      showToast(`Please, review your email to complete the confirmation!`, "success");
+      showToast(tx('Please, review your email to complete the confirmation!', 'افتح إيميلك لتكمّل تأكيد الحساب!'), "success");
 
     } else {
       setMessage('');
       setError(result.error);
-      showToast(`Somethings went wrong!`, "danger");
+      showToast(tx('Somethings went wrong!', 'صار في خطأ!'), "danger");
     }
     setLoading(false);
   };
@@ -67,7 +69,7 @@ export default function Register() {
     <Container className="auth-container d-flex flex-column align-items-center py-5" style={{ maxWidth: '400px' }}>
     <Logo className="logo-svg mb-4" style={{ height: '60px' }} />
 
-      <h2 className='c-black'>Register email</h2>
+      <h2 className='c-black'>{tx('Register email', 'إنشاء حساب')}</h2>
       
       {/* Error Message using Alert */}
       {error && <Alert variant="danger" className="w-100">{error}</Alert>}
@@ -82,7 +84,7 @@ export default function Register() {
           <Form.Group className="mb-3">
             <Form.Control
               type="email"
-              placeholder="Email" // Changed to start with uppercase for consistency
+              placeholder={tx('Email', 'الإيميل')} // Changed to start with uppercase for consistency
               value={email}
               onChange={e => setEmail(e.target.value)}
               required
@@ -93,7 +95,7 @@ export default function Register() {
             <InputGroup>
               <Form.Control
                 type={showPassword ? "text" : "password"} // Switches type
-                placeholder="Password"
+                placeholder={tx('Password', 'كلمة السر')}
                 value={password}
                 onChange={e => setPassword(e.target.value)}
                 required
@@ -122,7 +124,7 @@ export default function Register() {
                       aria-hidden="true"
                       className="me-2"
                     />
-                    Submitting...
+                    {tx('Submitting...', 'عم يبعت...')}
                 </>
             ) : (
                 'Submit'
@@ -131,14 +133,14 @@ export default function Register() {
         </Form>
 
         <div className="d-flex align-items-center my-3 text-muted small">
-          <hr className="flex-grow-1" /><span className="mx-2">or</span><hr className="flex-grow-1" />
+          <hr className="flex-grow-1" /><span className="mx-2">{tx('or', 'أو')}</span><hr className="flex-grow-1" />
         </div>
-        <GoogleButton label="Sign up with Google" />
+        <GoogleButton label={tx('Sign up with Google', 'سجّل بحساب Google')} />
       </Card>
 
       {/* Link to Login */}
       <p className='mt-3'>
-        have you an account? <Link to="/login">Login </Link>
+        {tx('Already have an account?', 'عندك حساب؟')} <Link to="/login">{tx('Login', 'تسجيل الدخول')} </Link>
       </p>
     </Container>
     </>

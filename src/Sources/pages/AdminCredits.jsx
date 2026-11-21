@@ -2,16 +2,20 @@ import React, { useEffect, useState } from 'react';
 import { refreshAdminSummary } from '../hooks/useAdminSummary';
 import {
   adminRequests, approveRequest, rejectRequest, adminPackages, createPackage, updatePackage, deletePackage,
-  adminUsers, adminUserLedger, adjustCredits, KIND_LABEL, METHOD_LABEL,
+  adminUsers, adminUserLedger, adjustCredits, KIND_LABEL, METHOD_LABEL, STATUS_LABEL,
 } from '../studio/lib/credits.js';
 import { getSettings, saveSettings } from '../studio/lib/api.js';
 import '../Style/Studio.css';
+import { useLang } from '../i18n/LanguageContext';
 
 // Admin → Credits: top-up requests (Whish / Neo), packages, user balances, payment details
 
-const fmt = (d) => (d ? new Date(d).toLocaleString('en-GB', { dateStyle: 'short', timeStyle: 'short' }) : '');
+const fmt = (d) => (d ? new Date(d).toLocaleString(document.documentElement.lang === 'ar' ? 'ar-LB' : 'en-GB', { dateStyle: 'short', timeStyle: 'short' }) : '');
+const KIND_EN = { topup: 'Top-up', download: 'File download', admin: 'Admin adjustment', refund: 'Refund' };
+const STATUS_EN = { pending: 'Pending', approved: 'Approved', rejected: 'Rejected' };
 
 function Requests() {
+  const { tx } = useLang();
   const [status, setStatus] = useState('pending');
   const [rows, setRows] = useState(null);
   const [err, setErr] = useState(null);
@@ -25,7 +29,7 @@ function Requests() {
   useEffect(load, [status]);
 
   const act = async (r, approve) => {
-    const note = window.prompt(approve ? `Approve ${r.credits} credits for ${r.email}? Optional note:` : 'Reason for rejecting (shown to the customer):', '');
+    const note = window.prompt(approve ? tx(`Approve ${r.credits} credits for ${r.email}? Optional note:`, `الموافقة على ${r.credits} كريدت لـ ${r.email}؟ ملاحظة (اختياري):`) : tx('Reason for rejecting (shown to the customer):', 'سبب الرفض (يظهر للزبون):'), '');
     if (note === null) return;
     setBusy(r.id);
     try {
@@ -42,19 +46,19 @@ function Requests() {
   return (
     <section className="sd-box">
       <div className="sd-admin-head">
-        <h6 className="m-0">Top-up requests</h6>
+        <h6 className="m-0">{tx('Top-up requests', 'طلبات الشحن')}</h6>
         <div className="sd-seg">
           {['pending', 'approved', 'rejected', 'all'].map((s) => (
-            <button key={s} type="button" className={status === s ? 'on' : ''} onClick={() => setStatus(s)}>{s}</button>
+            <button key={s} type="button" className={status === s ? 'on' : ''} onClick={() => setStatus(s)}>{tx(STATUS_EN[s] || s, STATUS_LABEL[s] || s)}</button>
           ))}
         </div>
       </div>
       {err && <p className="sd-error">{err}</p>}
-      <small className="sd-muted d-block mb-2">Check the transaction number in your Whish / Neo app before approving. Credits are added instantly.</small>
+      <small className="sd-muted d-block mb-2">{tx('Check the transaction number in your Whish / Neo app before approving. Credits are added instantly.', 'تأكد من رقم العملية في تطبيق Whish / Neo قبل الموافقة. يُضاف الكريدت فوراً.')}</small>
       <div className="sd-table-wrap">
         <table className="sd-table">
           <thead>
-            <tr><th>Date</th><th>Customer</th><th>Credits</th><th>Amount</th><th>Method</th><th>Transaction #</th><th>Sender</th><th>Status</th><th /></tr>
+            <tr><th>{tx('Date', 'التاريخ')}</th><th>{tx('Customer', 'الزبون')}</th><th>{tx('Credits', 'الكريدت')}</th><th>{tx('Amount', 'المبلغ')}</th><th>{tx('Method', 'الطريقة')}</th><th>{tx('Transaction #', 'رقم العملية')}</th><th>{tx('Sender', 'المرسل')}</th><th>{tx('Status', 'الحالة')}</th><th /></tr>
           </thead>
           <tbody>
             {rows?.map((r) => (
@@ -66,18 +70,18 @@ function Requests() {
                 <td>{METHOD_LABEL[r.method]}</td>
                 <td dir="ltr"><code>{r.reference}</code></td>
                 <td>{r.sender}</td>
-                <td>{r.status}{r.admin_note && <div className="sd-muted small">{r.admin_note}</div>}</td>
+                <td>{tx(STATUS_EN[r.status] || r.status, STATUS_LABEL[r.status] || r.status)}{r.admin_note && <div className="sd-muted small">{r.admin_note}</div>}</td>
                 <td className="text-nowrap">
                   {r.status === 'pending' && (
                     <>
-                      <button className="sd-btn sd-primary" disabled={busy === r.id} onClick={() => act(r, true)}>Approve</button>{' '}
-                      <button className="sd-btn" disabled={busy === r.id} onClick={() => act(r, false)}>Reject</button>
+                      <button className="sd-btn sd-primary" disabled={busy === r.id} onClick={() => act(r, true)}>{tx('Approve', 'موافقة')}</button>{' '}
+                      <button className="sd-btn" disabled={busy === r.id} onClick={() => act(r, false)}>{tx('Reject', 'رفض')}</button>
                     </>
                   )}
                 </td>
               </tr>
             ))}
-            {rows && !rows.length && <tr><td colSpan={9} className="sd-muted">Nothing here.</td></tr>}
+            {rows && !rows.length && <tr><td colSpan={9} className="sd-muted">{tx('Nothing here.', 'لا شيء هنا.')}</td></tr>}
           </tbody>
         </table>
       </div>
@@ -88,6 +92,7 @@ function Requests() {
 const EMPTY = { name: '', credits: '', price: '', currency: 'USD', active: true, sort: 0 };
 
 function Packages() {
+  const { tx } = useLang();
   const [rows, setRows] = useState(null);
   const [draft, setDraft] = useState(EMPTY);
   const [err, setErr] = useState(null);
@@ -102,7 +107,7 @@ function Packages() {
 
   const row = (r, onField) => (
     <>
-      <td><input type="text" value={r.name || ''} placeholder="Starter" onChange={(e) => onField('name', e.target.value)} /></td>
+      <td><input type="text" value={r.name || ''} placeholder={tx('Starter', 'باقة البداية')} onChange={(e) => onField('name', e.target.value)} /></td>
       <td><input type="number" min="1" value={r.credits} onChange={(e) => onField('credits', e.target.value)} /></td>
       <td><input type="number" min="0" step="0.01" value={r.price} onChange={(e) => onField('price', e.target.value)} /></td>
       <td><input type="text" value={r.currency} maxLength={8} onChange={(e) => onField('currency', e.target.value.toUpperCase())} style={{ width: 70 }} /></td>
@@ -115,25 +120,25 @@ function Packages() {
 
   return (
     <section className="sd-box mt-3">
-      <h6>Packages</h6>
-      <small className="sd-muted d-block mb-2">What customers can buy. Example: 1000 credits = 5 USD. Hidden packages stay on old requests.</small>
+      <h6>{tx('Packages', 'الباقات')}</h6>
+      <small className="sd-muted d-block mb-2">{tx('What customers can buy. Example: 1000 credits = 5 USD. Hidden packages stay on old requests.', 'ما يمكن للزبائن شراؤه. مثال: 1000 كريدت = 5 USD. الباقات المخفية تبقى على الطلبات القديمة.')}</small>
       {err && <p className="sd-error">{err}</p>}
       <div className="sd-table-wrap">
         <table className="sd-table">
-          <thead><tr><th>Name</th><th>Credits</th><th>Price</th><th>Currency</th><th>Order</th><th>Shown</th><th /></tr></thead>
+          <thead><tr><th>{tx('Name', 'الاسم')}</th><th>{tx('Credits', 'الكريدت')}</th><th>{tx('Price', 'السعر')}</th><th>{tx('Currency', 'العملة')}</th><th>{tx('Order', 'الترتيب')}</th><th>{tx('Shown', 'ظاهر')}</th><th /></tr></thead>
           <tbody>
             {rows?.map((r) => (
               <tr key={r.id} className={r.active ? '' : 'sd-off'}>
                 {row(r, (k, v) => edit(r.id, k, v))}
                 <td className="text-nowrap">
-                  <button className="sd-btn sd-primary" disabled={!r._dirty} onClick={() => run(() => updatePackage(r.id, r))}>Save</button>{' '}
-                  <button className="sd-btn" onClick={() => window.confirm('Delete this package?') && run(() => deletePackage(r.id))}>Delete</button>
+                  <button className="sd-btn sd-primary" disabled={!r._dirty} onClick={() => run(() => updatePackage(r.id, r))}>{tx('Save', 'حفظ')}</button>{' '}
+                  <button className="sd-btn" onClick={() => window.confirm(tx('Delete this package?', 'حذف هذه الباقة؟')) && run(() => deletePackage(r.id))}>{tx('Delete', 'حذف')}</button>
                 </td>
               </tr>
             ))}
             <tr>
               {row(draft, (k, v) => setDraft({ ...draft, [k]: v }))}
-              <td><button className="sd-btn sd-primary" disabled={!draft.credits || draft.price === ''} onClick={() => run(async () => { await createPackage(draft); setDraft(EMPTY); })}>Add</button></td>
+              <td><button className="sd-btn sd-primary" disabled={!draft.credits || draft.price === ''} onClick={() => run(async () => { await createPackage(draft); setDraft(EMPTY); })}>{tx('Add', 'إضافة')}</button></td>
             </tr>
           </tbody>
         </table>
@@ -143,6 +148,7 @@ function Packages() {
 }
 
 function Users() {
+  const { tx } = useLang();
   const [q, setQ] = useState('');
   const [rows, setRows] = useState(null);
   const [err, setErr] = useState(null);
@@ -161,7 +167,7 @@ function Users() {
     const a = adj[u.id] || {};
     const delta = parseInt(a.delta, 10);
     if (!delta) return;
-    if (!window.confirm(`${delta > 0 ? 'Add' : 'Remove'} ${Math.abs(delta)} credits ${delta > 0 ? 'to' : 'from'} ${u.email}?`)) return;
+    if (!window.confirm(delta > 0 ? tx(`Add ${delta} credits to ${u.email}?`, `إضافة ${delta} كريدت إلى ${u.email}؟`) : tx(`Remove ${-delta} credits from ${u.email}?`, `خصم ${-delta} كريدت من ${u.email}؟`))) return;
     try {
       await adjustCredits(u.id, delta, a.note || '');
       setAdj({ ...adj, [u.id]: {} });
@@ -175,17 +181,17 @@ function Users() {
   return (
     <section className="sd-box mt-3">
       <div className="sd-admin-head">
-        <h6 className="m-0">Customers & balances</h6>
+        <h6 className="m-0">{tx('Customers & balances', 'الزبائن والأرصدة')}</h6>
         <form onSubmit={search} className="d-flex gap-2">
-          <input type="text" placeholder="Search email or name" value={q} onChange={(e) => setQ(e.target.value)} />
-          <button className="sd-btn">Search</button>
+          <input type="text" placeholder={tx('Search email or name', 'ابحث بالإيميل أو الاسم')} value={q} onChange={(e) => setQ(e.target.value)} />
+          <button className="sd-btn">{tx('Search', 'بحث')}</button>
         </form>
       </div>
-      <small className="sd-muted d-block mb-2">Manual adjust: for cash payments, gifts or refunds. Use a negative number to remove credits.</small>
+      <small className="sd-muted d-block mb-2">{tx('Manual adjust: for cash payments, gifts or refunds. Use a negative number to remove credits.', 'تعديل يدوي: للدفع نقداً أو الهدايا أو الاسترجاع. استعمل رقماً سالباً لخصم كريدت.')}</small>
       {err && <p className="sd-error">{err}</p>}
       <div className="sd-table-wrap">
         <table className="sd-table">
-          <thead><tr><th>Customer</th><th>Balance</th><th>Adjust (+/−)</th><th>Note</th><th /></tr></thead>
+          <thead><tr><th>{tx('Customer', 'الزبون')}</th><th>{tx('Balance', 'الرصيد')}</th><th>{tx('Adjust (+/−)', 'تعديل (+/−)')}</th><th>{tx('Note', 'ملاحظة')}</th><th /></tr></thead>
           <tbody>
             {rows?.map((u) => (
               <React.Fragment key={u.id}>
@@ -193,10 +199,10 @@ function Users() {
                   <td>{u.email}{u.is_admin && <span className="sd-chip ms-1">admin</span>}<div className="sd-muted small">{u.full_name}</div></td>
                   <td><b>{u.balance.toLocaleString()}</b></td>
                   <td><input type="number" style={{ width: 110 }} value={adj[u.id]?.delta || ''} onChange={(e) => setAdj({ ...adj, [u.id]: { ...adj[u.id], delta: e.target.value } })} /></td>
-                  <td><input type="text" value={adj[u.id]?.note || ''} placeholder="cash / gift…" onChange={(e) => setAdj({ ...adj, [u.id]: { ...adj[u.id], note: e.target.value } })} /></td>
+                  <td><input type="text" value={adj[u.id]?.note || ''} placeholder={tx('cash / gift…', 'نقداً / هدية…')} onChange={(e) => setAdj({ ...adj, [u.id]: { ...adj[u.id], note: e.target.value } })} /></td>
                   <td className="text-nowrap">
-                    <button className="sd-btn sd-primary" disabled={!parseInt(adj[u.id]?.delta, 10)} onClick={() => adjust(u)}>Apply</button>{' '}
-                    <button className="sd-btn" onClick={async () => setOpen(open?.id === u.id ? null : { id: u.id, ledger: await adminUserLedger(u.id) })}>History</button>
+                    <button className="sd-btn sd-primary" disabled={!parseInt(adj[u.id]?.delta, 10)} onClick={() => adjust(u)}>{tx('Apply', 'تطبيق')}</button>{' '}
+                    <button className="sd-btn" onClick={async () => setOpen(open?.id === u.id ? null : { id: u.id, ledger: await adminUserLedger(u.id) })}>{tx('History', 'السجل')}</button>
                   </td>
                 </tr>
                 {open?.id === u.id && (
@@ -205,19 +211,19 @@ function Users() {
                       <ul className="sd-list">
                         {open.ledger.map((l) => (
                           <li key={l.id}>
-                            <span>{KIND_LABEL[l.kind] || l.kind}{l.tool_id && ` · ${l.tool_id}`}{l.ref && ` · ${l.ref}`}{l.note && ` — ${l.note}`}</span>
+                            <span>{tx(KIND_EN[l.kind] || l.kind, KIND_LABEL[l.kind] || l.kind)}{l.tool_id && ` · ${l.tool_id}`}{l.ref && ` · ${l.ref}`}{l.note && ` — ${l.note}`}</span>
                             <b className={l.delta > 0 ? 'sd-plus' : 'sd-minus'} dir="ltr">{l.delta > 0 ? '+' : ''}{l.delta} → {l.balance_after}</b>
                             <small className="sd-muted">{fmt(l.created_at)}</small>
                           </li>
                         ))}
-                        {!open.ledger.length && <li className="sd-muted">No movements.</li>}
+                        {!open.ledger.length && <li className="sd-muted">{tx('No movements.', 'لا توجد حركات.')}</li>}
                       </ul>
                     </td>
                   </tr>
                 )}
               </React.Fragment>
             ))}
-            {rows && !rows.length && <tr><td colSpan={5} className="sd-muted">No customers found.</td></tr>}
+            {rows && !rows.length && <tr><td colSpan={5} className="sd-muted">{tx('No customers found.', 'لم يُعثر على زبائن.')}</td></tr>}
           </tbody>
         </table>
       </div>
@@ -226,6 +232,7 @@ function Users() {
 }
 
 function Payment() {
+  const { tx } = useLang();
   const [s, setS] = useState(null);
   const [state, setState] = useState({ saving: false, ok: false, error: null });
   useEffect(() => { getSettings().then(setS).catch((e) => setState({ error: e.message })); }, []);
@@ -246,23 +253,23 @@ function Payment() {
   return (
     <section className="sd-box mt-3">
       <div className="sd-admin-head">
-        <h6 className="m-0">Payment details (shown to customers)</h6>
+        <h6 className="m-0">{tx('Payment details (shown to customers)', 'معلومات الدفع (تظهر للزبائن)')}</h6>
         <div className="d-flex gap-2 align-items-center">
-          {state.ok && <span className="sd-ok">Saved ✓</span>}
-          <button className="sd-btn sd-primary" onClick={save} disabled={state.saving}>{state.saving ? 'Saving…' : 'Save'}</button>
+          {state.ok && <span className="sd-ok">{tx('Saved ✓', 'تم الحفظ ✓')}</span>}
+          <button className="sd-btn sd-primary" onClick={save} disabled={state.saving}>{state.saving ? tx('Saving…', 'جارٍ الحفظ…') : tx('Save', 'حفظ')}</button>
         </div>
       </div>
       {state.error && <p className="sd-error">{state.error}</p>}
       <div className="sd-form-grid">
-        <label>Whish Money number<input type="text" dir="ltr" value={pay.whish?.number || ''} placeholder="+961 …" onChange={setAcct('whish', 'number')} /></label>
-        <label>Whish account name<input type="text" value={pay.whish?.name || ''} onChange={setAcct('whish', 'name')} /></label>
-        <label>Neo number / account<input type="text" dir="ltr" value={pay.neo?.number || ''} onChange={setAcct('neo', 'number')} /></label>
-        <label>Neo account name<input type="text" value={pay.neo?.name || ''} onChange={setAcct('neo', 'name')} /></label>
+        <label>{tx('Whish Money number', 'رقم Whish Money')}<input type="text" dir="ltr" value={pay.whish?.number || ''} placeholder="+961 …" onChange={setAcct('whish', 'number')} /></label>
+        <label>{tx('Whish account name', 'اسم حساب Whish')}<input type="text" value={pay.whish?.name || ''} onChange={setAcct('whish', 'name')} /></label>
+        <label>{tx('Neo number / account', 'رقم / حساب Neo')}<input type="text" dir="ltr" value={pay.neo?.number || ''} onChange={setAcct('neo', 'number')} /></label>
+        <label>{tx('Neo account name', 'اسم حساب Neo')}<input type="text" value={pay.neo?.name || ''} onChange={setAcct('neo', 'name')} /></label>
         <label className="sd-span-2">Note for customers (optional)
-          <input type="text" value={pay.note || ''} placeholder="Credits are added within a few hours…" onChange={(e) => setS({ ...s, payment: { ...pay, note: e.target.value } })} />
+          <input type="text" value={pay.note || ''} placeholder={tx('Credits are added within a few hours…', 'يُضاف الكريدت خلال ساعات قليلة…')} onChange={(e) => setS({ ...s, payment: { ...pay, note: e.target.value } })} />
         </label>
       </div>
-      <small className="sd-muted">A method with an empty number is hidden. Credits per download are set per tool in Studio Pricing.</small>
+      <small className="sd-muted">{tx('A method with an empty number is hidden. Credits per download are set per tool in Studio Pricing.', 'الطريقة بدون رقم تُخفى. كريدت كل تنزيل يُحدَّد لكل أداة في تسعير الاستوديو.')}</small>
     </section>
   );
 }

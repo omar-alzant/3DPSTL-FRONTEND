@@ -8,6 +8,8 @@ import { CreditsProvider } from './Sources/context/CreditsContext';
 import HumanGate from './Sources/components/HumanGate';
 import ErrorBoundary from './Sources/components/ErrorBoundary';
 import GlobalLoader from './Sources/components/GlobalLoader';
+import { LanguageProvider } from './Sources/i18n/LanguageContext';
+import { ThemeProvider } from './Sources/context/ThemeContext';
 
 export default function App() {
   return (
@@ -15,6 +17,8 @@ export default function App() {
     <GlobalLoader />
     <HumanGate>
     <BrowserRouter>
+      <LanguageProvider>
+      <ThemeProvider>
       <AuthProvider>
       <CreditsProvider>
       <CartProvider>
@@ -22,6 +26,8 @@ export default function App() {
       </CartProvider>
       </CreditsProvider>
       </AuthProvider>
+      </ThemeProvider>
+      </LanguageProvider>
     </BrowserRouter>
     </HumanGate>
     </ErrorBoundary>

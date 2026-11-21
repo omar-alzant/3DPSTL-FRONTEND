@@ -17,8 +17,10 @@ import {
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastProvider';
 import { GoogleButton } from '../components/GoogleSignIn';
+import { useLang } from '../i18n/LanguageContext';
 
 export default function Login() {
+  const { tx } = useLang();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -48,7 +50,7 @@ export default function Login() {
 
   const handleConfirmLogout = async () => {
     if (!email || !password) {
-      showToast("Please enter your email and password", "danger");
+      showToast(tx('Please enter your email and password', 'اكتب الإيميل وكلمة السر'), "danger");
       return;
     }
     setLoggingOut(true);
@@ -63,17 +65,17 @@ export default function Login() {
 
       if (res.ok && data.ok) {
         setError('');
-        showToast("Logout from other devices done", "warning");
+        showToast(tx('Logout from other devices done', 'تم تسجيل الخروج من الأجهزة التانية'), "warning");
         setLogoutFromOtherDevicesBtn(false);
         setShowForm(false);
       } else {
-        const msg = data.message || data.error || "Error occurred.";
+        const msg = data.message || data.error || tx('Error occurred.', 'صار خطأ.');
         setError(msg);
         showToast(msg, "danger");
       }
     } catch (err) {
-      setError("Error occurred.");
-      showToast("Error occurred", "danger");
+      setError(tx('Error occurred.', 'صار خطأ.'));
+      showToast(tx('Error occurred', 'صار خطأ'), "danger");
     } finally {
       setLoggingOut(false);
     }
@@ -88,7 +90,7 @@ export default function Login() {
 
     if (result.success) {
       setError('');
-    showToast("Login Done" )
+    showToast(tx('Login Done', 'تم تسجيل الدخول') )
       
       setLogoutFromOtherDevicesBtn(false);
     } else {
@@ -114,7 +116,7 @@ export default function Login() {
       style={{ maxWidth: '400px' }}
     >
       <Logo className="logo-svg mb-4" style={{ height: '60px' }} />
-      <h2 className='c-black'> Login </h2>
+      <h2 className='c-black'> {tx('Login', 'تسجيل الدخول')} </h2>
       {error && <Alert variant="danger" className="w-100">{error}</Alert>}
 
       {logoutFromOtherDevicesBtn && (
@@ -124,19 +126,19 @@ export default function Login() {
             className="mb-3 w-100"
             onClick={handleLogoutClick}
           >
-            Logout from all devices
+            {tx('Logout from all devices', 'تسجيل الخروج من كل الأجهزة')}
           </Button>
 
           <Modal show={showForm} onHide={() => setShowForm(false)} centered>
             <Modal.Header closeButton>
-              <Modal.Title>Confirm Logout</Modal.Title>
+              <Modal.Title>{tx('Confirm Logout', 'أكّد تسجيل الخروج')}</Modal.Title>
             </Modal.Header>
             <Modal.Body>
               <Form>
                 <Form.Group className="mb-3">
                   <Form.Control
                     type="email"
-                    placeholder="Email"
+                    placeholder={tx('Email', 'الإيميل')}
                     value={email}
                     onChange={e => setEmail(e.target.value)}
                   />
@@ -146,7 +148,7 @@ export default function Login() {
                   <InputGroup>
                     <Form.Control
                       type={showPassword ? "text" : "password"}
-                      placeholder="Password"
+                      placeholder={tx('Password', 'كلمة السر')}
                       value={password}
                       onChange={e => setPassword(e.target.value)}
                     />
@@ -171,7 +173,7 @@ export default function Login() {
                 {loggingOut ? <Spinner size="sm" /> : "Confirm"}
               </Button>
               <Button variant="secondary" onClick={() => setShowForm(false)}>
-                Cancel
+                {tx('Cancel', 'إلغاء')}
               </Button>
             </Modal.Footer>
           </Modal>
@@ -183,7 +185,7 @@ export default function Login() {
         {/* ✅ EMAIL CONFIRMATION MESSAGE */}
         {showVerifyMessage && (
           <Alert variant="info" className="mb-3">
-            Please check your email and confirm your account before logging in.
+            {tx('Please check your email and confirm your account before logging in.', 'افتح إيميلك وأكّد حسابك قبل ما تسجّل دخول.')}
           </Alert>
         )}
 
@@ -191,7 +193,7 @@ export default function Login() {
           <Form.Group className="mb-3">
             <Form.Control
               type="email"
-              placeholder="Email"
+              placeholder={tx('Email', 'الإيميل')}
               value={email}
               onChange={e => setEmail(e.target.value)}
               required
@@ -202,7 +204,7 @@ export default function Login() {
             <InputGroup>
               <Form.Control
                 type={showPassword ? "text" : "password"}
-                placeholder="Password"
+                placeholder={tx('Password', 'كلمة السر')}
                 value={password}
                 onChange={e => setPassword(e.target.value)}
                 required
@@ -226,25 +228,25 @@ export default function Login() {
             {loading ? (
               <>
                 <Spinner size="sm" animation="border" className="me-2" />
-                Logging in...
+                {tx('Logging in...', 'عم يسجّل دخول...')}
               </>
             ) : (
-              'Login'
+              tx('Login', 'تسجيل الدخول')
             )}
           </Button>
         </Form>
 
         <div className="d-flex align-items-center my-3 text-muted small">
-          <hr className="flex-grow-1" /><span className="mx-2">or</span><hr className="flex-grow-1" />
+          <hr className="flex-grow-1" /><span className="mx-2">{tx('or', 'أو')}</span><hr className="flex-grow-1" />
         </div>
         <GoogleButton />
       </Card>
 
       <p className="mt-3">
-        You don't have an account? <Link to="/register">Register</Link>
+        {tx("Don't have an account?", 'ما عندك حساب؟')} <Link to="/register">{tx('Register', 'إنشاء حساب')}</Link>
       </p>
       <p>
-        Forgot password? <Link to="/forgot-password">Forgot password</Link>
+        {tx('Forgot your password?', 'نسيت كلمة السر؟')} <Link to="/forgot-password">{tx('Forgot password', 'نسيت كلمة السر')}</Link>
       </p>
     </Container>
   );

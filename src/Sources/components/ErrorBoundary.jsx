@@ -2,6 +2,10 @@
 // A failed lazy chunk (old cached version after a new deploy) reloads the page once by itself.
 import React from 'react';
 import { reportError } from '../lib/reportError';
+// page language, set by index.html before React starts
+const pageAr = () => (typeof document !== 'undefined' ? document.documentElement.lang === 'ar' : false);
+const L = (en, ar) => (pageAr() ? ar : en);
+
 
 const RELOAD_KEY = 'chunk-reload-at';
 const isChunkError = (e) =>
@@ -40,17 +44,17 @@ export default class ErrorBoundary extends React.Component {
     if (!error) return this.props.children;
     const chunk = isChunkError(error);
     return (
-      <div dir="rtl" style={{ maxWidth: 560, margin: '60px auto', padding: 24, textAlign: 'center', color: '#E0E7FF' }}>
-        <h3 style={{ marginBottom: 12 }}>{chunk ? 'في نسخة جديدة من الموقع' : 'صار خطأ بعرض الصفحة'}</h3>
+      <div dir={pageAr() ? 'rtl' : 'ltr'} style={{ maxWidth: 560, margin: '60px auto', padding: 24, textAlign: 'center', color: '#E0E7FF' }}>
+        <h3 style={{ marginBottom: 12 }}>{chunk ? L('A new version of the site is available', 'في نسخة جديدة من الموقع') : L('Something went wrong showing this page', 'صار خطأ بعرض الصفحة')}</h3>
         <p style={{ color: '#A5B4FC' }}>
-          {chunk ? 'اضغط تحديث لتحميل النسخة الجديدة.' : 'جرّب تحديث الصفحة. إذا تكرّر الخطأ، صوّر هالرسالة وابعتلنا ياها.'}
+          {chunk ? L('Press refresh to load the new version.', 'اضغط تحديث لتحميل النسخة الجديدة.') : L('Try refreshing the page. If it happens again, take a screenshot of this message and send it to us.', 'جرّب تحديث الصفحة. إذا تكرّر الخطأ، صوّر هالرسالة وابعتلنا ياها.')}
         </p>
         <button
           type="button"
           onClick={() => window.location.reload()}
           style={{ background: '#6a4dff', color: '#fff', border: 0, borderRadius: 8, padding: '10px 22px', margin: '8px 0 16px' }}
         >
-          تحديث الصفحة
+          {L('Refresh the page', 'تحديث الصفحة')}
         </button>
         {!chunk && (
           <pre dir="ltr" style={{ whiteSpace: 'pre-wrap', textAlign: 'left', fontSize: 12, color: '#fca5a5', background: 'rgba(0,0,0,.25)', padding: 12, borderRadius: 8 }}>

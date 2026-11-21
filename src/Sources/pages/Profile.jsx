@@ -8,8 +8,10 @@ import { useSearchParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import MyStudioOrders from "../studio/components/MyStudioOrders";
 import "../Style/Studio.css";
+import { useLang } from '../i18n/LanguageContext';
 
 export default function ProfilePage() {
+  const { tx } = useLang();
     const [profile, setProfile] = useState({ full_name: "", phone: "", avatar: "" });
     const [originalProfile, setOriginalProfile] = useState(null);
     const [password, setPassword] = useState("");
@@ -43,7 +45,7 @@ export default function ProfilePage() {
       
             if (!res.ok) {
               const err = await res.json();
-              showToast(`${err.error || "Failed to load orders"}`, "danger");
+              showToast(`${err.error || tx('Failed to load orders', 'تعذّر تحميل الطلبات')}`, "danger");
               return;
             }
       
@@ -71,7 +73,7 @@ export default function ProfilePage() {
             // Detect backend errors (status !== 200)
             if (!res.ok) {
               const errBody = await res.json();
-              showToast(`${errBody.error || "Unknown error"}`, "danger");
+              showToast(`${errBody.error || tx('Unknown error', 'خطأ غير معروف')}`, "danger");
             }
       
             const data = await res.json();
@@ -111,7 +113,7 @@ export default function ProfilePage() {
 
       // the server answers with the saved profile (or { error })
       if (!res.ok) {
-        showToast(data.error || "Failed to update the profile!", "danger");
+        showToast(data.error || tx('Failed to update the profile!', 'تعذّر تحديث الحساب!'), "danger");
         return;
       }
 
@@ -123,9 +125,9 @@ export default function ProfilePage() {
       localStorage.setItem("Profile", JSON.stringify(merged));
       localStorage.removeItem("profile"); // old wrong key
       setAuthProfile(merged);
-      showToast("Profile updated!", "success");
+      showToast(tx('Profile updated!', 'تحدّث الحساب!'), "success");
     } catch (err) {
-      showToast(err.message || "Failed to update the profile!", "danger");
+      showToast(err.message || tx('Failed to update the profile!', 'تعذّر تحديث الحساب!'), "danger");
     }
   };
 
@@ -148,9 +150,9 @@ export default function ProfilePage() {
   
 
   const changePassword = async () => {
-    if (!currentEmail.trim()) return showToast("Please type your email to confirm.", "danger");
-    if (password.length < 6) return showToast("Password must be at least 6 characters.", "danger");
-    if (password !== confirmPassword) return showToast("The two passwords don't match.", "danger");
+    if (!currentEmail.trim()) return showToast(tx('Please type your email to confirm.', 'اكتب إيميلك للتأكيد.'), "danger");
+    if (password.length < 6) return showToast(tx('Password must be at least 6 characters.', 'كلمة السر لازم تكون 6 أحرف على الأقل.'), "danger");
+    if (password !== confirmPassword) return showToast(tx('The two passwords don\'t match.', 'كلمتين السر مش متل بعض.'), "danger");
     const res = await fetch(
       `${authUrl}/updatePwd`,
       {
@@ -167,7 +169,7 @@ export default function ProfilePage() {
     if (res.ok && !data.error) {
         // the server issues a new session token — keep it, otherwise the next request logs the user out
         if (data.token) saveToken(data.token);
-        showToast("Password updated successfully!", "success");
+        showToast(tx('Password updated successfully!', 'تغيّرت كلمة السر!'), "success");
         setPassword("")
         setConfirmPassword("")
         setCurrentEmail("")
@@ -183,7 +185,7 @@ export default function ProfilePage() {
 
     <Container className="py-5">
     <Card className="p-4 shadow-sm">
-  <h3 className="mb-4">My Account</h3>
+  <h3 className="mb-4">{tx('My Account', 'حسابي')}</h3>
 
   <Tabs
     activeKey={activeTab}
@@ -191,7 +193,7 @@ export default function ProfilePage() {
     className="mb-4"
   >
     {/* ================= PROFILE TAB ================= */}
-    <Tab eventKey="profile" title="Profile Details">
+    <Tab eventKey="profile" title={tx('Profile Details', 'معلوماتي')}>
       
       {/* Avatar */}
       <Form.Group className="d-flex justify-content-center mb-3">
@@ -218,7 +220,7 @@ export default function ProfilePage() {
 
       {/* Name */}
       <Form.Group className="mb-3">
-        <Form.Label>Full Name</Form.Label>
+        <Form.Label>{tx('Full Name', 'الاسم الكامل')}</Form.Label>
         <Form.Control
           type="text"
           value={profile.full_name}
@@ -230,7 +232,7 @@ export default function ProfilePage() {
 
       {/* Phone */}
       <Form.Group className="mb-3">
-        <Form.Label>Phone Number</Form.Label>
+        <Form.Label>{tx('Phone Number', 'رقم الهاتف')}</Form.Label>
         <Form.Control
           type="text"
           value={profile.phone}
@@ -241,7 +243,7 @@ export default function ProfilePage() {
       </Form.Group>
 
       <Button disabled={!hasChanges()} onClick={saveProfile}>
-        Save Changes
+        {tx('Save Changes', 'احفظ التغييرات')}
       </Button>
 
       <hr />
@@ -251,7 +253,7 @@ export default function ProfilePage() {
             <InputGroup>
               <Form.Control
                 type={'text' }
-                placeholder="Your Email"
+                placeholder={tx('Your Email', 'إيميلك')}
                 value={currentEmail}
                 onChange={e => setCurrentEmail(e.target.value)}
                 required
@@ -263,7 +265,7 @@ export default function ProfilePage() {
             <InputGroup>
               <Form.Control
                 type={showPassword ? 'text' : 'password'}
-                placeholder="New password"
+                placeholder={tx('New password', 'كلمة السر الجديدة')}
                 value={password}
                 onChange={e => setPassword(e.target.value)}
                 required
@@ -283,7 +285,7 @@ export default function ProfilePage() {
             <InputGroup>
               <Form.Control
                 type={showConfirmPassword ? 'text' : 'password'}
-                placeholder="Confirm new password"
+                placeholder={tx('Confirm new password', 'أكّد كلمة السر الجديدة')}
                 value={confirmPassword}
                 onChange={e => setConfirmPassword(e.target.value)}
                 required
@@ -299,32 +301,32 @@ export default function ProfilePage() {
           </Form.Group>
 
       <Button variant="warning" onClick={changePassword}>
-        Update Password
+        {tx('Update Password', 'غيّر كلمة السر')}
       </Button>
 
     </Tab>
 
     {/* ================= ORDERS TAB ================= */}
-    <Tab eventKey="orders" title="My Orders">
+    <Tab eventKey="orders" title={tx('My Orders', 'طلباتي')}>
 
-      <h6 className="mt-3 mb-2">Shop orders</h6>
+      <h6 className="mt-3 mb-2">{tx('Shop orders', 'طلبات المتجر')}</h6>
 
       {orders.length === 0 ? (
-        <p>No orders found.</p>
+        <p>{tx('No orders found.', 'ما في طلبات.')}</p>
       ) : (
         orders.map((order) => (
           <Card key={order.id} className="mb-3 p-3 shadow-sm">
             <Row>
               <Col md={6}>
-                <strong>Order ID:</strong> {order.id}
+                <strong>{tx('Order ID:', 'رقم الطلب:')}</strong> {order.id}
               </Col>
-              <Col md={6} className="text-end">
-                <strong>Status:</strong> {order.status}
+              <Col md={6} className="text-end text-md-end">
+                <strong>{tx('Status:', 'الحالة:')}</strong> {order.status}
               </Col>
             </Row>
             <Row>
               <Col>
-                <strong>Total:</strong> ${order.total_amount}
+                <strong>{tx('Total:', 'المجموع:')}</strong> ${order.total_amount}
               </Col>
             </Row>
             <Row>
@@ -338,7 +340,7 @@ export default function ProfilePage() {
         ))
       )}
 
-      <h6 className="mt-4 mb-2">Studio orders (custom designs)</h6>
+      <h6 className="mt-4 mb-2">{tx('Studio orders (custom designs)', 'طلبات الاستوديو (تصاميم خاصة)')}</h6>
       <MyStudioOrders />
 
     </Tab>

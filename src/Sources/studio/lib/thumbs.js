@@ -5,12 +5,41 @@ import { defaults } from '../tools/index.js';
 
 let renderer;
 const cache = new Map();
+let sample;
+
+/** a small made-up picture (sun over hills) so photo tools can show a preview */
+function sampleImage() {
+  if (sample) return sample;
+  const c = document.createElement('canvas');
+  c.width = 600; c.height = 400;
+  const g = c.getContext('2d');
+  const sky = g.createLinearGradient(0, 0, 0, 400);
+  sky.addColorStop(0, '#f4f1ff'); sky.addColorStop(1, '#b9a9ff');
+  g.fillStyle = sky; g.fillRect(0, 0, 600, 400);
+  g.fillStyle = '#ffb02e'; g.beginPath(); g.arc(420, 140, 62, 0, Math.PI * 2); g.fill();
+  g.fillStyle = '#6a4dff';
+  g.beginPath(); g.moveTo(0, 400); g.lineTo(0, 260); g.quadraticCurveTo(150, 150, 300, 270); g.quadraticCurveTo(450, 380, 600, 230); g.lineTo(600, 400); g.fill();
+  g.fillStyle = '#1b1846';
+  g.beginPath(); g.moveTo(0, 400); g.lineTo(0, 330); g.quadraticCurveTo(200, 250, 360, 340); g.quadraticCurveTo(480, 400, 600, 320); g.lineTo(600, 400); g.fill();
+  sample = c.toDataURL('image/png');
+  return sample;
+}
 
 export async function thumbnail(tool, w = 480, h = 360) {
   if (cache.has(tool.id)) return cache.get(tool.id);
-  const p = defaults(tool);
-  const fonts = await loadFonts(tool.fonts(p));
-  const parts = await tool.build(p, fonts);
+  let p = defaults(tool);
+  let fonts = await loadFonts(tool.fonts(p));
+  let parts;
+  try {
+    parts = await tool.build(p, fonts);
+  } catch (err) {
+    // photo tools need a picture: use a sample one for the preview
+    const img = tool.params.find((q) => q.type === 'image' && !p[q.key]);
+    if (!img) throw err;
+    p = { ...p, [img.key]: sampleImage() };
+    fonts = await loadFonts(tool.fonts(p));
+    parts = await tool.build(p, fonts);
+  }
   if (!renderer) {
     renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
     renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));

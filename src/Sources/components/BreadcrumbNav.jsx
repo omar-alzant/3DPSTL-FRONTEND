@@ -1,7 +1,9 @@
 import { Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import { useLang } from '../i18n/LanguageContext';
 
 export default function BreadcrumbNav({ type, model }) {
+  const { tx } = useLang();
   const navigate = useNavigate();
 
   return (
@@ -15,7 +17,7 @@ export default function BreadcrumbNav({ type, model }) {
             className="p-0 text-decoration-none"
             onClick={() => navigate("/")}
           >
-            Home
+            {tx('Home', 'الرئيسية')}
           </Button>
         </li>
 

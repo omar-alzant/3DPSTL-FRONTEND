@@ -3,18 +3,20 @@ import { Link } from 'react-router-dom';
 import { listOrders, updateOrder, designPath } from '../studio/lib/api.js';
 import '../Style/Studio.css';
 import { refreshAdminSummary } from '../hooks/useAdminSummary';
+import { useLang } from '../i18n/LanguageContext';
 
 const STATUSES = [
-  { value: 'new', label: 'New' },
-  { value: 'printing', label: 'Printing' },
-  { value: 'ready', label: 'Ready' },
-  { value: 'delivered', label: 'Delivered' },
-  { value: 'cancelled', label: 'Cancelled' },
+  { value: 'new', label: 'New', ar: 'جديد' },
+  { value: 'printing', label: 'Printing', ar: 'قيد الطباعة' },
+  { value: 'ready', label: 'Ready', ar: 'جاهز' },
+  { value: 'delivered', label: 'Delivered', ar: 'تم التسليم' },
+  { value: 'cancelled', label: 'Cancelled', ar: 'ملغى' },
 ];
 
 const summary = (p = {}) => [p.text || p.name, p.letter || p.letters, p.digits].filter(Boolean).join(' · ');
 
 export default function AdminStudioOrders() {
+  const { tx } = useLang();
   const [orders, setOrders] = useState(null);
   const [error, setError] = useState(null);
   const [filter, setFilter] = useState('all');
@@ -52,14 +54,14 @@ export default function AdminStudioOrders() {
         </h5>
         <div className="d-flex gap-2">
           <select className="sd-select" value={filter} onChange={(e) => setFilter(e.target.value)}>
-            <option value="all">All statuses</option>
-            {STATUSES.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
+            <option value="all">{tx('All statuses', 'كل الحالات')}</option>
+            {STATUSES.map((s) => <option key={s.value} value={s.value}>{tx(s.label, s.ar)}</option>)}
           </select>
-          <button className="sd-btn" onClick={load}>Refresh</button>
+          <button className="sd-btn" onClick={load}>{tx('Refresh', 'تحديث')}</button>
         </div>
       </div>
       {error && <p className="sd-error">{error}</p>}
-      {orders && !shown.length && <p className="sd-muted">No studio orders yet.</p>}
+      {orders && !shown.length && <p className="sd-muted">{tx('No studio orders yet.', 'لا توجد طلبات استوديو بعد.')}</p>}
       <div className="sd-orders">
         {shown.map((o) => (
           <article key={o.id} className={`sd-order st-${o.status}`}>
@@ -71,20 +73,20 @@ export default function AdminStudioOrders() {
             <p>
               <bdi>{o.customer_name}</bdi> · <a href={`tel:${o.customer_phone}`}>{o.customer_phone}</a>
               {' · '}
-              <a href={`https://wa.me/${String(o.customer_phone || '').replace(/\D/g, '')}`} target="_blank" rel="noreferrer">WhatsApp</a>
+              <a href={`https://wa.me/${String(o.customer_phone || '').replace(/\D/g, '')}`} target="_blank" rel="noreferrer">{tx('WhatsApp', 'واتساب')}</a>
             </p>
             <p className="sd-muted">
               Qty {o.qty}
               {o.estimate && <> · {o.estimate.grams} g{o.estimate.minutes ? <> · ~{Math.floor(o.estimate.minutes / 60)}h {o.estimate.minutes % 60}m/pc</> : null} · {o.estimate.price} {o.estimate.currency}</>}
-              {o.size && <> · {o.size.map((v) => Math.round(v)).join('×')} mm</>}
+              {o.size && <> · {o.size.map((v) => Math.round(v)).join('×')} {tx('mm', 'مم')}</>}
               {' · '}{new Date(o.created_at).toLocaleString()}
             </p>
             {o.customer_address && <p dir="auto">📍 <bdi>{o.customer_address}</bdi></p>}
-            {o.customer_location && <p><a href={o.customer_location} target="_blank" rel="noreferrer">🗺️ افتح الموقع على الخريطة</a></p>}
+            {o.customer_location && <p><a href={o.customer_location} target="_blank" rel="noreferrer">{tx('🗺️ افتح الموقع على الخريطة', '🗺️ افتح الموقع على الخريطة')}</a></p>}
             {o.notes && <p className="sd-notes" dir="auto">{o.notes}</p>}
             <div className="sd-order-foot">
               <select className="sd-select" value={o.status} onChange={(e) => setStatus(o.id, e.target.value)}>
-                {STATUSES.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
+                {STATUSES.map((s) => <option key={s.value} value={s.value}>{tx(s.label, s.ar)}</option>)}
               </select>
               <Link className="sd-btn" to={designPath(o.tool_id)} state={{ params: o.params, orderId: o.id }}>
                 Open design &amp; download file

@@ -5,9 +5,11 @@ import { CiStar } from "react-icons/ci";
 import BreadcrumbNav from "./BreadcrumbNav";
 import { CART_ENABLED, SHOW_SHOP_DETAILS } from '../config/site';
 import OrderLikeThis from './OrderLikeThis';
+import { useLang } from '../i18n/LanguageContext';
 
 
 const ReadMore = ({ htmlContent, maxChars = 250 }) => {
+  const { tx } = useLang();
   const [isExpanded, setIsExpanded] = useState(false);
 
   // Strip HTML tags to check the actual text length
@@ -29,7 +31,7 @@ const ReadMore = ({ htmlContent, maxChars = 250 }) => {
         onClick={() => setIsExpanded(!isExpanded)}
         style={{ color: 'var(--brand-light)', cursor: 'pointer', border: 'none', background: 'none', padding: 0, fontWeight: 'bold' }}
       >
-        {isExpanded ? "Show Less" : "Read More"}
+        {isExpanded ? tx('Show less', 'أقل') : tx('Read more', 'إقرا أكتر')}
       </button>
     </div>
   );
@@ -50,6 +52,7 @@ export default function ItemDetails({
   rating,
   submitRating,
 }) {
+  const { tx } = useLang();
   const { cart, addToCart, increment, decrement } = useCart();
   
   const productInCart = cart.find((p) => p.productId === item.id);
@@ -114,7 +117,7 @@ export default function ItemDetails({
       <div className="d-flex flex-row align-items-center justify-content-between">
             <h1 className="fw-bold mb-1">{ }</h1>
             {SHOW_SHOP_DETAILS && resolvedVariant.onsale && (
-                <Badge bg="danger" className=" m-1 fs-6">SALE</Badge>
+                <Badge bg="danger" className=" m-1 fs-6">{tx('SALE', 'عرض')}</Badge>
             )}
         </div>
         { 
@@ -164,7 +167,7 @@ export default function ItemDetails({
           <Row>
           {resolvedVariant.age[0] !== null && 
             <Col xs={6}>
-              <span className="text-muted small d-block">Recommended Age</span>
+              <span className="text-muted small d-block">{tx('Recommended Age', 'العمر المناسب')}</span>
               <strong className="fs-6">
                 {resolvedVariant.age ? `${resolvedVariant.age[0]} - ${resolvedVariant.age[1]} ${resolvedVariant.age[2] ?? 'Years'}` : "N/A"}
               </strong>
@@ -172,7 +175,7 @@ export default function ItemDetails({
           }
           { resolvedVariant.lengthcm[0] !== null && 
             <Col xs={6} className="border-start">
-              <span className="text-muted small d-block">Item Length</span>
+              <span className="text-muted small d-block">{tx('Item Length', 'الطول')}</span>
               <strong className="fs-6">
                 {resolvedVariant.lengthcm ? `${resolvedVariant.lengthcm[0]} - ${resolvedVariant.lengthcm[1]} ${resolvedVariant.lengthcm[2] ?? 'Cm'}` : "N/A"}
               </strong>
@@ -186,7 +189,7 @@ export default function ItemDetails({
         {
           SHOW_SHOP_DETAILS && !sizes.find(s => s.toLowerCase() === "unspecified") &&
           <div className="mb-1">
-          <label className="fw-bold mb-1">Size</label>
+          <label className="fw-bold mb-1">{tx('Size', 'القياس')}</label>
           <div className="d-flex gap-2">
             {sizes.map(s => (
               s.toLowerCase() !== "unspecified" && <Button 
@@ -203,7 +206,7 @@ export default function ItemDetails({
         </div>
         }
         <div className="mb-1">
-          <label className="fw-bold mb-1">Color</label>
+          <label className="fw-bold mb-1">{tx('Color', 'اللون')}</label>
           <div className="d-flex gap-3">
             {colorsForSelectedSize.map(c => (
               <div
@@ -215,7 +218,7 @@ export default function ItemDetails({
                   height: "35px",
                   borderRadius: "50%",
                   cursor: "pointer",
-                  border: selectedColor === c ? "3px solid #fff" : "1px solid var(--brand-border)",
+                  border: selectedColor === c ? "3px solid var(--brand-strong)" : "1px solid var(--brand-border)",
                   boxShadow: selectedColor === c ? "0 0 0 2px var(--brand-bg), 0 0 0 4px var(--brand-primary)" : "none"
                 }}
               />
@@ -225,11 +228,11 @@ export default function ItemDetails({
 
         {/* DESCRIPTION (HTML/QUILL CONTENT) */}
         <div className="mb-2">
-          <label className="fw-bold mb-2 border-bottom w-100 pb-1">Product Description</label>
+          <label className="fw-bold mb-2 border-bottom w-100 pb-1">{tx('Description', 'الوصف')}</label>
           <ReadMore htmlContent={item.description ?? ""} maxChars={100} />
         </div>
         {CART_ENABLED && <div className={`d-flex flex-row gap-2 mb-2 ${resolvedVariant.stock < 3 ? 'text-danger' : ''} ? `}>
-          <label className="fw-bold mb-2 ">On Stock: </label>
+          <label className="fw-bold mb-2 ">{tx('In stock:', 'بالمخزون:')} </label>
             <p>{resolvedVariant.stock}</p>
         </div>}
 
@@ -249,7 +252,7 @@ export default function ItemDetails({
                 variant: { ...resolvedVariant, quantity: 1 }
               })}
             >
-              {canAddToCart ? "Add to Cart" : "Out of Stock"}
+              {canAddToCart ? tx('Add to Cart', 'زيد عالسلة') : tx('Out of Stock', 'خلصت')}
             </Button>
           ) : (
             <div className="d-flex align-items-center justify-content-center gap-4 p-2 border rounded bg-light">

@@ -200,8 +200,8 @@
 }
 
 /* رصيد الكريدت في الشريط العلوي */
-.credit-badge { position: relative; display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 999px; background: rgba(106, 77, 255, 0.15); border: 1px solid rgba(106, 77, 255, 0.45); color: #fff; text-decoration: none; font-weight: 600; font-size: 14px; white-space: nowrap; transition: transform .2s, box-shadow .2s, border-color .2s; }
-.credit-badge:hover { color: #fff; transform: translateY(-1px); box-shadow: 0 0 12px rgba(106, 77, 255, 0.45); }
+.credit-badge { position: relative; display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 999px; background: rgba(106, 77, 255, 0.15); border: 1px solid rgba(106, 77, 255, 0.45); color: var(--brand-strong); text-decoration: none; font-weight: 600; font-size: 14px; white-space: nowrap; transition: transform .2s, box-shadow .2s, border-color .2s; }
+.credit-badge:hover { color: var(--brand-strong); transform: translateY(-1px); box-shadow: 0 0 12px rgba(106, 77, 255, 0.45); }
 .credit-badge-icon { color: #fbbf24; font-size: 16px; }
 .credit-badge.up { border-color: #4ade80; box-shadow: 0 0 14px rgba(74, 222, 128, .5); }
 .credit-badge.down { border-color: #f87171; box-shadow: 0 0 14px rgba(248, 113, 113, .45); }

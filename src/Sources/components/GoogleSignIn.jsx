@@ -4,6 +4,7 @@ import { Button, Spinner, Container } from 'react-bootstrap';
 import { supabase } from '../supabase';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastProvider';
+import { useLang } from '../i18n/LanguageContext';
 
 // تسجيل الدخول بحساب Google عبر Supabase:
 // 1) GoogleButton يفتح صفحة Google
@@ -18,7 +19,9 @@ const GoogleIcon = () => (
   </svg>
 );
 
-export function GoogleButton({ label = 'Continue with Google' }) {
+export function GoogleButton({ label }) {
+  const { tx } = useLang();
+  const text = label || tx('Continue with Google', 'كمّل بحساب Google');
   const [busy, setBusy] = useState(false);
   const { showToast } = useToast();
   const go = async () => {
@@ -35,12 +38,13 @@ export function GoogleButton({ label = 'Continue with Google' }) {
   return (
     <Button variant="light" className="w-100 d-flex align-items-center justify-content-center gap-2" onClick={go} disabled={busy}>
       {busy ? <Spinner size="sm" animation="border" /> : <GoogleIcon />}
-      <span>{label}</span>
+      <span>{text}</span>
     </Button>
   );
 }
 
 export function GoogleCallback() {
+  const { tx } = useLang();
   const { completeLogin } = useAuth();
   const { showToast } = useToast();
   const navigate = useNavigate();
@@ -78,7 +82,7 @@ export function GoogleCallback() {
         if (!res.ok) throw new Error(data.error || 'Google sign-in failed');
         // لا نحتاج جلسة Supabase بعد الآن — التطبيق يستعمل توكنه الخاص
         supabase.auth.signOut({ scope: 'local' }).catch(() => {});
-        showToast('Logged in with Google');
+        showToast(tx('Logged in with Google', 'دخلت بحساب Google'));
         completeLogin(data);
       } catch (e) {
         supabase.auth.signOut({ scope: 'local' }).catch(() => {});
@@ -92,7 +96,7 @@ export function GoogleCallback() {
   return (
     <Container className="d-flex flex-column align-items-center justify-content-center" style={{ minHeight: '60vh' }}>
       <Spinner animation="border" />
-      <p className="mt-3">Signing you in with Google…</p>
+      <p className="mt-3">{tx('Signing you in with Google…', 'عم نسجّل دخولك بحساب Google…')}</p>
     </Container>
   );
 }

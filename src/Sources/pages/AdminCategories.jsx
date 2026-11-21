@@ -7,8 +7,10 @@ import AdminForm from "../components/AdminForm";
 import PreviewAdminContent from "../components/PreviewAdminContent";
 import { useToast } from "../context/ToastProvider";
 import { PageLoader } from '../components/BrandSpinner';
+import { useLang } from '../i18n/LanguageContext';
 
 export default function AdminCategories() {
+  const { tx } = useLang();
   /* ===================== STATE ===================== */
   const token = localStorage.getItem('token');
 
@@ -43,7 +45,7 @@ export default function AdminCategories() {
       const data = await res.json();
       setCategories(Array.isArray(data) ? data : []);
     } catch (err) {
-      showToast(`Fetch categories failed: ${err}`, "danger")
+      showToast(`${tx('Fetch categories failed', 'فشل تحميل الفئات')}: ${err}`, "danger")
     } finally {
       setLoading(false);
     }
@@ -133,16 +135,16 @@ export default function AdminCategories() {
       resetForm();
       fetchCategories();
     } catch (err) {
-      showToast(`Save category failed: ${err}`, "danger")
+      showToast(`${tx('Save category failed', 'فشل حفظ الفئة')}: ${err}`, "danger")
     } finally {
       setIsSaving(false);
-      showToast("adding Done.")
+      showToast(tx('adding Done.', 'تمت الإضافة.'))
     }
   };
 
   /* ===================== DELETE ===================== */
   const deleteCategory = async (id) => {
-    if (!window.confirm("Delete this category?")) return;
+    if (!window.confirm(tx('Delete this category?', 'حذف هذه الفئة؟'))) return;
 
     try {
       await fetch(`${adminCatalogURL}/${id}`, {
@@ -153,10 +155,10 @@ export default function AdminCategories() {
       });
       fetchCategories();
     } catch (err) {
-      showToast(`Delete category failed: ${err}`, "danger")
+      showToast(`${tx('Delete category failed', 'فشل حذف الفئة')}: ${err}`, "danger")
     }
     finally{
-      showToast("Deleting Done.")
+      showToast(tx('Deleting Done.', 'تم الحذف.'))
     }
   };
 
@@ -165,7 +167,7 @@ export default function AdminCategories() {
     {
       controlId: "name",
       name: "name",
-      label: "Name",
+      label: tx('Name', 'الاسم'),
       type: "text",
       required: true,
       row: 1,
@@ -174,7 +176,7 @@ export default function AdminCategories() {
     {
       controlId: "sort_order",
       name: "sort_order",
-      label: "Sort Order",
+      label: tx('Sort Order', 'الترتيب'),
       type: "number",
       row: 1,
       colWidth: 4,
@@ -183,7 +185,7 @@ export default function AdminCategories() {
     {
       controlId: "galleryurls",
       name: "galleryurls",
-      label: "📤 Banner Images",
+      label: tx('📤 Banner Images', '📤 صور البانر'),
       type: "multimage",
       row: 2,
       colWidth: 8,
@@ -191,7 +193,7 @@ export default function AdminCategories() {
     {
       controlId: "isdisabled",
       name: "isdisabled",
-      label: "Disable",
+      label: tx('Disable', 'تعطيل'),
       type: "checkbox",
       row: 3,
       colWidth: 4,
@@ -199,7 +201,7 @@ export default function AdminCategories() {
     {
       controlId: "description",
       name: "description",
-      label: "Description",
+      label: tx('Description', 'الوصف'),
       type: "Editor",
       row: 4,
       colWidth: 12,
@@ -221,9 +223,9 @@ export default function AdminCategories() {
         <div className="mt-2">
         <div className="mt-3 d-flex gap-2">
           <Button type="submit" variant="primary" disabled={isSaving}>
-            {isSaving ? <Spinner size="sm" /> : editingId ? "Save Changes" : "Add Category"}
+            {isSaving ? <Spinner size="sm" /> : editingId ? tx('Save Changes', 'حفظ التعديلات') : tx('Add Category', 'إضافة فئة')}
           </Button>
-          <Button variant="secondary" onClick={resetForm}>Cancel</Button>
+          <Button variant="secondary" onClick={resetForm}>{tx('Cancel', 'إلغاء')}</Button>
         </div>
         </div>
       </Form>

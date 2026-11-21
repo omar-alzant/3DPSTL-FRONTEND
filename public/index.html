@@ -17,6 +17,27 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black" />
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
 
+    <!-- Language + direction before anything paints: Arabic flips the page right-to-left (admin pages stay left-to-right) -->
+    <script>
+      (function () {
+        var lang = null;
+        try { lang = localStorage.getItem('lang'); } catch (e) {}
+        if (lang !== 'ar' && lang !== 'en') {
+          var langs = (navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || 'en']);
+          lang = String(langs[0] || 'en').toLowerCase().indexOf('ar') === 0 ? 'ar' : 'en';
+        }
+        var rtl = lang === 'ar';
+        var theme = null;
+        try { theme = localStorage.getItem('theme'); } catch (e) {}
+        if (theme !== 'light' && theme !== 'dark') theme = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', theme);
+        document.documentElement.setAttribute('data-bs-theme', theme);
+        document.documentElement.lang = lang;
+        document.documentElement.dir = rtl ? 'rtl' : 'ltr';
+        document.write('<link id="bs-css" rel="stylesheet" href="%PUBLIC_URL%/vendor/bootstrap/bootstrap' + (rtl ? '.rtl' : '') + '.min.css">');
+      })();
+    </script>
+
     <title>3DSTL | Premium 3d Printing Products</title>
 
     <script type="application/ld+json">

@@ -17,9 +17,15 @@ import stamp from './stamp.js';
 import ramadanTray from './ramadanTray.js';
 import deskOrganizer from './deskOrganizer.js';
 import lebanonKeychain from './lebanonKeychain.js';
+import lithophane from './lithophane.js';
+import photoLampshade from './photoLampshade.js';
+import vase from './vase.js';
+import puzzle from './puzzle.js';
+import clicker from './clicker.js';
 
 export const TOOLS = [
-  keychain, qrCode, phoneCase, coaster, cookieCutter, stamp, ramadanTray, deskOrganizer, lebanonKeychain, initialSign, birthSign,
+  keychain, qrCode, phoneCase, coaster, cookieCutter, stamp, ramadanTray, deskOrganizer, lebanonKeychain,
+  lithophane, photoLampshade, vase, puzzle, clicker, initialSign, birthSign,
   dualName, lbPlate, plate, keycaps, pencilTopper, toteBag, flexiToy,
 ];
 

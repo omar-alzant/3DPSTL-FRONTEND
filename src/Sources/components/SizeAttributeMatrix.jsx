@@ -5,11 +5,13 @@ import MultiColorPicker from './MultiColorPicker';
 import ConfirmationModal from './ConfirmationModal';
 import RangeInputAge from './RangeInputAge';
 import RangeInputLength from './RangeInputLength';
+import { useLang } from '../i18n/LanguageContext';
 
 // Utility function to generate a unique ID for a new variant
 const generateUniqueId = () => Math.random().toString(36).substring(2, 9);
 
 export default function SizeAttributeMatrix({ value, onChange, options, isSimple = false }) {
+  const { tx } = useLang();
     const { allSizes, genderOptions } = options;
     const [showModal, setShowModal] = useState(false);
     const [variantToDelete, setVariantToDelete] = useState(null);
@@ -135,12 +137,12 @@ export default function SizeAttributeMatrix({ value, onChange, options, isSimple
                             <Row className="mb-3">
                                 <Col md={4}>
                                     <Form.Group>
-                                        <Form.Label>Size</Form.Label>
+                                        <Form.Label>{tx('Size', 'المقاس')}</Form.Label>
                                         <Form.Select
                                             value={variant.size || ''}
                                             onChange={(e) => updateVariantField(index, 'size', e.target.value)}
                                         >
-                                            <option value="" disabled>Select Size...</option>
+                                            <option value="" disabled>{tx('Select Size...', 'اختر المقاس…')}</option>
                                             {allSizes.map(s => (
                                                     <option key={s.value} value={s.value}>
                                                         {s.label.toUpperCase()}
@@ -152,12 +154,12 @@ export default function SizeAttributeMatrix({ value, onChange, options, isSimple
 
                                 <Col md={4}>
                                     <Form.Group>
-                                        <Form.Label>Gender</Form.Label>
+                                        <Form.Label>{tx('Gender', 'الجنس')}</Form.Label>
                                         <Form.Select
                                             value={variant.gender || ''}
                                             onChange={(e) => updateVariantField(index, 'gender', e.target.value)}
                                         >
-                                            <option value="" disabled>Select...</option>
+                                            <option value="" disabled>{tx('Select...', 'اختر…')}</option>
                                             {genderOptions.map(o => (
                                                 <option key={o.value} value={o.value}>{o.label}</option>
                                             ))}
@@ -166,7 +168,7 @@ export default function SizeAttributeMatrix({ value, onChange, options, isSimple
                                 </Col>
                                 <Col md={4}>
                                 <Form.Group>
-                                    <Form.Label>Barcode</Form.Label>
+                                    <Form.Label>{tx('Barcode', 'الباركود')}</Form.Label>
                                     <Form.Control
                                         type="text"
                                         placeholder="EAN / UPC / SKU"
@@ -181,7 +183,7 @@ export default function SizeAttributeMatrix({ value, onChange, options, isSimple
                             <Row className="mb-3">
                                 <Col md={12}>
                                     <Form.Group>
-                                        <Form.Label className="fw-bold">Color</Form.Label>
+                                        <Form.Label className="fw-bold">{tx('Color', 'اللون')}</Form.Label>
 
                                         <div className="d-flex align-items-center gap-2">
                                             <Form.Control
@@ -196,7 +198,7 @@ export default function SizeAttributeMatrix({ value, onChange, options, isSimple
                                             <Form.Control
                                             type="text"
                                             value={variant.color || ""}
-                                            placeholder="Select Color"
+                                            placeholder={tx('Select Color', 'اختر اللون')}
                                             onChange={(e) =>
                                                 updateVariantField(index, "color", e.target.value)
                                             }
@@ -210,7 +212,7 @@ export default function SizeAttributeMatrix({ value, onChange, options, isSimple
                             <Row className="mb-3">
                                 <Col md={6}>
                                     <Form.Group>
-                                        <Form.Label>Price ($)</Form.Label>
+                                        <Form.Label>{tx('Price ($)', 'السعر ($)')}</Form.Label>
                                         <Form.Control
                                             type="number"
                                             value={variant.price || ''}
@@ -223,7 +225,7 @@ export default function SizeAttributeMatrix({ value, onChange, options, isSimple
 
                                 <Col md={6}>
                                     <Form.Group>
-                                        <Form.Label>Old Price ($)</Form.Label>
+                                        <Form.Label>{tx('Old Price ($)', 'السعر القديم ($)')}</Form.Label>
                                         <Form.Control
                                             type="number"
                                             value={variant.oldprice || ''}
@@ -239,7 +241,7 @@ export default function SizeAttributeMatrix({ value, onChange, options, isSimple
                             <Row className="mb-3">
                                 <Col md={6}>
                                     <Form.Group>
-                                        <Form.Label>Stock (pcs)</Form.Label>
+                                        <Form.Label>{tx('Stock (pcs)', 'المخزون (قطعة)')}</Form.Label>
                                         <Form.Control
                                             type="number"
                                             value={variant.stock || ''}
@@ -253,7 +255,7 @@ export default function SizeAttributeMatrix({ value, onChange, options, isSimple
                                 <Col md={6} className="d-flex align-items-center">
                                     <Form.Check
                                         type="checkbox"
-                                        label="Out of Stock"
+                                        label={tx('Out of Stock', 'نفد من المخزون')}
                                         checked={variant.outofstock || false}
                                         onChange={(e) =>
                                             updateVariantField(index, 'outofstock', e.target.checked)
@@ -263,7 +265,7 @@ export default function SizeAttributeMatrix({ value, onChange, options, isSimple
 
                                     <Form.Check
                                         type="checkbox"
-                                        label="On Sale"
+                                        label={tx('On Sale', 'عليه تخفيض')}
                                         checked={variant.onSale || false}
                                         onChange={(e) =>
                                             updateVariantField(index, 'onSale', e.target.checked)
@@ -275,7 +277,7 @@ export default function SizeAttributeMatrix({ value, onChange, options, isSimple
                             {/* Age + Length */}
                             <Row>
                                 <Col md={6}>
-                                    <Form.Label>Age Range</Form.Label>
+                                    <Form.Label>{tx('Age Range', 'الفئة العمرية')}</Form.Label>
                                     <RangeInputAge
                                         value={variant.age}
                                         onChange={(val) => updateVariantField(index, 'age', val)}
@@ -283,7 +285,7 @@ export default function SizeAttributeMatrix({ value, onChange, options, isSimple
                                 </Col>
 
                                 <Col md={6}>
-                                    <Form.Label>Length</Form.Label>
+                                    <Form.Label>{tx('Length', 'الطول')}</Form.Label>
                                     <RangeInputLength
                                         value={variant.lengthcm}
                                         onChange={(val) => updateVariantField(index, 'lengthcm', val)}
@@ -302,23 +304,23 @@ export default function SizeAttributeMatrix({ value, onChange, options, isSimple
                 hidden={isSimple}
                 className="mt-3"
             >
-                {availableSizes.length > 0 ? "Add New Size Variant" : "All sizes added"}
+                {availableSizes.length > 0 ? tx('Add New Size Variant', 'إضافة خيار مقاس') : tx('All sizes added', 'كل المقاسات مضافة')}
             </Button>
 
             {/* ------------- GLOBAL MODAL ------------- */}
             <ConfirmationModal
                 show={showModal}
                 onHide={handleClose}
-                title="Confirm Deletion"
+                title={tx('Confirm Deletion', 'تأكيد الحذف')}
                 titleClassName="text-danger"
-                message={<>Are you sure you want to remove this variant?</>}
+                message={<>{tx('Are you sure you want to remove this variant?', 'متأكد أنك تريد حذف هذا الخيار؟')}</>}
                 primaryButton={{
-                    text: "Yes, remove it",
+                    text: tx("Yes, remove it", "نعم، احذفه"),
                     variant: "danger",
                     onClick: handleConfirmDelete,
                 }}
                 secondaryButton={{
-                    text: "Cancel",
+                    text: tx('Cancel', 'إلغاء'),
                     variant: "secondary",
                     onClick: handleClose,
                 }}

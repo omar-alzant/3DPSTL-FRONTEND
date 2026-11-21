@@ -24,14 +24,14 @@
 .studio {
   font-family: 'IBM Plex Sans Arabic', 'Poppins', system-ui, sans-serif;
   background: var(--sd-bg);
-  text-align: right;
+  text-align: start;
 }
 .studio h1, .studio h2, .studio h3,
 .sd-modal h3 {
   font-family: 'IBM Plex Sans Arabic', 'Fredoka', sans-serif;
   margin: 0;
   line-height: 1.25;
-  color: #fff;
+  color: var(--brand-strong);
 }
 .studio a { color: inherit; }
 .sd-muted { color: var(--sd-dim); }
@@ -85,7 +85,7 @@
 .sd-panel::-webkit-scrollbar { width: 6px; }
 .sd-panel::-webkit-scrollbar-thumb { background: var(--sd-line); border-radius: 10px; }
 .sd-back { font-size: 14px; color: var(--sd-muted) !important; text-decoration: none; }
-.sd-back:hover { color: #fff !important; }
+.sd-back:hover { color: var(--brand-strong) !important; }
 .sd-panel h1 { font-size: 24px; margin-top: 10px; }
 .sd-panel > p { font-size: 14px; line-height: 1.7; margin: 6px 0 4px; }
 
@@ -128,14 +128,14 @@
 .sd-switch { margin: 0; }
 .sd-switch input { display: none; }
 .sd-switch span { display: block; width: 42px; height: 24px; background: var(--brand-border); border-radius: 99px; position: relative; cursor: pointer; transition: .15s; }
-.sd-switch span::after { content: ''; position: absolute; top: 3px; right: 3px; width: 18px; height: 18px; background: #fff; border-radius: 50%; transition: .15s; }
+.sd-switch span::after { content: ''; position: absolute; top: 3px; inset-inline-start: 3px; width: 18px; height: 18px; background: #fff; border-radius: 50%; transition: .15s; }
 .sd-switch input:checked + span { background: var(--sd-accent); }
-.sd-switch input:checked + span::after { right: 21px; }
+.sd-switch input:checked + span::after { inset-inline-start: 21px; }
 
 .sd-stage { display: flex; flex-direction: column; min-width: 0; min-height: 0; }
 .sd-canvas-wrap { position: relative; flex: 1; min-height: 0; background: var(--brand-bg-2); }
 .sd-badge {
-  position: absolute; top: 14px; left: 14px; padding: 6px 12px; border-radius: 999px; font-size: 13px;
+  position: absolute; top: 14px; inset-inline-end: 14px; padding: 6px 12px; border-radius: 999px; font-size: 13px;
   background: var(--sd-surface); border: 1px solid var(--sd-line); color: var(--sd-muted);
 }
 .sd-badge.sd-err { color: var(--sd-err); }
@@ -146,7 +146,7 @@
 .sd-stats { display: flex; flex-wrap: wrap; gap: 6px 22px; margin: 0; }
 .sd-stats div { display: flex; flex-direction: column; }
 .sd-stats dt { font-size: 12px; color: var(--sd-dim); font-weight: 400; }
-.sd-stats dd { margin: 0; font-weight: 500; color: #fff; }
+.sd-stats dd { margin: 0; font-weight: 500; color: var(--brand-strong); }
 .sd-actions { display: flex; flex-wrap: wrap; gap: 8px; }
 
 /* ---------- Buttons ---------- */
@@ -156,7 +156,7 @@
   text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 6px;
   transition: border-color .15s, background .15s, box-shadow .15s;
 }
-.sd-btn:hover:not(:disabled) { border-color: var(--sd-accent); color: #fff !important; }
+.sd-btn:hover:not(:disabled) { border-color: var(--sd-accent); color: var(--brand-strong) !important; }
 .sd-btn:disabled { opacity: .45; cursor: default; }
 .sd-btn.sd-primary {
   background: linear-gradient(90deg, var(--sd-accent), var(--sd-accent-2)); border-color: transparent; color: #fff !important;
@@ -190,8 +190,8 @@
 .sd-modal label { display: block; font-size: 14px; font-weight: 500; margin: 12px 0 0; }
 .sd-modal label input, .sd-modal label textarea { margin-top: 5px; }
 .sd-modal .sd-row { display: flex; gap: 8px; margin-top: 18px; flex-wrap: wrap; }
-.sd-x { position: absolute; top: 10px; left: 12px; border: 0; background: none; font-size: 26px; cursor: pointer; color: var(--sd-dim); line-height: 1; }
-.sd-x:hover { color: #fff; }
+.sd-x { position: absolute; top: 10px; inset-inline-end: 12px; border: 0; background: none; font-size: 26px; cursor: pointer; color: var(--sd-dim); line-height: 1; }
+.sd-x:hover { color: var(--brand-strong); }
 .sd-done p { line-height: 1.8; }
 
 /* ---------- Admin: studio orders ---------- */
@@ -206,7 +206,7 @@
 .sd-order.st-ready { border-top-color: var(--sd-ok); }
 .sd-order.st-delivered, .sd-order.st-cancelled { border-top-color: var(--brand-border); opacity: .75; }
 .sd-order-head { display: flex; justify-content: space-between; gap: 8px; font-size: 14px; }
-.sd-order .sd-big { font-size: 22px; font-weight: 700; margin: 8px 0; color: #fff; }
+.sd-order .sd-big { font-size: 22px; font-weight: 700; margin: 8px 0; color: var(--brand-strong); }
 .sd-order p { margin: 4px 0; font-size: 14px; }
 .sd-order a { color: var(--sd-muted); }
 .sd-notes { background: var(--sd-bg); padding: 6px 10px; border-radius: 8px; }
@@ -232,7 +232,7 @@
 .sd-ok { color: var(--sd-ok); font-size: 14px; }
 .sd-pricing-grid { display: grid; grid-template-columns: 3fr 2fr; gap: 14px; }
 .sd-box { background: var(--sd-surface); border: 1px solid var(--sd-line); border-radius: var(--sd-radius); padding: 16px 18px; }
-.sd-box h6 { color: #fff; font-weight: 600; margin-bottom: 12px; }
+.sd-box h6 { color: var(--brand-strong); font-weight: 600; margin-bottom: 12px; }
 .sd-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 14px; }
 .sd-form-grid label { display: flex; flex-direction: column; gap: 5px; font-size: 13px; color: var(--sd-muted); margin: 0; }
 .sd-span-2 { grid-column: 1 / -1; }
@@ -242,11 +242,11 @@
 }
 .sd-admin input::placeholder { color: #6f6ca8; }
 .sd-admin input:focus, .sd-admin select:focus { outline: 2px solid var(--sd-accent); outline-offset: -1px; border-color: transparent; }
-.sd-preview { font-size: 34px; font-weight: 700; color: #fff; margin: 14px 0 2px; }
+.sd-preview { font-size: 34px; font-weight: 700; color: var(--brand-strong); margin: 14px 0 2px; }
 .sd-preview small { font-size: 15px; color: var(--sd-muted); font-weight: 500; }
 .sd-table-wrap { overflow-x: auto; }
 .sd-table { width: 100%; border-collapse: collapse; min-width: 640px; }
-.sd-table th { font-size: 12px; font-weight: 600; color: var(--sd-muted); text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--sd-line); }
+.sd-table th { font-size: 12px; font-weight: 600; color: var(--sd-muted); text-align: start; padding: 8px 10px; border-bottom: 1px solid var(--sd-line); }
 .sd-table td { padding: 10px; border-bottom: 1px solid var(--sd-line); vertical-align: middle; }
 .sd-table td input { max-width: 130px; }
 .sd-table tr.sd-off td:not(:nth-child(2)) { opacity: .45; }
@@ -263,7 +263,7 @@
 /* ---------- Profile → My Orders: studio order progress ---------- */
 .studio-steps { display: flex; gap: 0; margin: 12px 0 8px; }
 .studio-step { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; position: relative; color: var(--brand-muted); }
-.studio-step::before { content: ''; position: absolute; top: 6px; right: 50%; width: 100%; height: 2px; background: var(--brand-border); z-index: 0; }
+.studio-step::before { content: ''; position: absolute; top: 6px; inset-inline-end: 50%; width: 100%; height: 2px; background: var(--brand-border); z-index: 0; }
 .studio-step:first-child::before { display: none; }
 .studio-step .dot { width: 14px; height: 14px; border-radius: 50%; background: var(--brand-border); position: relative; z-index: 1; }
 .studio-step.done { color: var(--brand-primary); }
@@ -279,7 +279,7 @@
 .sd-font-current {
   width: 100%; display: flex; flex-direction: column; align-items: stretch; gap: 2px;
   padding: 8px 12px; border: 1px solid var(--sd-line); border-radius: 10px;
-  background: var(--sd-bg); color: var(--sd-ink); cursor: pointer; text-align: right; font: inherit;
+  background: var(--sd-bg); color: var(--sd-ink); cursor: pointer; text-align: start; font: inherit;
 }
 .sd-font-current:hover, .sd-font-current[aria-expanded='true'] { border-color: var(--sd-accent); }
 .sd-font-sample { display: block; font-size: 24px; line-height: 1.45; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -294,7 +294,7 @@
 .sd-font-list::-webkit-scrollbar { width: 6px; }
 .sd-font-list::-webkit-scrollbar-thumb { background: var(--sd-line); border-radius: 10px; }
 .sd-font-item {
-  display: flex; flex-direction: column; align-items: stretch; gap: 0; text-align: right;
+  display: flex; flex-direction: column; align-items: stretch; gap: 0; text-align: start;
   padding: 6px 10px; border: 1px solid transparent; border-radius: 8px;
   background: transparent; color: var(--sd-ink); cursor: pointer; font: inherit;
 }
@@ -361,7 +361,7 @@
   background: rgba(17, 17, 63, .82); backdrop-filter: blur(6px);
   border: 1px solid var(--sd-line); border-radius: 12px; padding: 6px 8px 6px 12px; font-size: 13px; color: var(--sd-ink);
 }
-.sd-mini b { color: #fff; }
+.sd-mini b { color: var(--brand-strong); }
 .sd-mini .sd-btn { padding: 5px 12px; font-size: 13px; }
 
 /* قائمة منسدلة (موديلات الهواتف) */
@@ -376,14 +376,14 @@
 .sd-gate { max-width: 440px; }
 .sd-credits { max-width: 1000px; margin: 0 auto; padding: 24px 16px 48px; }
 .sd-balance { display: inline-block; margin-top: 12px; padding: 10px 18px; border-radius: 999px; background: var(--sd-surface); border: 1px solid var(--sd-line); }
-.sd-balance b { font-size: 1.4em; color: #fff; margin: 0 6px; }
+.sd-balance b { font-size: 1.4em; color: var(--brand-strong); margin: 0 6px; }
 .sd-center { text-align: center; }
 .sd-center .sd-row { justify-content: center; }
 .sd-packs { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 12px; margin-bottom: 18px; }
 .sd-pack { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 18px 12px; border-radius: var(--sd-radius); background: var(--sd-surface); border: 2px solid var(--sd-line); color: inherit; cursor: pointer; transition: border-color .15s, transform .15s; }
 .sd-pack:hover { transform: translateY(-2px); }
 .sd-pack.on { border-color: var(--sd-accent); }
-.sd-pack b { font-size: 1.8em; color: #fff; line-height: 1.1; }
+.sd-pack b { font-size: 1.8em; color: var(--brand-strong); line-height: 1.1; }
 .sd-pack em { font-style: normal; font-weight: 600; margin-top: 6px; color: var(--sd-accent); }
 .sd-pay { display: flex; flex-direction: column; gap: 12px; margin-bottom: 18px; }
 .sd-pay h3 { margin: 0; }

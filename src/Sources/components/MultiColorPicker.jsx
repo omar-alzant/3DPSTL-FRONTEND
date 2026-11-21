@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { InputGroup, Button } from "react-bootstrap";
 import "../Style/MultiColorPicker.css";
+import { useLang } from '../i18n/LanguageContext';
 const MultiColorPicker = ({ 
   value, 
   onChange, // Used for Admin/Edit mode (add/remove available colors)
@@ -8,6 +9,7 @@ const MultiColorPicker = ({
   selectedValues = [], // 🔑 NEW: The colors currently selected by the client
   onSelect, // 🔑 NEW: Callback to notify the parent of client's color selection
 }) => {
+  const { tx } = useLang();
   // ... (rest of parseValue remains the same)
   const parseValue = (val) => {
     // ... (parseValue logic)
@@ -81,11 +83,11 @@ const MultiColorPicker = ({
             type="color"
             className="form-control form-control-color"
             value={currentColor}
-            title="Choose color"
+            title={tx('Choose color', 'اختر لوناً')}
             onChange={(e) => setCurrentColor(e.target.value)}
           />
           <Button variant="light" onClick={addColor}>
-            Add
+            {tx('Add', 'إضافة')}
           </Button>
         </InputGroup>
       )}

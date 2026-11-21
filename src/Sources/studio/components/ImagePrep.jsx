@@ -2,12 +2,13 @@
 // إزالة الخلفية تتم بالكامل في المتصفح: تعبئة من حواف الصورة للألوان القريبة من لون الخلفية
 // (مناسبة للرسومات والصور ذات الخلفية السادة). الناتج PNG بخلفية شفافة.
 import { useEffect, useRef, useState } from 'react';
+import { useLang } from '../../i18n/LanguageContext';
 
 const WORK = 900; // أقصى دقة للعمل داخل النافذة
 const BOX = 420; // حجم مساحة العرض
 
 const RATIOS = [
-  { id: 'free', label: 'حر', r: null },
+  { id: 'free', label: 'حر', en: 'Free', r: null },
   { id: '1:1', label: '1:1', r: 1 },
   { id: '4:3', label: '4:3', r: 4 / 3 },
   { id: '3:2', label: '3:2', r: 3 / 2 },
@@ -82,6 +83,7 @@ function fitRatio(c, r, W, H) {
 const HANDLES = ['nw', 'n', 'ne', 'e', 'se', 's', 'sw', 'w'];
 
 export default function ImagePrep({ src, maxSize = 256, onCancel, onConfirm }) {
+  const { tx } = useLang();
   const [base, setBase] = useState(null); // canvas بدقة العمل
   const [proc, setProc] = useState(null); // بعد إزالة الخلفية
   const [bg, setBg] = useState('keep');
@@ -198,9 +200,9 @@ export default function ImagePrep({ src, maxSize = 256, onCancel, onConfirm }) {
   return (
     <div className="sd-modal-bg" onPointerMove={onMove} onPointerUp={onUp} onPointerLeave={onUp}>
       <div className="sd-modal sd-prep" onClick={(e) => e.stopPropagation()}>
-        <button className="sd-x" onClick={onCancel} aria-label="إغلاق">×</button>
-        <h3>تجهيز الصورة</h3>
-        {err && <p className="sd-error">{err}</p>}
+        <button className="sd-x" onClick={onCancel} aria-label={tx('Close', 'إغلاق')}>×</button>
+        <h3>{tx('Prepare the image', 'تجهيز الصورة')}</h3>
+        {err && <p className="sd-error">{tx('Could not read the image', 'تعذّر قراءة الصورة')}</p>}
         <div className="sd-prep-body">
           <div className="sd-prep-stage">
             <div className="sd-prep-view" style={{ width: BOX, height: BOX }}>
@@ -229,36 +231,36 @@ export default function ImagePrep({ src, maxSize = 256, onCancel, onConfirm }) {
           </div>
 
           <div className="sd-prep-side">
-            <label>الخلفية</label>
+            <label>{tx('Background', 'الخلفية')}</label>
             <div className="sd-seg">
-              <button type="button" className={bg === 'keep' ? 'on' : ''} onClick={() => setBg('keep')}>إبقاء الخلفية</button>
-              <button type="button" className={bg === 'remove' ? 'on' : ''} onClick={() => setBg('remove')}>إزالة الخلفية</button>
+              <button type="button" className={bg === 'keep' ? 'on' : ''} onClick={() => setBg('keep')}>{tx('Keep background', 'إبقاء الخلفية')}</button>
+              <button type="button" className={bg === 'remove' ? 'on' : ''} onClick={() => setBg('remove')}>{tx('Remove background', 'إزالة الخلفية')}</button>
             </div>
             {bg === 'remove' && (
               <div className="sd-prep-tol">
-                <small>حساسية الإزالة</small>
+                <small>{tx('Removal sensitivity', 'حساسية الإزالة')}</small>
                 <div className="sd-range">
                   <input type="range" min={5} max={120} step={1} value={tol} onChange={(e) => setTol(+e.target.value)} />
                   <span className="sd-unit">{tol}</span>
                 </div>
-                <small>تعمل أفضل مع الرسومات والصور ذات الخلفية السادة</small>
+                <small>{tx('Works best with drawings and plain-background photos', 'تعمل أفضل مع الرسومات والصور ذات الخلفية السادة')}</small>
               </div>
             )}
 
-            <label>نسبة القصّ</label>
+            <label>{tx('Crop ratio', 'نسبة القصّ')}</label>
             <div className="sd-ratios">
               {RATIOS.map((r) => (
                 <button key={r.id} type="button" className={ratio === r.id ? 'on' : ''} onClick={() => pickRatio(r.id)}>
                   <i style={r.r ? { aspectRatio: String(r.r) } : undefined} />
-                  <span>{r.label}</span>
+                  <span>{r.en ? tx(r.en, r.label) : r.label}</span>
                 </button>
               ))}
             </div>
           </div>
         </div>
         <div className="sd-row sd-prep-actions">
-          <button type="button" className="sd-btn" onClick={onCancel}>إلغاء</button>
-          <button type="button" className="sd-btn sd-primary" disabled={!proc} onClick={confirm}>تأكيد</button>
+          <button type="button" className="sd-btn" onClick={onCancel}>{tx('Cancel', 'إلغاء')}</button>
+          <button type="button" className="sd-btn sd-primary" disabled={!proc} onClick={confirm}>{tx('Confirm', 'تأكيد')}</button>
         </div>
       </div>
     </div>

@@ -14,8 +14,10 @@ import { useToast } from "../context/ToastProvider";
 
 import { ReactComponent as Logo } from '../../logo.svg';
 import { supabase } from '../supabase';
+import { useLang } from '../i18n/LanguageContext';
 
 export default function UpdatePassword() {
+  const { tx } = useLang();
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -46,7 +48,7 @@ export default function UpdatePassword() {
         });
 
         if (error) {
-          showToast("Invalid or expired reset link.", "danger");
+          showToast(tx('Invalid or expired reset link.', 'الرابط غلط أو انتهت صلاحيته.'), "danger");
           navigate('/login');
           return;
         }
@@ -64,8 +66,8 @@ export default function UpdatePassword() {
     setError('');
 
     if (password !== confirmPassword) {
-      setError('Passwords do not match.');
-      showToast('Passwords do not match.', "danger");
+      setError(tx('Passwords do not match.', 'كلمتين السر مش متل بعض.'));
+      showToast(tx('Passwords do not match.', 'كلمتين السر مش متل بعض.'), "danger");
       return;
     }
 
@@ -79,7 +81,7 @@ export default function UpdatePassword() {
       setError(error.message);
       showToast(error.message, "danger");
     } else {
-      showToast("Password updated successfully.", "success");
+      showToast(tx('Password updated successfully.', 'تغيّرت كلمة السر.'), "success");
       await supabase.auth.signOut();
       navigate('/login');
     }
@@ -94,7 +96,7 @@ export default function UpdatePassword() {
     >
       <Logo className="logo-svg mb-4" style={{ height: '60px' }} />
 
-      <h2 className="mb-3 c-black">Update Password</h2>
+      <h2 className="mb-3 c-black">{tx('Update Password', 'تغيير كلمة السر')}</h2>
 
       {error && <Alert variant="danger" className="w-100">{error}</Alert>}
 
@@ -106,7 +108,7 @@ export default function UpdatePassword() {
             <InputGroup>
               <Form.Control
                 type={showPassword ? 'text' : 'password'}
-                placeholder="New password"
+                placeholder={tx('New password', 'كلمة السر الجديدة')}
                 value={password}
                 onChange={e => setPassword(e.target.value)}
                 required
@@ -126,7 +128,7 @@ export default function UpdatePassword() {
             <InputGroup>
               <Form.Control
                 type={showConfirmPassword ? 'text' : 'password'}
-                placeholder="Confirm new password"
+                placeholder={tx('Confirm new password', 'أكّد كلمة السر الجديدة')}
                 value={confirmPassword}
                 onChange={e => setConfirmPassword(e.target.value)}
                 required
@@ -150,10 +152,10 @@ export default function UpdatePassword() {
             {loading ? (
               <>
                 <Spinner as="span" animation="border" size="sm" className="me-2" />
-                Updating...
+                {tx('Updating...', 'عم يحدّث...')}
               </>
             ) : (
-              'Update Password'
+              tx('Update Password', 'تغيير كلمة السر')
             )}
           </Button>
 

@@ -1,11 +1,13 @@
 // قائمة خطوط بمعاينة حيّة: كل خط يعرض نص الزبون نفسه، ويُحمَّل الخط فقط عند ظهوره في القائمة
 import { useDeferredValue, useEffect, useRef, useState } from 'react';
 import { FONTS, fontStyle, fontSupports, hasArabic } from '../lib/fonts.js';
+import { useT } from '../i18n/index.js';
+import { useLang } from '../../i18n/LanguageContext';
 
 const TABS = [
-  { id: 'all', label: 'الكل' },
-  { id: 'ar', label: 'عربي' },
-  { id: 'en', label: 'English' },
+  { id: 'all', label: ['All', 'الكل'] },
+  { id: 'ar', label: ['Arabic', 'عربي'] },
+  { id: 'en', label: ['English', 'English'] },
 ];
 
 function preview(def, sample) {
@@ -15,6 +17,8 @@ function preview(def, sample) {
 }
 
 function Item({ def, sample, active, onPick, root }) {
+  const t = useT();
+  const { tx } = useLang();
   const ref = useRef(null);
   const [seen, setSeen] = useState(false);
   useEffect(() => {
@@ -32,11 +36,11 @@ function Item({ def, sample, active, onPick, root }) {
       className={`sd-font-item${active ? ' on' : ''}`}
       disabled={!ok}
       onClick={() => onPick(def.id)}
-      title={ok ? def.name : 'هذا الخط لا يدعم الحروف العربية'}
+      title={ok ? t(def.name) : tx('This font has no Arabic letters', 'هذا الخط لا يدعم الحروف العربية')}
     >
       <span className="sd-font-name">
-        {def.name}
-        {!ok && <em>لا يدعم العربي</em>}
+        {t(def.name)}
+        {!ok && <em>{tx('No Arabic', 'لا يدعم العربي')}</em>}
       </span>
       <span className="sd-font-sample" dir="auto" style={seen ? fontStyle(def) : undefined}>
         {preview(def, sample)}
@@ -48,6 +52,8 @@ function Item({ def, sample, active, onPick, root }) {
 export default function FontPicker({ value, onChange, sample: liveSample }) {
   // the font previews follow the typed text without slowing the typing itself
   const sample = useDeferredValue(liveSample);
+  const tr = useT();
+  const { tx } = useLang();
   const [open, setOpen] = useState(false);
   const [tab, setTab] = useState(() => (hasArabic(sample) ? 'ar' : 'all'));
   const wrap = useRef(null);
@@ -78,15 +84,15 @@ export default function FontPicker({ value, onChange, sample: liveSample }) {
     <div className="sd-font-picker" ref={wrap}>
       <button type="button" className="sd-font-current" onClick={() => setOpen((o) => !o)} aria-expanded={open}>
         <span className="sd-font-sample" dir="auto" style={fontStyle(cur)}>{preview(cur, sample)}</span>
-        <span className="sd-font-name">{cur.name} ▾</span>
+        <span className="sd-font-name">{tr(cur.name)} ▾</span>
       </button>
-      {!fontSupports(cur, sample) && <small className="sd-error">الخط المختار لا يدعم الحروف العربية — اختر خطاً من تبويب «عربي»</small>}
+      {!fontSupports(cur, sample) && <small className="sd-error">{tx('This font has no Arabic letters — pick one from the “Arabic” tab', 'الخط المختار لا يدعم الحروف العربية — اختر خطاً من تبويب «عربي»')}</small>}
       {open && (
         <div className="sd-font-pop">
           <div className="sd-seg">
             {TABS.map((t) => (
               <button key={t.id} type="button" className={t.id === tab ? 'on' : ''} onClick={() => setTab(t.id)}>
-                {t.label}
+                {tx(...t.label)}
               </button>
             ))}
           </div>

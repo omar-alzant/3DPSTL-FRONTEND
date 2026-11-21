@@ -6,10 +6,12 @@ import { isToolEnabled } from '../studio/lib/pricing.js';
 import Gallery from '../studio/components/Gallery.jsx';
 import Editor from '../studio/components/Editor.jsx';
 import '../Style/Studio.css';
+import { useLang } from '../i18n/LanguageContext';
 
 // صفحة Studio: معرض الأدوات على /studio والمحرّر على /studio/:toolId (و ?d=… لتصميم محفوظ)
 export default function Studio() {
   const { toolId } = useParams();
+  const { dir, lang } = useLang();
   const [search] = useSearchParams();
   const location = useLocation();
   const [config, setConfig] = useState(DEFAULT_CONFIG);
@@ -32,7 +34,7 @@ export default function Studio() {
   const initial = location.state?.params || (d ? decodeParams(d) : null);
 
   return (
-    <div className="studio" dir="rtl" lang="ar">
+    <div className="studio" dir={dir} lang={lang}>
       {tool ? (
         <Editor key={toolId + (d || '') + (location.state?.params ? location.key : '')} tool={tool} initial={initial} config={config} orderId={location.state?.orderId} downloadId={location.state?.downloadId} />
       ) : (

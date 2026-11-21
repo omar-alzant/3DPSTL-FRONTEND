@@ -12,9 +12,23 @@ import ConfirmationModal from "./ConfirmationModal";
 import Form from "react-bootstrap/Form";
 import { Badge, Image, ListGroup } from "react-bootstrap";
 import { PageLoader } from './BrandSpinner';
+import { FaInstagram } from 'react-icons/fa';
+import { useLang } from '../i18n/LanguageContext';
+
+// Under each item in the admin: its Instagram post, or a note that it has none
+function InstagramLink({ url }) {
+  const { tx } = useLang();
+  if (!url) return <small className="text-muted me-auto">{tx('No Instagram link', 'ما في رابط إنستغرام')}</small>;
+  return (
+    <a href={url} target="_blank" rel="noopener noreferrer" className="btn btn-outline-primary me-auto d-inline-flex align-items-center gap-2" title={url}>
+      <FaInstagram /> {tx('Open on Instagram', 'افتحها عالإنستغرام')}
+    </a>
+  );
+}
 
 // search/onSearch اختياريان: إن مرّرتهما الصفحة يصبح البحث على الخادم (لكل العناصر وليس الصفحة الحالية فقط)
 const PreviewAdminContent = ({ materials, editingId, startEditing, deleteMaterial, copyMaterial, canDelete, withVariants = false, flatView = false, search, onSearch, loading = false }) => {
+  const { tx } = useLang();
   const [showModal, setShowModal] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -62,7 +76,7 @@ const PreviewAdminContent = ({ materials, editingId, startEditing, deleteMateria
     <Form className="mb-4" onSubmit={(e) => e.preventDefault()}>
         <Form.Control
             type="search"
-            placeholder="Search by name..."
+            placeholder={tx('Search by name...', 'ابحث بالاسم…')}
             value={term}
             onChange={(e) => (serverSearch ? onSearch(e.target.value) : setSearchTerm(e.target.value))}
             className="shadow-lg border-primary border-2 rounded-pill p-3"
@@ -92,13 +106,13 @@ const PreviewAdminContent = ({ materials, editingId, startEditing, deleteMateria
                             <h5 className={`mb-0 fw-bold text-truncate ${(m.isDisabled) ? 'text-muted' : 'text-dark'}`}>
                                 {(m.isDisabled ) ? "🔒" : "✨"} {m.name || 'Untitled Product'}
                             </h5>
-                            {m.isDisabled && <Badge pill bg="danger" className="ms-3">Disabled</Badge>}
+                            {m.isDisabled && <Badge pill bg="danger" className="ms-3">{tx('Disabled', 'معطّل')}</Badge>}
                         </div>
                         </Card.Header>
                         <Card.Body className="p-4">
                         {m.brandsF &&
                                             <div className="mb-2">
-                                                <h4> Brands:</h4>
+                                                <h4> {tx('Brands:', 'الماركات:')}</h4>
                                                 {m.brandsF?.map((b) => (
                                                     <span key={b.value} className="badge bg-warning c-black me-2">{b.label}</span>
                                                     ))}
@@ -114,7 +128,7 @@ const PreviewAdminContent = ({ materials, editingId, startEditing, deleteMateria
                     }
                     {(m.linkedPath) && 
                         <div className="d-flex flex-wrap gap-2 mb-3">
-                            <p>Linked Path: </p>
+                            <p>{tx('Linked Path:', 'الرابط:')} </p>
                             <p> {m.linkedPath} </p>
                         </div>
                     }
@@ -148,7 +162,7 @@ const PreviewAdminContent = ({ materials, editingId, startEditing, deleteMateria
                     {/* Description */}
                     {m.description !== "" && m.description && (
                         <div className="mb-4">
-                            <h6 className="fw-bold text-muted">Description:</h6>
+                            <h6 className="fw-bold text-muted">{tx('Description:', 'الوصف:')}</h6>
                             <Editor
                                 ref={quillRef}
                                 label={"Description"}
@@ -162,7 +176,7 @@ const PreviewAdminContent = ({ materials, editingId, startEditing, deleteMateria
                     )}
                         {m.short_description && m.short_description.trim() !== "" && (
                     <div className="mb-4">
-                        <h6 className="fw-bold text-muted">Short Description:</h6>
+                        <h6 className="fw-bold text-muted">{tx('Short Description:', 'وصف قصير:')}</h6>
                         <textarea
                         readOnly
                         className="fw-semibold text-primary form-control"
@@ -216,7 +230,7 @@ const PreviewAdminContent = ({ materials, editingId, startEditing, deleteMateria
             
                                                 {v?.color !== ""  && 
                                                     <div className="d-flex justify-content-md-end flex-wrap gap-2">
-                                                        <small className="text-muted">Color:</small>
+                                                        <small className="text-muted">{tx('Color:', 'اللون:')}</small>
                                                         <span
                                                             className="swatch"
                                                             style={{ backgroundColor: v.color }}
@@ -238,13 +252,14 @@ const PreviewAdminContent = ({ materials, editingId, startEditing, deleteMateria
                     <hr />
             
                     {/* Buttons */}
-                    <div className="d-flex justify-content-end gap-2">
-                        <Button variant="secondary" onClick={() => startEditing(m)}>Edit</Button>
+                    <div className="d-flex justify-content-end align-items-center gap-2 flex-wrap">
+                        {withVariants && <InstagramLink url={m.instagram_url} />}
+                        <Button variant="secondary" onClick={() => startEditing(m)}>{tx('Edit', 'تعديل')}</Button>
                         {copyMaterial && (
-                            <Button variant="outline-info" onClick={() => copyMaterial(m)}>Copy</Button>
+                            <Button variant="outline-info" onClick={() => copyMaterial(m)}>{tx('Copy', 'نسخ')}</Button>
                         )}
                         {canDelete && (
-                            <Button variant="danger" onClick={() => handleShow(m)}>Remove</Button>
+                            <Button variant="danger" onClick={() => handleShow(m)}>{tx('Remove', 'حذف')}</Button>
                         )}
                     </div>
             
@@ -259,7 +274,7 @@ const PreviewAdminContent = ({ materials, editingId, startEditing, deleteMateria
                                     <h5 className={`mb-0 fw-bold text-truncate ${(m.isDisabled) ? 'text-muted' : 'text-dark'}`}>
                                         {(m.isDisabled) ? "🔒" : "✨"} {m.name || 'Untitled Product'}
                                     </h5>
-                                    {m.isDisabled && <Badge pill bg="danger" className="ms-3">Disabled</Badge>}
+                                    {m.isDisabled && <Badge pill bg="danger" className="ms-3">{tx('Disabled', 'معطّل')}</Badge>}
                                     {/* Optional: Add min/max price indicator here if available in the data */}
                                 </div>
                             </Accordion.Header>
@@ -269,7 +284,7 @@ const PreviewAdminContent = ({ materials, editingId, startEditing, deleteMateria
                                     
                                 {Array.isArray(m.brandsF) && m.brandsF.length > 0 && (
                                     <div className="mb-2">
-                                        <h4>Brands:</h4>
+                                        <h4>{tx('Brands:', 'الماركات:')}</h4>
                                         {m.brandsF.map(b => (
                                         <span
                                             key={b.value}
@@ -283,7 +298,7 @@ const PreviewAdminContent = ({ materials, editingId, startEditing, deleteMateria
 
                                     {(m.category_name || m.type_name || m.model_name) && 
                                         <>
-                                        <h4>Parents:</h4>
+                                        <h4>{tx('Parents:', 'الأصل:')}</h4>
                                         <div className="d-flex flex-wrap gap-2 mb-3">
                                             <Badge bg="primary" className="fw-normal">{m.category_name || ""}</Badge>
                                             <Badge bg="secondary" className="fw-normal">{m.type_name || m.typename}</Badge>
@@ -294,7 +309,7 @@ const PreviewAdminContent = ({ materials, editingId, startEditing, deleteMateria
                                     
                                 {(m.linkedPath) && 
                                                 <div className="d-flex flex-wrap gap-2 p-2 mb-1 border rounded">
-                                                    <h6>Linked Path: 
+                                                    <h6>{tx('Linked Path:', 'الرابط:')} 
                                                     <hr />
                                                     </h6>
                                                     <small> {m.linkedPath} </small>
@@ -330,7 +345,7 @@ const PreviewAdminContent = ({ materials, editingId, startEditing, deleteMateria
                                     {/* Description */}
                                     {m.description && m.description.replace(" ", "") !== "" && (
                                         <div className="mb-4">
-                                            <h6 className="fw-bold text-muted">Description:</h6>
+                                            <h6 className="fw-bold text-muted">{tx('Description:', 'الوصف:')}</h6>
                                             <Editor
                                                 label={"Description"}
                                                 key={m.id + "-desc"}
@@ -351,7 +366,7 @@ const PreviewAdminContent = ({ materials, editingId, startEditing, deleteMateria
                                     )}
                                     {m.short_description && m.short_description.trim() !== "" && (
                                         <div className="mb-4">
-                                            <h6 className="fw-bold text-muted">Short Description:</h6>
+                                            <h6 className="fw-bold text-muted">{tx('Short Description:', 'وصف قصير:')}</h6>
                                             <textarea
                                             readOnly
                                             className="fw-semibold text-primary form-control"
@@ -447,19 +462,20 @@ const PreviewAdminContent = ({ materials, editingId, startEditing, deleteMateria
                                     <hr className="my-3"/>
                                         
                                     {/* Action Buttons */}
-                                    <div className="d-flex justify-content-end gap-2">
+                                    <div className="d-flex justify-content-end align-items-center gap-2 flex-wrap">
+                        {withVariants && <InstagramLink url={m.instagram_url} />}
                                         <Button
                                             variant="secondary"
                                             onClick={() => startEditing(m)}
                                         >
-                                                Edit
+                                                {tx('Edit', 'تعديل')}
                                         </Button>
                                         {copyMaterial && (
                                             <Button
                                                 variant="outline-info"
                                                 onClick={() => copyMaterial(m)}
                                             >
-                                                    Copy
+                                                    {tx('Copy', 'نسخ')}
                                             </Button>
                                         )}
                                         {canDelete && (
@@ -467,7 +483,7 @@ const PreviewAdminContent = ({ materials, editingId, startEditing, deleteMateria
                                                 variant="danger"
                                                 onClick={() => handleShow(m)}
                                             >
-                                                    Remove
+                                                    {tx('Remove', 'حذف')}
                                             </Button>
                                         )}
                                     </div>
@@ -486,7 +502,7 @@ const PreviewAdminContent = ({ materials, editingId, startEditing, deleteMateria
 <ConfirmationModal
     show={showModal}
     onHide={handleClose}
-    title="Confirm Deletion"
+    title={tx('Confirm Deletion', 'تأكيد الحذف')}
     titleClassName="text-danger"
     message={
         <>
@@ -501,7 +517,7 @@ const PreviewAdminContent = ({ materials, editingId, startEditing, deleteMateria
         onClick: handleConfirmDelete,
     }}
     secondaryButton={{
-        text: "Cancel",
+        text: tx('Cancel', 'إلغاء'),
         variant: "secondary",
         onClick: handleClose,
     }}

@@ -1,8 +1,10 @@
 import React from 'react';
 import { Button } from 'react-bootstrap';
 import { useParams, Link } from 'react-router-dom';
+import { useLang } from '../i18n/LanguageContext';
 
 const OrderSuccess = () => {
+  const { tx } = useLang();
 
   const { orderId } = useParams();
     const message = encodeURIComponent("Hello! I'm shopping at 3DSTL and have a question about an item.");
@@ -23,7 +25,7 @@ const OrderSuccess = () => {
         </p>
 
         <Link to="/" className="btn btn-primary px-5 shadow-sm">
-          Return to Shop
+          {tx('Return to Shop', 'رجوع للمتجر')}
         </Link>
       </div>
     </div>

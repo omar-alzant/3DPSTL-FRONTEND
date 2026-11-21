@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Form, Button, Spinner, Container, Table } from "react-bootstrap";
 import { useToast } from "../context/ToastProvider";
+import { useLang } from '../i18n/LanguageContext';
 
 export default function AdminColors() {
+  const { tx } = useLang();
 
   const token = localStorage.getItem('token');
   const { showToast } = useToast();
@@ -50,7 +52,7 @@ export default function AdminColors() {
 
     } catch {
 
-      showToast("Failed loading colors", "danger");
+      showToast(tx('Failed loading colors', 'فشل تحميل الألوان'), "danger");
 
     } finally {
 
@@ -79,7 +81,7 @@ export default function AdminColors() {
 
     } catch {
 
-      showToast("Failed loading metadata", "danger");
+      showToast(tx('Failed loading metadata', 'فشل تحميل البيانات'), "danger");
 
     }
 
@@ -144,14 +146,14 @@ export default function AdminColors() {
 
       if (!res.ok) throw new Error();
 
-      showToast(editingId ? "Color updated" : "Color added");
+      showToast(editingId ? tx('Color updated', 'تم تحديث اللون') : tx('Color added', 'تمت إضافة اللون'));
 
       resetForm();
       fetchColors();
 
     } catch {
 
-      showToast("Save failed", "danger");
+      showToast(tx('Save failed', 'فشل الحفظ'), "danger");
 
     } finally {
 
@@ -184,7 +186,7 @@ export default function AdminColors() {
 
   const deleteColor = async (id) => {
 
-    if (!window.confirm("Delete this color?")) return;
+    if (!window.confirm(tx('Delete this color?', 'حذف هذا اللون؟'))) return;
 
     try {
 
@@ -195,11 +197,11 @@ export default function AdminColors() {
 
       setColors(colors.filter(c => c.id !== id));
 
-      showToast("Deleted");
+      showToast(tx('Deleted', 'تم الحذف'));
 
     } catch {
 
-      showToast("Delete error", "danger");
+      showToast(tx('Delete error', 'خطأ في الحذف'), "danger");
 
     }
 
@@ -212,7 +214,7 @@ export default function AdminColors() {
       <Form className="p-4 border rounded mb-5" onSubmit={handleSubmit}>
 
         <Form.Group className="mb-3">
-          <Form.Label>Color Name</Form.Label>
+          <Form.Label>{tx('Color Name', 'اسم اللون')}</Form.Label>
           <Form.Control
             value={form.name}
             onChange={e => handleChange("name", e.target.value)}
@@ -221,7 +223,7 @@ export default function AdminColors() {
         </Form.Group>
 
         <Form.Group className="mb-3">
-          <Form.Label>Color</Form.Label>
+          <Form.Label>{tx('Color', 'اللون')}</Form.Label>
           <Form.Control
             type="color"
             value={form.hex}
@@ -230,14 +232,14 @@ export default function AdminColors() {
         </Form.Group>
 
         <Form.Group className="mb-3">
-          <Form.Label>Material</Form.Label>
+          <Form.Label>{tx('Material', 'المادة')}</Form.Label>
 
           <Form.Select
             value={form.material_id}
             onChange={e => handleChange("material_id", e.target.value)}
           >
 
-            <option value="">Select Material</option>
+            <option value="">{tx('Select Material', 'اختر المادة')}</option>
 
             {metadata.materials.map(m => (
               <option key={m.id} value={m.id}>
@@ -250,14 +252,14 @@ export default function AdminColors() {
         </Form.Group>
 
         <Form.Group className="mb-3">
-          <Form.Label>Brand</Form.Label>
+          <Form.Label>{tx('Brand', 'الماركة')}</Form.Label>
 
           <Form.Select
             value={form.brand_id}
             onChange={e => handleChange("brand_id", e.target.value)}
           >
 
-            <option value="">Select Brand</option>
+            <option value="">{tx('Select Brand', 'اختر الماركة')}</option>
 
             {metadata.brands.map(b => (
               <option key={b.id} value={b.id}>
@@ -270,7 +272,7 @@ export default function AdminColors() {
         </Form.Group>
 
         <Form.Group className="mb-3">
-          <Form.Label>Stock</Form.Label>
+          <Form.Label>{tx('Stock', 'المخزون')}</Form.Label>
           <Form.Control
             type="number"
             value={form.stock}
@@ -282,8 +284,8 @@ export default function AdminColors() {
           {isSaving
             ? <Spinner size="sm" />
             : editingId
-              ? "Save Changes"
-              : "Add Color"}
+              ? tx('Save Changes', 'حفظ التعديلات')
+              : tx('Add Color', 'إضافة لون')}
         </Button>
 
         <Button
@@ -291,7 +293,7 @@ export default function AdminColors() {
           className="ms-2"
           onClick={resetForm}
         >
-          Cancel
+          {tx('Cancel', 'إلغاء')}
         </Button>
 
       </Form>
@@ -306,12 +308,12 @@ export default function AdminColors() {
 
           <thead>
             <tr>
-              <th>Preview</th>
-              <th>Name</th>
-              <th>Material</th>
-              <th>Brand</th>
-              <th>Stock</th>
-              <th>Actions</th>
+              <th>{tx('Preview', 'معاينة')}</th>
+              <th>{tx('Name', 'الاسم')}</th>
+              <th>{tx('Material', 'المادة')}</th>
+              <th>{tx('Brand', 'الماركة')}</th>
+              <th>{tx('Stock', 'المخزون')}</th>
+              <th>{tx('Actions', 'إجراءات')}</th>
             </tr>
           </thead>
 
@@ -348,7 +350,7 @@ export default function AdminColors() {
                     variant="warning"
                     onClick={() => startEditing(color)}
                   >
-                    Edit
+                    {tx('Edit', 'تعديل')}
                   </Button>
 
                   <Button
@@ -357,7 +359,7 @@ export default function AdminColors() {
                     className="ms-2"
                     onClick={() => deleteColor(color.id)}
                   >
-                    Delete
+                    {tx('Delete', 'حذف')}
                   </Button>
 
                 </td>

@@ -3,8 +3,10 @@ import { Form, Button, InputGroup, Card, Container } from "react-bootstrap";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { IoSearch } from "react-icons/io5";
 import { CiCircleRemove } from "react-icons/ci";
+import { useLang } from '../i18n/LanguageContext';
 
 export default function GlobalSearch({ onClose }) {
+  const { tx } = useLang();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
@@ -53,13 +55,13 @@ export default function GlobalSearch({ onClose }) {
           }}
         >
           <Form.Control
-            placeholder="Search products, models, or descriptions..."
+            placeholder={tx('Search our works…', 'دوّر بشغلنا…')}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             style={{
               background: "transparent",
               border: "none",
-              color: "#fff",
+              color: "var(--brand-text)",
               padding: "12px 16px"
             }}
           />

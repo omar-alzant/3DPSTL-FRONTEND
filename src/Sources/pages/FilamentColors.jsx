@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Container, Spinner, Badge } from "react-bootstrap";
 import '../Style/FilamentColors.css'
+import { useLang } from '../i18n/LanguageContext';
 
 export default function FilamentColors() {
+  const { tx } = useLang();
 
   const token = localStorage.getItem('token');
 
@@ -53,11 +55,11 @@ export default function FilamentColors() {
 
     <div className="d-flex justify-content-between align-items-center">
 
-      <h4 className="mb-4">Filament Colors </h4>
+      <h4 className="mb-4">{tx('Filament Colors', 'ألوان الخيوط')} </h4>
         Total: {colors.length}
     </div>
       <p className="filament-note">
-  Colors are for reference only and may slightly vary from the actual filament due to lighting and display differences.
+  {tx('Colors are for reference only and may slightly vary from the actual filament due to lighting and display differences.', 'الألوان للتوضيح بس، وممكن تختلف شوي عن لون الخيط الحقيقي حسب الإضاءة والشاشة.')}
 </p>
 
 
@@ -91,9 +93,9 @@ export default function FilamentColors() {
 
             {/* <div className="mt-2">
               {color.stock > 0 ? (
-                <Badge bg="success">In Stock</Badge>
+                <Badge bg="success">{tx('In Stock', 'متوفّر')}</Badge>
               ) : (
-                <Badge bg="secondary">Out of Stock</Badge>
+                <Badge bg="secondary">{tx('Out of Stock', 'خلص')}</Badge>
               )}
             </div> */}
 

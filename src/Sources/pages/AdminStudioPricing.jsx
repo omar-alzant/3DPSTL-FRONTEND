@@ -4,6 +4,7 @@ import { priceFor, TIME_DEFAULTS, formatMinutes } from '../studio/lib/pricing.js
 import { TOOLS } from '../studio/tools/index.js';
 import '../Style/Studio.css';
 import { PageLoader } from '../components/BrandSpinner';
+import { useLang } from '../i18n/LanguageContext';
 
 // Admin → Studio Pricing: global prices + per-tool overrides, saved in Supabase (studio_settings)
 
@@ -47,6 +48,7 @@ function Num({ value, onChange, placeholder, step = '0.01' }) {
 }
 
 export default function AdminStudioPricing() {
+  const { tx } = useLang();
   const [form, setForm] = useState(null);
   const [saved, setSaved] = useState(null);
   const [state, setState] = useState({ saving: false, error: null, ok: false });
@@ -103,17 +105,17 @@ export default function AdminStudioPricing() {
     <div className="sd-admin sd-pricing">
       <div className="sd-admin-head">
         <div>
-          <h5 className="m-0">Studio pricing</h5>
+          <h5 className="m-0">{tx('Studio pricing', 'تسعير الاستوديو')}</h5>
           <small className="sd-muted">
             Price = max(minimum, grams × price per gram + extra-colour fee × (colours − 1) + setup fee + print hours × price per hour)
           </small>
         </div>
         <div className="d-flex gap-2 align-items-center">
-          {state.ok && <span className="sd-ok">Saved ✓</span>}
-          {dirty && !state.saving && <span className="sd-muted">Unsaved changes</span>}
-          <button className="sd-btn" onClick={load} disabled={state.saving}>Reset</button>
+          {state.ok && <span className="sd-ok">{tx('Saved ✓', 'تم الحفظ ✓')}</span>}
+          {dirty && !state.saving && <span className="sd-muted">{tx('Unsaved changes', 'تعديلات غير محفوظة')}</span>}
+          <button className="sd-btn" onClick={load} disabled={state.saving}>{tx('Reset', 'إعادة الضبط')}</button>
           <button className="sd-btn sd-primary" onClick={save} disabled={!dirty || state.saving}>
-            {state.saving ? 'Saving…' : 'Save'}
+            {state.saving ? tx('Saving…', 'جارٍ الحفظ…') : tx('Save', 'حفظ')}
           </button>
         </div>
       </div>
@@ -121,14 +123,14 @@ export default function AdminStudioPricing() {
 
       <div className="sd-pricing-grid">
         <section className="sd-box">
-          <h6>Default prices</h6>
+          <h6>{tx('Default prices', 'الأسعار الافتراضية')}</h6>
           <div className="sd-form-grid">
-            <label>Currency<input type="text" value={form.currency} maxLength={8} onChange={(e) => set('currency')(e.target.value.toUpperCase())} /></label>
+            <label>{tx('Currency', 'العملة')}<input type="text" value={form.currency} maxLength={8} onChange={(e) => set('currency')(e.target.value.toUpperCase())} /></label>
             <label>Price per gram ({cur})<Num value={form.pricePerGram} onChange={set('pricePerGram')} step="0.001" /></label>
             <label>Minimum price per piece ({cur})<Num value={form.minPrice} onChange={set('minPrice')} /></label>
             <label>Fee per extra colour ({cur})<Num value={form.colorFee} onChange={set('colorFee')} /></label>
             <label>Price per print hour ({cur})<Num value={form.pricePerHour} onChange={set('pricePerHour')} /></label>
-            <label>Credits per file download (default)<Num value={form.creditsPerDownload} onChange={set('creditsPerDownload')} step="1" /></label>
+            <label>{tx('Credits per file download (default)', 'كريدت لكل تنزيل ملف (افتراضي)')}<Num value={form.creditsPerDownload} onChange={set('creditsPerDownload')} step="1" /></label>
             <label className="sd-span-2">WhatsApp number for orders (international, no +)
               <input type="text" value={form.whatsapp} placeholder="96176118290" onChange={(e) => set('whatsapp')(e.target.value)} />
             </label>
@@ -136,51 +138,51 @@ export default function AdminStudioPricing() {
         </section>
 
         <section className="sd-box">
-          <h6>Price preview</h6>
+          <h6>{tx('Price preview', 'معاينة السعر')}</h6>
           <div className="sd-form-grid">
-            <label className="sd-span-2">Tool
+            <label className="sd-span-2">{tx('Tool', 'الأداة')}
               <select value={preview.tool} onChange={(e) => setPreview({ ...preview, tool: e.target.value })}>
                 {TOOLS.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
               </select>
             </label>
-            <label>Weight (g)<Num value={preview.grams} onChange={(v) => setPreview({ ...preview, grams: v })} step="0.5" /></label>
-            <label>Colours<Num value={preview.colors} onChange={(v) => setPreview({ ...preview, colors: v })} step="1" /></label>
-            <label>Print time (min)<Num value={preview.minutes} onChange={(v) => setPreview({ ...preview, minutes: v })} step="5" /></label>
+            <label>{tx('Weight (g)', 'الوزن (غ)')}<Num value={preview.grams} onChange={(v) => setPreview({ ...preview, grams: v })} step="0.5" /></label>
+            <label>{tx('Colours', 'الألوان')}<Num value={preview.colors} onChange={(v) => setPreview({ ...preview, colors: v })} step="1" /></label>
+            <label>{tx('Print time (min)', 'وقت الطباعة (دقيقة)')}<Num value={preview.minutes} onChange={(v) => setPreview({ ...preview, minutes: v })} step="5" /></label>
           </div>
           <p className="sd-preview">
             {previewPrice.toFixed(2)} <small>{cur}</small>
           </p>
-          <small className="sd-muted">The customer sees this as the estimated price in the Studio.</small>
+          <small className="sd-muted">{tx('The customer sees this as the estimated price in the Studio.', 'هذا ما يراه الزبون كسعر تقريبي في الاستوديو.')}</small>
         </section>
       </div>
 
       <section className="sd-box mt-3">
-        <h6>Print time estimate</h6>
+        <h6>{tx('Print time estimate', 'تقدير وقت الطباعة')}</h6>
         <small className="sd-muted d-block mb-2">
           Time = plastic volume ÷ print speed + layers × 2 s + filament swaps × swap time + start-up.
-          Compare with Bambu Studio's estimate for one of your prints and adjust the speed until they match.
+          {tx('Compare with Bambu Studio\'s estimate for one of your prints and adjust the speed until they match.', 'قارن مع تقدير Bambu Studio لإحدى طبعاتك وعدّل السرعة حتى يتطابقا.')}
           Example with these settings: 100 g, 2 colours, 40 swaps ≈ {formatMinutes(((100 / 1.24) * 1000) / (Number(form.printFlow) || 7) / 60 + (40 * (Number(form.swapSeconds) || 0)) / 60 + (Number(form.startupMinutes) || 0))}.
         </small>
         <div className="sd-form-grid">
-          <label>Average print speed (mm³/s)<Num value={form.printFlow} onChange={set('printFlow')} step="0.5" /></label>
-          <label>Seconds per filament swap<Num value={form.swapSeconds} onChange={set('swapSeconds')} step="5" /></label>
-          <label>Start-up (heating + calibration), min<Num value={form.startupMinutes} onChange={set('startupMinutes')} step="1" /></label>
+          <label>{tx('Average print speed (mm³/s)', 'متوسط سرعة الطباعة (مم³/ث)')}<Num value={form.printFlow} onChange={set('printFlow')} step="0.5" /></label>
+          <label>{tx('Seconds per filament swap', 'ثوانٍ لكل تبديل خيط')}<Num value={form.swapSeconds} onChange={set('swapSeconds')} step="5" /></label>
+          <label>{tx('Start-up (heating + calibration), min', 'التحضير (تسخين + معايرة)، دقيقة')}<Num value={form.startupMinutes} onChange={set('startupMinutes')} step="1" /></label>
         </div>
       </section>
 
       <section className="sd-box mt-3">
-        <h6>Per-tool prices</h6>
-        <small className="sd-muted d-block mb-2">Credits / download: what downloading this tool's files costs (0 = free, empty = default). Admins never pay. Leave a field empty to use the default price. Hidden tools disappear from the Studio page.</small>
+        <h6>{tx('Per-tool prices', 'أسعار كل أداة')}</h6>
+        <small className="sd-muted d-block mb-2">{tx('Credits / download: what downloading this tool’s files costs (0 = free, empty = default). Admins never pay. Leave a field empty to use the default price. Hidden tools disappear from the Studio page.', 'كريدت / تنزيل: كلفة تنزيل ملفات هذه الأداة (0 = مجاني، فارغ = الافتراضي). الأدمن لا يدفع أبداً. اترك الخانة فارغة لاستعمال السعر الافتراضي. الأدوات المخفية تختفي من صفحة الاستوديو.')}</small>
         <div className="sd-table-wrap">
           <table className="sd-table">
             <thead>
               <tr>
-                <th>Tool</th>
-                <th>Shown</th>
+                <th>{tx('Tool', 'الأداة')}</th>
+                <th>{tx('Shown', 'ظاهر')}</th>
                 <th>Price / g ({cur})</th>
                 <th>Minimum ({cur})</th>
                 <th>Setup fee ({cur})</th>
-                <th>Credits / download</th>
+                <th>{tx('Credits / download', 'كريدت / تنزيل')}</th>
               </tr>
             </thead>
             <tbody>

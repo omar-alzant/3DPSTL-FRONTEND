@@ -1,4 +1,4 @@
-import { CART_ENABLED, WORKS_LABEL } from "../config/site";
+import { CART_ENABLED } from "../config/site";
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
@@ -17,9 +17,13 @@ import CreditBadge from './CreditBadge';
 import { CiShoppingCart } from "react-icons/ci";
 import useAdminSummary from "../hooks/useAdminSummary";
 import '../Style/Navbar.css'
+import { useLang, LangToggle } from '../i18n/LanguageContext';
+import { useTheme, ThemeToggle } from '../context/ThemeContext';
 
 
 function NavbarComp() {
+  const { theme } = useTheme();
+  const { tx } = useLang();
   const [show, setShow] = useState(false);
   const { cart } = useCart();
   const target = useRef(null);
@@ -40,8 +44,9 @@ function NavbarComp() {
             <Navbar.Brand href="/">
               {/* <Image src="/logoIco.svg" height={"30px"} style={{objectFit: "cover"}}/> */}
               <Image
-                src="/logo.png"
-                height={"45px"}
+                src={theme === 'light' ? "/logo-light.png" : "/logo.png"}
+                className="nav-logo"
+                alt="3DSTL"
                 style={{
                   objectFit: "contain",
                   filter: "drop-shadow(0 0 8px rgba(106, 77, 255,0.4))"
@@ -49,13 +54,15 @@ function NavbarComp() {
               />            
             </Navbar.Brand>
             {/* رصيد الكريدت: ظاهر دائماً (حتى على الهاتف خارج القائمة)، وفي آخر الشريط على الشاشات الكبيرة */}
-            <div className="ms-auto me-2 order-lg-last ms-lg-2 me-lg-0">
+            <div className="ms-auto me-2 order-lg-last ms-lg-2 me-lg-0 d-flex align-items-center gap-2">
+              <ThemeToggle />
+              <LangToggle />
               <CreditBadge />
             </div>
             <Navbar.Toggle 
               aria-controls={`offcanvasNavbar-expand-${expand}`}
-              style={{border: "none", background: "white"}}
-              title='Click to show navs'
+              className="nav-burger"
+              title={tx('Menu', 'القائمة')}
               onClick={() => setShowOffcanvas(true)}            
              >
               </Navbar.Toggle>            
@@ -64,7 +71,7 @@ function NavbarComp() {
               show={showOffcanvas}
               style={{
                 background: "var(--brand-bg)",
-                borderLeft: "1px solid var(--brand-border)"
+                borderInlineStart: "1px solid var(--brand-border)"
               }}
               onHide={() => setShowOffcanvas(false)}
               id={`offcanvasNavbar-expand-${expand}`}
@@ -73,7 +80,7 @@ function NavbarComp() {
             >
               <Offcanvas.Header closeButton style={{borderBottom: "1px solid var(--brand-border)"}}>
                 <Offcanvas.Title id={`offcanvasNavbarLabel-expand-${expand}`} className='d-flex align-items-center justify-items-between'>
-                  <Image src="/logo.png" height={"30px"} style={{objectFit: "cover"}}/>
+                  <Image src={theme === 'light' ? "/logo-light.png" : "/logo.png"} height={"30px"} style={{objectFit: "cover"}}/>
                  
                 </Offcanvas.Title>
 
@@ -90,7 +97,7 @@ function NavbarComp() {
                         textDecoration: "none",
                       }}
                     >
-                      Home
+                      {tx('Home', 'الرئيسية')}
                     </Nav.Link> 
                   {isAdmin && <Nav.Link
                     onClick={() => setShowOffcanvas(false)}
@@ -102,9 +109,9 @@ function NavbarComp() {
                         textDecoration: "none",
                       }}
                     >
-                      Admin
+                      {tx('Admin', 'الإدارة')}
                       {adminSummary.total > 0 && (
-                        <span className="admin-count ms-1" title="طلبات بانتظار المراجعة">{adminSummary.total}</span>
+                        <span className="admin-count ms-1" title={tx('Waiting for review', 'بانتظار المراجعة')}>{adminSummary.total}</span>
                       )}
                     </Nav.Link>}
                   <Nav.Link
@@ -117,7 +124,7 @@ function NavbarComp() {
                         textDecoration: "none",
                       }}
                     >
-                      {WORKS_LABEL}
+                      {CART_ENABLED ? tx('Shop', 'المتجر') : tx('Our Works', 'شغلنا')}
                     </Nav.Link>
                   <Nav.Link
                       as={NavLink}
@@ -129,7 +136,7 @@ function NavbarComp() {
                         textDecoration: "none",
                       }}
                     >
-                      Studio
+                      {tx('Studio', 'الاستوديو')}
                     </Nav.Link>
                   <Nav.Link
                       as={NavLink}
@@ -141,7 +148,7 @@ function NavbarComp() {
                         textDecoration: "none",
                       }}
                     >
-                      Colors
+                      {tx('Colors', 'الألوان')}
                     </Nav.Link>
                   <Nav.Link
                       as={NavLink}
@@ -153,7 +160,7 @@ function NavbarComp() {
                         textDecoration: "none",
                       }}
                     >
-                      Terms
+                      {tx('Terms', 'الشروط')}
                     </Nav.Link>
                   <Nav.Link
                       as={NavLink}
@@ -165,7 +172,7 @@ function NavbarComp() {
                         textDecoration: "none",
                       }}
                     >
-                      About Us
+                      {tx('About Us', 'من نحن')}
                     </Nav.Link>
                   {CART_ENABLED && <Nav.Link
                     as={NavLink}
@@ -228,7 +235,7 @@ function NavbarComp() {
                               setShowOffcanvas(false);
                             }}
                           >
-                            My Profile
+                            {tx('My Profile', 'حسابي')}
                           </Button>
 
                           <div className="kids-popover-divider" />

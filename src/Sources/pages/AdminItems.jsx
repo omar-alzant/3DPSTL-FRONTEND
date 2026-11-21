@@ -4,8 +4,10 @@ import PreviewAdminContent from "../components/PreviewAdminContent";
 import AdminForm from '../components/AdminForm';
 import "../Style/AdminLayout.css";
 import { useToast } from "../context/ToastProvider";
+import { useLang } from '../i18n/LanguageContext';
 
 export default function AdminItems() {
+  const { tx } = useLang();
   const token = localStorage.getItem('token');
 
   /* ---------------- STATE ---------------- */
@@ -51,6 +53,7 @@ export default function AdminItems() {
     isdisabled: false,
     galleryurls: [],
     short_description: '',
+    instagram_url: '',
     variants: [{
       size: null,
       color: '',
@@ -101,7 +104,7 @@ export default function AdminItems() {
       setMaterials((json.items || []).map(normalizeItem));
       setTotalItems(total);
     } catch {
-      showToast("Error loading items", "danger");
+      showToast(tx('Error loading items', 'خطأ في تحميل القطع'), "danger");
     } finally {
       setLoading(false);
     }
@@ -124,7 +127,7 @@ export default function AdminItems() {
           brands: marketsRes.items || [] 
         });
       } catch (err) {
-        showToast(`Failed to fetch filter metadata: ${err}`, "danger")
+        showToast(`${tx('Failed to fetch filter metadata', 'فشل تحميل البيانات')}: ${err}`, "danger")
       }
     };
     fetchMeta();
@@ -176,6 +179,7 @@ export default function AdminItems() {
       name: form.name,
       description: form.description,
       short_description: form.short_description,
+      instagram_url: (form.instagram_url || '').trim() || null,
       isSimple: form.isSimple,
       isdisabled: !!form.isdisabled,
       brands_ids: form.brandsF.map(b => b.value),
@@ -204,9 +208,9 @@ export default function AdminItems() {
         }
       );
 
-      if (!res.ok) showToast("Save failed", "danger");
+      if (!res.ok) showToast(tx('Save failed', 'فشل الحفظ'), "danger");
 
-      showToast(editingId ? "Updated successfully" : "Added successfully");
+      showToast(editingId ? tx('Updated successfully', 'تم التحديث بنجاح') : tx('Added successfully', 'تمت الإضافة بنجاح'));
       resetForm();
       fetchItems();
     } catch (err) {
@@ -232,6 +236,7 @@ export default function AdminItems() {
       name: material.name,
       description: material.description,
       short_description: material.short_description,
+      instagram_url: material.instagram_url || '',
       brandsF: selectedBrands,
       isSimple: material.issimple,
       isdisabled: material.isdisabled === true,
@@ -276,6 +281,7 @@ const resetForm = () => {
       name: '',
       description: '',
       short_description: '',
+    instagram_url: '',
       brandsF: null,
       isSimple: false,
       isdisabled: false,
@@ -302,6 +308,7 @@ const handleDescriptionChange = (html) => {
       name: material.name,
       description: material.description,
       short_description: material.short_description,
+      instagram_url: material.instagram_url || '',
       brandsF: selectedBrands,
       isSimple: material.issimple,
       isdisabled: material.isdisabled === true,
@@ -316,23 +323,24 @@ const handleDescriptionChange = (html) => {
   
 
   const deleteMaterial = async (id) => {
-    if (!window.confirm("Delete this item?")) return;
+    if (!window.confirm(tx('Delete this item?', 'حذف هذه القطعة؟'))) return;
     try {
       await fetch(`${adminItemURL}/${id}`, { method: "DELETE", headers: { Authorization: `Bearer ${token}` } });
       setMaterials(materials.filter(m => m.id !== id));
-      showToast("Deleted");
-    } catch (err) { showToast("Error deleting", "danger"); }
+      showToast(tx('Deleted', 'تم الحذف'));
+    } catch (err) { showToast(tx('Error deleting', 'خطأ في الحذف'), "danger"); }
   };
 
   // --- 4. Field Configuration ---
   const adminItemsFields = [
-    { controlId: 'model_id', name: 'model_id', label: 'Model', type: 'select', options: models, row: 1, colWidth: 4, required: true },
-    { controlId: 'brandsF', name: 'brandsF', label: 'Brands', type: 'multiselect', options: brands, row: 1, colWidth: 4 },
-    { controlId: 'name', name: 'name', label: 'Item Name', type: 'text', row: 1, colWidth: 4, required: true },
-    { controlId: 'description', name: 'description', label: 'Description', type: "Editor", colWidth: 12 },
-    { controlId: 'short_description', name: 'short_description', label: 'Short Description', type: "textarea", colWidth: 12 },
-    { controlId: 'isSimple', name: 'isSimple', label: 'Simple Product (No Sizes/Colors)', type: 'checkbox', colWidth: 12 },
-    { controlId: 'isdisabled', name: 'isdisabled', label: 'Hidden — not shown in the shop (only admins can see it)', type: 'checkbox', colWidth: 12 },
+    { controlId: 'model_id', name: 'model_id', label: tx('Model', 'الموديل'), type: 'select', options: models, row: 1, colWidth: 4, required: true },
+    { controlId: 'brandsF', name: 'brandsF', label: tx('Brands', 'الماركات'), type: 'multiselect', options: brands, row: 1, colWidth: 4 },
+    { controlId: 'name', name: 'name', label: tx('Item Name', 'اسم القطعة'), type: 'text', row: 1, colWidth: 4, required: true },
+    { controlId: 'description', name: 'description', label: tx('Description', 'الوصف'), type: "Editor", colWidth: 12 },
+    { controlId: 'short_description', name: 'short_description', label: tx('Short Description', 'وصف قصير'), type: "textarea", colWidth: 12 },
+    { controlId: 'instagram_url', name: 'instagram_url', label: tx('Instagram link (post or reel)', 'رابط إنستغرام (بوست أو ريل)'), type: 'text', placeholder: 'https://www.instagram.com/reel/…', colWidth: 12 },
+    { controlId: 'isSimple', name: 'isSimple', label: tx('Simple Product (No Sizes/Colors)', 'منتج بسيط (بدون مقاسات/ألوان)'), type: 'checkbox', colWidth: 12 },
+    { controlId: 'isdisabled', name: 'isdisabled', label: tx('Hidden — not shown in the shop (only admins can see it)', 'مخفي — لا يظهر في المعرض (الأدمن فقط يراه)'), type: 'checkbox', colWidth: 12 },
     { 
       controlId: 'variants-matrix', 
       name: 'variants', 
@@ -346,7 +354,7 @@ const handleDescriptionChange = (html) => {
         genderOptions: [{label: 'Male', value: 'Male'}, {label: 'Female', value: 'Female'}, {label: 'No Gender', value: ''}]
       }
     },
-    { controlId: 'galleryurls', name: 'galleryurls', label: 'Gallery Images', type: 'multimage', colWidth: 6 }
+    { controlId: 'galleryurls', name: 'galleryurls', label: tx('Gallery Images', 'صور المعرض'), type: 'multimage', colWidth: 6 }
   ];
 
   return (
@@ -361,17 +369,17 @@ const handleDescriptionChange = (html) => {
         />
         <div className="mt-3 d-flex gap-2">
           <Button type="submit" variant="primary" disabled={isSaving}>
-            {isSaving ? <Spinner size="sm" /> : editingId ? "Save Changes" : "Add Item"}
+            {isSaving ? <Spinner size="sm" /> : editingId ? tx('Save Changes', 'حفظ التعديلات') : tx('Add Item', 'إضافة قطعة')}
           </Button>
-          <Button variant="secondary" onClick={resetForm}>Cancel</Button>
+          <Button variant="secondary" onClick={resetForm}>{tx('Cancel', 'إلغاء')}</Button>
         </div>
       </Form>
 
       <hr />
 
       <div className="d-flex align-items-center gap-2 mb-3">
-        <small className="text-muted me-1">Show:</small>
-        {[['all', 'All'], ['hidden', '🔒 Hidden'], ['visible', 'Visible']].map(([v, label]) => (
+        <small className="text-muted me-1">{tx('Show:', 'عرض:')}</small>
+        {[['all', tx('All', 'الكل')], ['hidden', tx('🔒 Hidden', '🔒 مخفي')], ['visible', tx('Visible', 'ظاهر')]].map(([v, label]) => (
           <Button key={v} size="sm" variant={visibility === v ? 'primary' : 'outline-secondary'}
             onClick={() => { setVisibility(v); setPage(1); }}>
             {label}
@@ -397,7 +405,7 @@ const handleDescriptionChange = (html) => {
     {/* ✅ PAGINATION HERE */}
     <div className="d-flex justify-content-between align-items-center mt-4">
       <small className="text-muted">
-        Page {page} of {Math.max(1, Math.ceil(totalItems / pageSize))} • {query ? 'Results' : 'Total items'}: {totalItems}
+        {tx('Page', 'صفحة')} {page} {tx('of', 'من')} {Math.max(1, Math.ceil(totalItems / pageSize))} • {query ? tx('Results', 'النتائج') : tx('Total items', 'مجموع القطع')}: {totalItems}
       </small>
 
       <div className="d-flex gap-2">
@@ -407,7 +415,7 @@ const handleDescriptionChange = (html) => {
           disabled={page <= 1 || loading}
           onClick={() => setPage(p => Math.max(1, p - 1))}
         >
-          Previous
+          {tx('Previous', 'السابق')}
         </Button>
 
         <Button
@@ -416,7 +424,7 @@ const handleDescriptionChange = (html) => {
           disabled={page * pageSize >= totalItems || loading}
           onClick={() => setPage(p => p + 1)}
         >
-          Next
+          {tx('Next', 'التالي')}
         </Button>
       </div>
     </div>

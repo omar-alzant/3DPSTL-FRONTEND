@@ -8,9 +8,11 @@ import Button from 'react-bootstrap/Button';
 import Spinner from 'react-bootstrap/Spinner';
 import { useToast } from "../context/ToastProvider";
 import { PageLoader } from '../components/BrandSpinner';
+import { useLang } from '../i18n/LanguageContext';
 
 
 export default function AdminModels() {
+  const { tx } = useLang();
   const [materials, setMaterials] = useState([]);
   const [types, settypes] = useState([]);
   const [editingId, setEditingId] = useState(null);
@@ -50,7 +52,7 @@ export default function AdminModels() {
         settypes(Array.isArray(typesData) ? typesData.map(t => {return {label: t.name, value: t.id}}) : []);
         // localStorage.setItem("materials", JSON.stringify(data));
       } catch (err) {
-        showToast(`Error fetching Types: ${err}`, "danger")
+        showToast(`${tx('Error fetching Types', 'خطأ في تحميل الأنواع')}: ${err}`, "danger")
       } finally {
         setLoading(false);
       }
@@ -103,10 +105,10 @@ export default function AdminModels() {
           setForm({ type_id: null, type_name: '', name: '', description: '', isdisabled: false});
         });
     } catch (err) {
-      showToast(`Error adding material: ${err}`, "danger")
+      showToast(`${tx('Error adding material', 'خطأ في الإضافة')}: ${err}`, "danger")
     } finally {
       setIsSaving(false);
-      showToast("Adding Done.")
+      showToast(tx('Adding Done.', 'تمت الإضافة.'))
     }
   };
 
@@ -143,10 +145,10 @@ export default function AdminModels() {
         .then(data => setMaterials(data));
       }
       catch (err) {
-        showToast(`Error updating Model: ${err}`, "danger")
+        showToast(`${tx('Error updating Model', 'خطأ في تعديل الموديل')}: ${err}`, "danger")
       } finally{
         setIsSaving(false);
-        showToast("Adding Done.")
+        showToast(tx('Adding Done.', 'تمت الإضافة.'))
       }
     } else {
       // ADD
@@ -163,7 +165,7 @@ export default function AdminModels() {
     {
       controlId: 'type_id',
       name: 'type_id',
-      label: 'Type name',
+      label: tx('Type name', 'اسم النوع'),
       type: 'select',
       placeholder: '',
       required: true,
@@ -176,9 +178,9 @@ export default function AdminModels() {
     {
       controlId: 'name',
       name: 'name',
-      label: 'Name',
+      label: tx('Name', 'الاسم'),
       type: 'text',
-      placeholder: 'Name',
+      placeholder: tx('Name', 'الاسم'),
       required: true,
       row:2,
       colWidth: 4,
@@ -187,7 +189,7 @@ export default function AdminModels() {
     {
       controlId: 'isdisabled',
       name: 'isdisabled',
-      label: 'Disable',
+      label: tx('Disable', 'تعطيل'),
       type: 'checkbox',
       row:2,
       colWidth: 4
@@ -195,9 +197,9 @@ export default function AdminModels() {
     {
       controlId: 'description',
       name: 'description',
-      label: 'Description',
+      label: tx('Description', 'الوصف'),
       type: "Editor",
-      placeholder: 'Write something...',
+      placeholder: tx('Write something...', 'اكتب شيئاً…'),
       row:3,
       colWidth: 6,
       required: true,
@@ -243,7 +245,7 @@ export default function AdminModels() {
               aria-hidden="true"
               className="me-2"
             />
-            {editingId ? "Saving..." : "Uploading..."}
+            {editingId ? tx('Saving...', 'جارٍ الحفظ…') : tx('Uploading...', 'جارٍ الرفع…')}
           </>
         ) : editingId ? (
           "💾 Save updates"
@@ -254,7 +256,7 @@ export default function AdminModels() {
 
       {editingId && !isSaving && (
         <Button type="button" onClick={resetForm} >
-          Cancel
+          {tx('Cancel', 'إلغاء')}
         </Button>
       )}
 

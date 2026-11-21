@@ -11,6 +11,7 @@ import SizeAttributeMatrix from './SizeAttributeMatrix';
 import Select from 'react-select';
 import { Ratio } from 'react-bootstrap';
 import { pathToSelectValue, selectValueToPath } from '../pages/AdminCarousel';
+import { useLang } from '../i18n/LanguageContext';
 
 function FormField({ fieldData, value, onChange, isValid, formData }) {
   // useEffect(() => {
@@ -20,6 +21,7 @@ function FormField({ fieldData, value, onChange, isValid, formData }) {
   // }, [options, value, onChange]);
   const { controlId, label, name, type,isSimple,  placeholder, options, colWidth, required, accept, readOnly, previewKey = 'imgPreview', imageValueKey = 'image', inputValue = {} ,maxImages = 5} = fieldData;
 
+  const { tx } = useLang();
   const isSelect = type === 'select';
   const isTextarea = type === 'textarea';
   const isSimpleBtn = label === 'Simple';
@@ -86,7 +88,7 @@ if (isSelectGroup) {
           onChange(selectValueToPath(v));
         }}
       >
-        <option value="">— Select link —</option>
+        <option value="">{tx('— Select link —', '— اختر رابطاً —')}</option>
 
         {options?.map(group => (
           <optgroup key={group.label} label={group.label}>
@@ -123,7 +125,7 @@ if (isSelectGroup) {
               />
               {isSimpleBtn && readOnly && (
                 <Form.Text className="text-warning">
-                  Remove extra variants to enable Simple item mode.
+                  {tx('Remove extra variants to enable Simple item mode.', 'احذف الخيارات الزائدة لتفعيل وضع القطعة البسيطة.')}
                 </Form.Text>
               )}
 
@@ -272,7 +274,7 @@ if (isMultiSelect) {
           value={value ?? ''}
           onChange={(e) => onChange(e.target.value.replace(/\s+/g, ' ').trim())}
         >
-    <option value="" disabled>Select...</option>
+    <option value="" disabled>{tx('Select...', 'اختر…')}</option>
     {options?.map(o => (
       <option disabled={o.isDisabled === true} key={String(o.value)} value={String(o.value)}>
         {o.label}

@@ -3,8 +3,11 @@ import { Link } from 'react-router-dom';
 import { TOOLS } from '../tools/index.js';
 import { thumbnail } from '../lib/thumbs.js';
 import { isToolEnabled } from '../lib/pricing.js';
+import { useT } from '../i18n/index.js';
+import { useLang } from '../../i18n/LanguageContext';
 
 function Card({ tool }) {
+  const tr = useT();
   const [img, setImg] = useState(null);
   useEffect(() => {
     let alive = true;
@@ -17,30 +20,31 @@ function Card({ tool }) {
   }, [tool]);
   return (
     <Link className="sd-card" to={`/studio/${tool.id}`}>
-      <div className="sd-card-img">{img ? <img src={img} alt={tool.name} /> : <div className="sd-shimmer" />}</div>
+      <div className="sd-card-img">{img ? <img src={img} alt={tr(tool.name)} /> : <div className="sd-shimmer" />}</div>
       <div className="sd-card-body">
-        <span className="sd-chip">{tool.category}</span>
-        <h3>{tool.name}</h3>
-        <p>{tool.description}</p>
+        <span className="sd-chip">{tr(tool.category)}</span>
+        <h3>{tr(tool.name)}</h3>
+        <p>{tr(tool.description)}</p>
       </div>
     </Link>
   );
 }
 
 export default function Gallery({ config }) {
+  const { tx } = useLang();
   const tools = TOOLS.filter((t) => isToolEnabled(config, t.id));
   return (
     <div className="sd-gallery">
       <section className="sd-hero">
         <span className="sd-kicker" dir="ltr">3DSTL Studio</span>
-        <h1>صمّم قطعتك… واطبعها</h1>
-        <p>اختر قالباً جاهزاً، اكتب اسمك وعدّل المقاسات والألوان، شاهد النتيجة ثلاثية الأبعاد فوراً، ثم حمّل الملف أو اطلب الطباعة.</p>
+        <h1>{tx('Design your piece… and print it', 'صمّم قطعتك… واطبعها')}</h1>
+        <p>{tx('Pick a ready template, type your name, adjust sizes and colours, see the 3D result instantly, then download the file or order the print.', 'اختر قالباً جاهزاً، اكتب اسمك وعدّل المقاسات والألوان، شاهد النتيجة ثلاثية الأبعاد فوراً، ثم حمّل الملف أو اطلب الطباعة.')}</p>
         <div className="sd-row">
-          <Link className="sd-btn sd-ghost" to="/credits">رصيد الكريدت</Link>
-          <Link className="sd-btn sd-ghost" to="/tools">أدوات مجانية</Link>
+          <Link className="sd-btn sd-ghost" to="/credits">{tx('My credits', 'رصيد الكريدت')}</Link>
+          <Link className="sd-btn sd-ghost" to="/tools">{tx('Free tools', 'أدوات مجانية')}</Link>
         </div>
       </section>
-      <h2 className="sd-section-title">الأدوات</h2>
+      <h2 className="sd-section-title">{tx('Templates', 'الأدوات')}</h2>
       <div className="sd-grid">
         {tools.map((t) => (
           <Card key={t.id} tool={t} />

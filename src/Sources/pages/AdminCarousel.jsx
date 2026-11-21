@@ -7,6 +7,7 @@ import Button from 'react-bootstrap/Button';
 import Spinner from 'react-bootstrap/Spinner';
 import { useToast } from "../context/ToastProvider";
 import { PageLoader } from '../components/BrandSpinner';
+import { useLang } from '../i18n/LanguageContext';
 
 // Converts stored path → select value
 export function pathToSelectValue(path) {
@@ -40,6 +41,7 @@ export function selectValueToPath(value) {
 }
 
 export default function AdminCarousel() {
+  const { tx } = useLang();
   const [materials, setMaterials] = useState([]);
   const [editingId, setEditingId] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -76,7 +78,7 @@ export default function AdminCarousel() {
         setMaterials(Array.isArray(data) ? data : []);
         localStorage.setItem("carousel", JSON.stringify(data));
       } catch (err) {
-          showToast(`Error fetching materials: ${err}`, "danger");
+          showToast(`${tx('Error fetching materials', 'خطأ في التحميل')}: ${err}`, "danger");
       } finally {
         setLoading(false);
       }
@@ -107,21 +109,21 @@ export default function AdminCarousel() {
   // const isBrandDisabled = linkedPath.level && linkedPath.level !== 'brand';
   const linkedOptions = [
     {
-      label: 'Types',
+      label: tx('Types', 'الأنواع'),
       options: types.map(t => ({
         value: `type:${t.id}`,
         label: t.name,
       })),
     },
     {
-      label: 'Models',
+      label: tx('Models', 'الموديلات'),
       options: models.map(m => ({
         value: `model:${m.id}`,
         label: m.name,
       })),
     },
     {
-      label: 'Brands',
+      label: tx('Brands', 'الماركات'),
       options: brands.map(b => ({
         value: `brand:${b.id}`,
         label: b.name,
@@ -178,10 +180,10 @@ export default function AdminCarousel() {
       });
   
     } catch (err) {
-      showToast(`Error adding material: ${err}`, "danger");
+      showToast(`${tx('Error adding material', 'خطأ في الإضافة')}: ${err}`, "danger");
     } finally {
       setIsSaving(false);
-      showToast("Adding Done.")
+      showToast(tx('Adding Done.', 'تمت الإضافة.'))
     }
   };
   
@@ -194,8 +196,8 @@ export default function AdminCarousel() {
         } 
       })
       .then(() => setMaterials(materials.filter(m => m.id !== id)))
-      .catch(err => showToast(`Error deleting material: ${err}`, "danger"))
-      .finally(() => {showToast("Deletion Done.")})
+      .catch(err => showToast(`${tx('Error deleting material', 'خطأ في الحذف')}: ${err}`, "danger"))
+      .finally(() => {showToast(tx('Deletion Done.', 'تم الحذف.'))})
   };
 
   const handleSubmit = async (e) => {
@@ -235,10 +237,10 @@ export default function AdminCarousel() {
       setMaterials(data);
   
     } catch (err) {
-      showToast(`Error updating material: ${err}`, "danger")
+      showToast(`${tx('Error updating material', 'خطأ في التعديل')}: ${err}`, "danger")
     } finally {
       setIsSaving(false);
-      showToast("Adding Done.")
+      showToast(tx('Adding Done.', 'تمت الإضافة.'))
     }
   };
 
@@ -259,9 +261,9 @@ export default function AdminCarousel() {
     {
       controlId: 'name',
       name: 'name',
-      label: 'Name',
+      label: tx('Name', 'الاسم'),
       type: 'text',
-      placeholder: 'Name',
+      placeholder: tx('Name', 'الاسم'),
       required: true,
       row:1,
       colWidth: 4,
@@ -272,7 +274,7 @@ export default function AdminCarousel() {
     {
       controlId: 'linkedPath',
       name: 'linkedPath',
-      label: 'Linked Path',
+      label: tx('Linked Path', 'الرابط'),
       type: 'select-grouped', // or 'select' if AdminForm supports optgroup
       options: linkedOptions,
       value: linkedPath,
@@ -286,7 +288,7 @@ export default function AdminCarousel() {
     {
       controlId: 'image',
       name: 'image',
-      label: '📤 Insert Image',
+      label: tx('📤 Insert Image', '📤 إدراج صورة'),
       type: 'multimage',
       maxImages: 1,
       row: 3,
@@ -295,9 +297,9 @@ export default function AdminCarousel() {
     {
       controlId: 'description',
       name: 'description',
-      label: 'Description',
+      label: tx('Description', 'الوصف'),
       type: "Editor",
-      placeholder: 'Write something...',
+      placeholder: tx('Write something...', 'اكتب شيئاً…'),
       row:3,
       colWidth: 6,
       required: true,
@@ -344,7 +346,7 @@ export default function AdminCarousel() {
               aria-hidden="true"
               className="me-2"
             />
-            {editingId ? "Saving..." : "Uploading..."}
+            {editingId ? tx('Saving...', 'جارٍ الحفظ…') : tx('Uploading...', 'جارٍ الرفع…')}
           </>
         ) : editingId ? (
           "💾 Save updates"
@@ -356,7 +358,7 @@ export default function AdminCarousel() {
       {editingId && !isSaving && (
         <>
         <Button type="button" onClick={resetForm} >
-          Cancel
+          {tx('Cancel', 'إلغاء')}
         </Button>
         </>
       )}

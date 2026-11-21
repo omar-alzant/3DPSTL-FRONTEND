@@ -278,6 +278,8 @@ ${partsXml}
   for (let a = 0; a < N; a++) for (let b = 0; b < N; b++) settings.flush_volumes_matrix.push(a === b ? '0' : '280');
   settings.different_settings_to_system = Array(N + 2).fill('');
   settings.inherits_group = Array(N + 2).fill('');
+  // a tool can ask for its own print settings (e.g. vase mode, 100% infill for lithophanes)
+  for (const p of parts) if (p.slicer) Object.assign(settings, p.slicer);
 
   return zipSync({
     '[Content_Types].xml': strToU8(
@@ -311,13 +313,25 @@ export function exportBambu3MF(parts, name) {
  * الوقت نفسه يُحسب في pricing.js حسب إعدادات الإدارة (سرعة الطباعة، مدة التبديل، التحمية)
  */
 export const LAYER = 0.2;
+function surfaceArea(g) {
+  const a = g.attributes.position.array;
+  let s = 0;
+  for (let i = 0; i < a.length; i += 9) {
+    const ux = a[i + 3] - a[i], uy = a[i + 4] - a[i + 1], uz = a[i + 5] - a[i + 2];
+    const vx = a[i + 6] - a[i], vy = a[i + 7] - a[i + 1], vz = a[i + 8] - a[i + 2];
+    s += Math.hypot(uy * vz - uz * vy, uz * vx - ux * vz, ux * vy - uy * vx) / 2;
+  }
+  return s;
+}
+
 export function stats(parts) {
   const box = new THREE.Box3();
   let vol = 0;
   for (const p of parts) {
     p.geometry.computeBoundingBox();
     box.union(p.geometry.boundingBox);
-    vol += volume(p.geometry);
+    // a part printed as a single wall (vase mode): surface × wall width, undoing the infill factor below
+    vol += p.vaseWall ? (surfaceArea(p.geometry) * p.vaseWall) / 0.75 : volume(p.geometry);
   }
   const size = new THREE.Vector3();
   box.getSize(size);

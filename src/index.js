@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import 'bootstrap/dist/css/bootstrap.min.css';
+// Bootstrap CSS is loaded from public/vendor/bootstrap by index.html (LTR or RTL, switched by the language)
 import './index.css';
 import './Sources/Style/theme.css'; // logo colours — keep this last
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';

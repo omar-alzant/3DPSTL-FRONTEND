@@ -2,9 +2,12 @@ import { CART_ENABLED, SHOW_SHOP_DETAILS } from '../config/site';
 import React, { useState, useMemo, useEffect } from "react";
 import { Card, Badge, Button, Modal, Image, Ratio } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import { useLang } from '../i18n/LanguageContext';
+import { FaInstagram } from 'react-icons/fa';
 import ItemDetails from "./ItemDetails"; // Ensure path is correct
 
 function ProductCard({ product, cart, onAddToCart }) {
+  const { tx } = useLang();
   const navigate = useNavigate();
   const img = product.galleryurls?.[0] || "/thumbnail.png";
   const variants = Array.isArray(product.variants) ? product.variants : [];
@@ -95,17 +98,33 @@ function ProductCard({ product, cart, onAddToCart }) {
               )}
             </div>
             {!CART_ENABLED ? (
-              <Button variant="outline-success" size="sm" onClick={(e) => { e.stopPropagation(); navigate(`/item/${product.id}`); }}>
-                Order similar
-              </Button>
+              <div className="d-flex align-items-center gap-1 ms-auto">
+                {product.instagram_url && (
+                  <a
+                    href={product.instagram_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn btn-sm btn-outline-primary d-inline-flex align-items-center justify-content-center"
+                    style={{ width: 32, height: 31, padding: 0 }}
+                    onClick={(e) => e.stopPropagation()}
+                    aria-label={tx('Watch it on Instagram', 'شوفها عالإنستغرام')}
+                    title={tx('Watch it on Instagram', 'شوفها عالإنستغرام')}
+                  >
+                    <FaInstagram size={16} />
+                  </a>
+                )}
+                <Button variant="outline-success" size="sm" onClick={(e) => { e.stopPropagation(); navigate(`/item/${product.id}`); }}>
+                  {tx('Order similar', 'اطلب متلها')}
+                </Button>
+              </div>
             ) : itemExistInCart ? (
               <Button variant="outline-info" size="sm" onClick={(e) => { e.stopPropagation(); navigate(`/cart`); }}>
-                In Cart
+                {tx('In Cart', 'بالسلة')}
               </Button>
             ) : (
               !allOutOfStock ? 
                 <Button variant="outline-success" size="sm" onClick={handleAddClick}>
-                  Add
+                  {tx('Add', 'زيد')}
                 </Button>
                 :
                <Badge bg="danger" className="ms-2">OOS</Badge>
@@ -117,7 +136,7 @@ function ProductCard({ product, cart, onAddToCart }) {
       {/* --- REUSABLE MODAL WITH ITEM DETAILS --- */}
       <Modal show={showVariantModal} onHide={() => setShowVariantModal(false)} centered size="lg">
         <Modal.Header closeButton>
-          <Modal.Title>Select Options</Modal.Title>
+          <Modal.Title>{tx('Select Options', 'اختار')}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {resolvedVariant && (

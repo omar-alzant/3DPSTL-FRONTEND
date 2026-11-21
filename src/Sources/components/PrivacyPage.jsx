@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { useLang } from '../i18n/LanguageContext';
 import { Container, Row, Col, ListGroup, Card, ButtonGroup, Button } from 'react-bootstrap';
 
 // سياسة الخصوصية — /privacy (إنكليزي + عربي). مرتبطة بشاشة موافقة Google وتسجيل الدخول بـ Google.
@@ -116,7 +117,8 @@ const AR = {
 };
 
 export default function PrivacyPage() {
-  const [lang, setLang] = useState(() => (navigator.language || '').startsWith('ar') ? 'ar' : 'en');
+  // follows the site language (ع / EN in the navbar); these buttons switch the whole site
+  const { lang, setLang } = useLang();
   const t = lang === 'ar' ? AR : EN;
 
   return (

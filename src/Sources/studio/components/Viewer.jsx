@@ -2,6 +2,7 @@ import { useEffect, useMemo } from 'react';
 import { Canvas, useThree } from '@react-three/fiber';
 import { OrbitControls, Grid } from '@react-three/drei';
 import * as THREE from 'three';
+import { useTheme } from '../../context/ThemeContext';
 
 function Fit({ box, trigger }) {
   const { camera, controls } = useThree();
@@ -23,6 +24,7 @@ function Fit({ box, trigger }) {
 }
 
 export default function Viewer({ parts, fitKey }) {
+  const light = useTheme().theme === 'light';
   // توسيط المجسّم على سطح الطباعة
   const { offset, box } = useMemo(() => {
     if (!parts?.length) return { offset: [0, 0, 0], box: null };
@@ -38,7 +40,7 @@ export default function Viewer({ parts, fitKey }) {
 
   return (
     <Canvas camera={{ up: [0, 0, 1], fov: 35, position: [0, -120, 110] }} dpr={[1, 2]} gl={{ preserveDrawingBuffer: true }}>
-      <color attach="background" args={['#11113f']} />
+      <color attach="background" args={[light ? '#ece9fd' : '#11113f']} />
       <hemisphereLight args={['#ffffff', '#8a84c8', 1.5]} />
       <directionalLight position={[60, -80, 140]} intensity={2.2} />
       <directionalLight position={[-90, 60, 60]} intensity={0.7} />
@@ -55,8 +57,8 @@ export default function Viewer({ parts, fitKey }) {
         args={[400, 400]}
         cellSize={5}
         sectionSize={25}
-        cellColor="#232368"
-        sectionColor="#3b2f9a"
+        cellColor={light ? '#d3cdf6' : '#232368'}
+        sectionColor={light ? '#a99cf5' : '#3b2f9a'}
         fadeDistance={400}
         infiniteGrid
       />

@@ -13,9 +13,11 @@ import {
 
 } from 'react-bootstrap';
 import { useToast } from "../context/ToastProvider";
+import { useLang } from '../i18n/LanguageContext';
 
 
 export default function ForgotPassword() {
+  const { tx } = useLang();
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
@@ -54,11 +56,11 @@ export default function ForgotPassword() {
         setMessage('Check your email to confirm your account!');
       }
     } catch (err) {
-      setError('Something went wrong. Please try again.');
-      showToast('Something went wrong. Please try again.', "danger")
+      setError(tx('Something went wrong. Please try again.', 'صار خطأ. جرّب مرة تانية.'));
+      showToast(tx('Something went wrong. Please try again.', 'صار خطأ. جرّب مرة تانية.'), "danger")
     } finally {
         setLoading(false);
-        showToast("Reset Done.")
+        showToast(tx('Reset Done.', 'انبعت رابط تغيير كلمة السر.'))
     }
   };
 
@@ -66,7 +68,7 @@ export default function ForgotPassword() {
     // Use Container for responsive centering, limiting width
     <Container className="auth-container d-flex flex-column align-items-center py-5" style={{ maxWidth: '400px' }}>
             <Logo className="logo-svg mb-4" style={{ height: '60px' }} />
-      <h2 className='c-black'>Forgot Password!</h2>
+      <h2 className='c-black'>{tx('Forgot Password!', 'نسيت كلمة السر؟')}</h2>
       
       {/* Error Message using Alert */}
       {error && <Alert variant="danger" className="w-100">{error}</Alert>}
@@ -77,7 +79,7 @@ export default function ForgotPassword() {
             <p className='mb-2'>{message}</p>
             {/* The text color will be styled by the Alert component's text color */}
             <Link to="/login" className="alert-link">
-                Return to login page
+                {tx('Return to login page', 'رجوع لتسجيل الدخول')}
             </Link>
         </Alert>
       }
@@ -88,7 +90,7 @@ export default function ForgotPassword() {
             <Form.Group className="mb-4">
                 <Form.Control 
                     type="email" 
-                    placeholder="Email" 
+                    placeholder={tx('Email', 'الإيميل')} 
                     value={email} 
                     onChange={e => setEmail(e.target.value)} 
                     required 
@@ -116,7 +118,7 @@ export default function ForgotPassword() {
                             aria-hidden="true"
                             className="me-2"
                         />
-                        Submitting...
+                        {tx('Submitting...', 'عم يبعت...')}
                     </>
                 ) : (
                     'Submit'
@@ -127,7 +129,7 @@ export default function ForgotPassword() {
 
       {/* Link to Login */}
       <p className='mt-3'>
-        Return to <Link to="/login">Login</Link>
+        {tx('Back to', 'رجوع لـ')} <Link to="/login">{tx('Login', 'تسجيل الدخول')}</Link>
       </p>
     </Container>
   );

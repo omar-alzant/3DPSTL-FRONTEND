@@ -6,8 +6,10 @@ import { useToast } from "../context/ToastProvider";
 
 import AdminForm from "../components/AdminForm";
 import PreviewAdminContent from "../components/PreviewAdminContent";
+import { useLang } from '../i18n/LanguageContext';
 
 export default function AdminBrands() {
+  const { tx } = useLang();
   /* ===================== AUTH ===================== */
   const token = localStorage.getItem('token');
   const { showToast } = useToast();
@@ -66,7 +68,7 @@ export default function AdminBrands() {
       setMaterials(json.items || []);
       setTotalItems(total);
     } catch (err) {
-      showToast(`Failed to fetch brands: ${err}`, "danger");
+      showToast(`${tx('Failed to fetch brands', 'فشل تحميل الماركات')}: ${err}`, "danger");
 
     } finally {
       setLoading(false);
@@ -143,23 +145,23 @@ export default function AdminBrands() {
         }
       );
 
-      if (!res.ok) showToast("Save failed", "danger");
+      if (!res.ok) showToast(tx('Save failed', 'فشل الحفظ'), "danger");
 
       resetForm();
       fetchBrands();
     } catch (err) {
-      showToast(`Save failed: ${err}`, "danger");
+      showToast(`${tx('Save failed', 'فشل الحفظ')}: ${err}`, "danger");
 
     } finally {
       setIsSaving(false);
-      showToast("Adding Done.");
+      showToast(tx('Adding Done.', 'تمت الإضافة.'));
 
     }
   };
 
   /* ===================== DELETE ===================== */
   const deleteMaterial = async (id) => {
-    if (!window.confirm("Delete this brand?")) return;
+    if (!window.confirm(tx('Delete this brand?', 'حذف هذه الماركة؟'))) return;
 
     try {
       await fetch(`${adminMarketURL}/${id}`, {
@@ -168,10 +170,10 @@ export default function AdminBrands() {
       });
       fetchBrands();
     } catch (err) {
-      showToast(`Delete failed: ${err}`, "danger");
+      showToast(`${tx('Delete failed', 'فشل الحذف')}: ${err}`, "danger");
     }
     finally{
-      showToast(`Deletion Done.`);
+      showToast(tx('Deletion Done.', 'تم الحذف.'));
 
     }
   };
@@ -181,9 +183,9 @@ export default function AdminBrands() {
     {
       controlId: "name",
       name: "name",
-      label: "Name",
+      label: tx('Name', 'الاسم'),
       type: "text",
-      placeholder: "Brand name",
+      placeholder: tx('Brand name', 'اسم الماركة'),
       row: 1,
       colWidth: 4,
       required: true,
@@ -191,7 +193,7 @@ export default function AdminBrands() {
     {
       controlId: "imageUpload",
       name: "galleryurls",
-      label: "📤 Insert Image",
+      label: tx('📤 Insert Image', '📤 إدراج صورة'),
       type: "multimage",
       maxImages: 5,
       row: 1,
@@ -200,7 +202,7 @@ export default function AdminBrands() {
     {
       controlId: "isdisabled",
       name: "isdisabled",
-      label: "Disable",
+      label: tx('Disable', 'تعطيل'),
       type: "checkbox",
       row: 1,
       colWidth: 4,
@@ -208,9 +210,9 @@ export default function AdminBrands() {
     {
       controlId: "description",
       name: "description",
-      label: "Description",
+      label: tx('Description', 'الوصف'),
       type: "Editor",
-      placeholder: "Write description...",
+      placeholder: tx('Write description...', 'اكتب الوصف…'),
       row: 2,
       colWidth: 6,
       required: true,
@@ -232,9 +234,9 @@ export default function AdminBrands() {
         <div className="mt-2">
         <div className="mt-3 d-flex gap-2">
           <Button type="submit" variant="primary" disabled={isSaving}>
-            {isSaving ? <Spinner size="sm" /> : editingId ? "Save Changes" : "Add Brand"}
+            {isSaving ? <Spinner size="sm" /> : editingId ? tx('Save Changes', 'حفظ التعديلات') : tx('Add Brand', 'إضافة ماركة')}
           </Button>
-          <Button variant="secondary" onClick={resetForm}>Cancel</Button>
+          <Button variant="secondary" onClick={resetForm}>{tx('Cancel', 'إلغاء')}</Button>
         </div>
         </div>
       </Form>
@@ -256,7 +258,7 @@ export default function AdminBrands() {
 
           <div className="d-flex justify-content-between  align-items-center mt-3">
             <small className="text-light">
-              Page {page} of {Math.max(1, Math.ceil(totalItems / pageSize))} • {query ? "Results" : "Total brands"}: {totalItems}
+              Page {page} of {Math.max(1, Math.ceil(totalItems / pageSize))} • {query ? tx('Results', 'النتائج') : tx('Total brands', 'مجموع الماركات')}: {totalItems}
             </small>
 
             <div className="d-flex gap-2">
@@ -266,7 +268,7 @@ export default function AdminBrands() {
                 disabled={page <= 1 || loading}
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
               >
-                Previous
+                {tx('Previous', 'السابق')}
               </Button>
 
               <Button
@@ -275,7 +277,7 @@ export default function AdminBrands() {
                 disabled={page * pageSize >= totalItems || loading}
                 onClick={() => setPage((p) => p + 1)}
               >
-                Next
+                {tx('Next', 'التالي')}
               </Button>
             </div>
           </div>

@@ -15,12 +15,13 @@ export const WHATSAPP = '96176118290'; // international format, no +
 export const whatsappLink = (text) => `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(text)}`;
 
 /** WhatsApp message for "I want one like this piece" */
-export function orderLikeThisLink(item, variant) {
+export function orderLikeThisLink(item, variant, lang = 'en') {
+  const ar = lang === 'ar';
   const lines = [
-    `Hi 3DSTL! I'd like to order something like this piece:`,
+    ar ? 'مرحبا 3DSTL! بدّي إطلب شي متل هالقطعة:' : `Hi 3DSTL! I'd like to order something like this piece:`,
     `• ${item?.name || ''}`,
   ];
-  if (variant?.color && variant.color !== 'simple') lines.push(`• Color: ${variant.color}`);
-  lines.push('', 'Changes I want (name, size, colors…):', '', `${window.location.origin}/item/${item?.id ?? ''}`);
+  if (variant?.color && variant.color !== 'simple') lines.push(`• ${ar ? 'اللون' : 'Color'}: ${variant.color}`);
+  lines.push('', ar ? 'التعديلات يلي بدّي ياها (اسم، قياس، ألوان…):' : 'Changes I want (name, size, colors…):', '', `${window.location.origin}/item/${item?.id ?? ''}`);
   return whatsappLink(lines.join('\n'));
 }

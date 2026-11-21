@@ -2,15 +2,18 @@ import { useState, useEffect, useRef } from 'react';
 import FontPicker from './FontPicker.jsx';
 import ImagePrep from './ImagePrep.jsx';
 import { colorsFor } from '../lib/palette.js';
+import { useT } from '../i18n/index.js';
+import { useLang } from '../../i18n/LanguageContext';
 
 function ImageField({ value, set, maxSize }) {
+  const { tx } = useLang();
   const [err, setErr] = useState(null);
   const [editing, setEditing] = useState(null); // مصدر الصورة داخل نافذة التجهيز
   const pick = (e) => {
     const file = e.target.files?.[0];
     e.target.value = '';
     if (!file) return;
-    if (!/^image\//.test(file.type)) return setErr('اختر ملف صورة');
+    if (!/^image\//.test(file.type)) return setErr(tx('Choose an image file', 'اختر ملف صورة'));
     setErr(null);
     setEditing(URL.createObjectURL(file));
   };
@@ -20,14 +23,14 @@ function ImageField({ value, set, maxSize }) {
   };
   return (
     <div className="sd-image-field">
-      {value ? <img src={value} alt="" /> : <div className="sd-img-empty">لا توجد صورة</div>}
+      {value ? <img src={value} alt="" /> : <div className="sd-img-empty">{tx('No picture', 'لا توجد صورة')}</div>}
       <div className="sd-img-actions">
         <label className="sd-btn">
-          {value ? 'تغيير' : 'رفع صورة'}
+          {value ? tx('Change', 'تغيير') : tx('Upload picture', 'رفع صورة')}
           <input type="file" accept="image/png,image/jpeg,image/svg+xml,image/webp" onChange={pick} hidden />
         </label>
-        {value && <button type="button" className="sd-btn" onClick={() => setEditing(value)}>تعديل</button>}
-        {value && <button type="button" className="sd-btn sd-link" onClick={() => set('')}>حذف</button>}
+        {value && <button type="button" className="sd-btn" onClick={() => setEditing(value)}>{tx('Edit', 'تعديل')}</button>}
+        {value && <button type="button" className="sd-btn sd-link" onClick={() => set('')}>{tx('Remove', 'حذف')}</button>}
       </div>
       {err && <small className="sd-error">{err}</small>}
       {editing && (
@@ -47,6 +50,7 @@ function ImageField({ value, set, maxSize }) {
 
 /** colour dropdown: the chosen colour + name; opens a list of the colours in stock */
 function ColorSelect({ list, value, onChange, label, isAdmin }) {
+  const { tx } = useLang();
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
   const cur = list.find((c) => c.hex === String(value).toLowerCase());
@@ -87,7 +91,7 @@ function ColorSelect({ list, value, onChange, label, isAdmin }) {
             <li className="sd-csel-mats" role="presentation">
               {['all', ...materials].map((m) => (
                 <button key={m} type="button" className={mat === m ? 'on' : ''} aria-pressed={mat === m} onClick={() => setMat(m)}>
-                  {m === 'all' ? 'الكل' : m}
+                  {m === 'all' ? tx('All', 'الكل') : m}
                 </button>
               ))}
             </li>
@@ -105,7 +109,7 @@ function ColorSelect({ list, value, onChange, label, isAdmin }) {
             <li className="sd-csel-admin">
               <label>
                 <input type="color" value={value} onChange={(e) => onChange(e.target.value)} />
-                <span>لون آخر (للأدمن فقط)</span>
+                <span>{tx('Any colour (admin only)', 'لون آخر (للأدمن فقط)')}</span>
               </label>
             </li>
           )}
@@ -116,6 +120,7 @@ function ColorSelect({ list, value, onChange, label, isAdmin }) {
 }
 
 function Field({ def, value, onChange, params, tool, palette, isAdmin }) {
+  const t = useT();
   const set = (v) => onChange(def.key, v);
   switch (def.type) {
     case 'image':
@@ -144,9 +149,9 @@ function Field({ def, value, onChange, params, tool, palette, isAdmin }) {
           <select className="sd-dropdown" value={value} onChange={(e) => set(e.target.value)}>
             {groups.map((g) => {
               const opts = def.options.filter((o) => (o.group || '') === g).map((o) => (
-                <option key={o.value} value={o.value}>{o.label}</option>
+                <option key={o.value} value={o.value}>{t(o.label)}</option>
               ));
-              return g ? <optgroup key={g} label={g}>{opts}</optgroup> : opts;
+              return g ? <optgroup key={g} label={t(g)}>{opts}</optgroup> : opts;
             })}
           </select>
         );
@@ -155,7 +160,7 @@ function Field({ def, value, onChange, params, tool, palette, isAdmin }) {
         <div className="sd-seg">
           {def.options.map((o) => (
             <button key={o.value} type="button" className={o.value === value ? 'on' : ''} onClick={() => set(o.value)}>
-              {o.label}
+              {t(o.label)}
             </button>
           ))}
         </div>
@@ -178,7 +183,7 @@ function Field({ def, value, onChange, params, tool, palette, isAdmin }) {
           </div>
         );
       }
-      return <ColorSelect list={list} value={value} onChange={set} label={def.label} isAdmin={isAdmin} />;
+      return <ColorSelect list={list} value={value} onChange={set} label={t(def.label)} isAdmin={isAdmin} />;
     }
     case 'number':
     default:
@@ -200,13 +205,14 @@ function Field({ def, value, onChange, params, tool, palette, isAdmin }) {
             value={value}
             onChange={(e) => e.target.value !== '' && set(parseFloat(e.target.value))}
           />
-          {def.unit && <span className="sd-unit">{def.unit}</span>}
+          {def.unit && <span className="sd-unit">{t(def.unit)}</span>}
         </div>
       );
   }
 }
 
 export default function ParamPanel({ tool, params, onChange, palette = [], isAdmin = false }) {
+  const t = useT();
   const groups = [];
   for (const def of tool.params) {
     if (def.show && !def.show(params)) continue;
@@ -218,12 +224,12 @@ export default function ParamPanel({ tool, params, onChange, palette = [], isAdm
     <div className="sd-params">
       {groups.map((g) => (
         <fieldset key={g.name}>
-          <legend>{g.name}</legend>
+          <legend>{t(g.name)}</legend>
           {g.defs.map((def) => (
             <div className={`sd-field sd-field-${def.type}`} key={def.key}>
-              <label>{def.label}</label>
+              <label>{t(def.label)}</label>
               <Field def={def} value={params[def.key]} onChange={onChange} params={params} tool={tool} palette={palette} isAdmin={isAdmin} />
-              {def.help && <small>{def.help}</small>}
+              {def.help && <small>{t(def.help)}</small>}
             </div>
           ))}
         </fieldset>

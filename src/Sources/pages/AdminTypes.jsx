@@ -7,8 +7,10 @@ import { useToast } from "../context/ToastProvider";
 import AdminForm from "../components/AdminForm";
 import PreviewAdminContent from "../components/PreviewAdminContent";
 import { PageLoader } from '../components/BrandSpinner';
+import { useLang } from '../i18n/LanguageContext';
 
 export default function AdminTypes() {
+  const { tx } = useLang();
   const token = localStorage.getItem('token');
 
   /* ===================== STATE ===================== */
@@ -58,7 +60,7 @@ export default function AdminTypes() {
           : []
       );
     } catch (err) {
-      showToast(`Fetch error: ${err}`, "danger")
+      showToast(`${tx('Fetch error', 'خطأ في التحميل')}: ${err}`, "danger")
     } finally {
       setLoading(false);
     }
@@ -136,15 +138,15 @@ export default function AdminTypes() {
         }
       );
 
-      if (!res.ok) showToast("Save failed", "danger");
+      if (!res.ok) showToast(tx('Save failed', 'فشل الحفظ'), "danger");
 
       resetForm();
       fetchData();
     } catch (err) {
-      showToast(`Save error: ${err}`, "danger")
+      showToast(`${tx('Save error', 'خطأ في الحفظ')}: ${err}`, "danger")
     } finally {
       setIsSaving(false);
-      showToast("Adding Done.")
+      showToast(tx('Adding Done.', 'تمت الإضافة.'))
     }
   };
 
@@ -153,7 +155,7 @@ export default function AdminTypes() {
     {
       controlId: "category_id",
       name: "category_id",
-      label: "Category",
+      label: tx('Category', 'الفئة'),
       type: "select",
       required: true,
       row: 1,
@@ -163,7 +165,7 @@ export default function AdminTypes() {
     {
       controlId: "name",
       name: "name",
-      label: "Name",
+      label: tx('Name', 'الاسم'),
       type: "text",
       required: true,
       row: 1,
@@ -172,7 +174,7 @@ export default function AdminTypes() {
     {
       controlId: "imageUpload",
       name: "image",
-      label: "📤 Insert Image",
+      label: tx('📤 Insert Image', '📤 إدراج صورة'),
       type: "multimage",
       maxImages: 5,
       row: 2,
@@ -181,7 +183,7 @@ export default function AdminTypes() {
     {
       controlId: "isdisabled",
       name: "isdisabled",
-      label: "Disable",
+      label: tx('Disable', 'تعطيل'),
       type: "checkbox",
       row: 1,
       colWidth: 4,
@@ -189,7 +191,7 @@ export default function AdminTypes() {
     {
       controlId: "description",
       name: "description",
-      label: "Description",
+      label: tx('Description', 'الوصف'),
       type: "Editor",
       required: true,
       row: 3,
@@ -212,9 +214,9 @@ export default function AdminTypes() {
         <div className="mt-2">
         <div className="mt-3 d-flex gap-2">
           <Button type="submit" variant="primary" disabled={isSaving}>
-            {isSaving ? <Spinner size="sm" /> : editingId ? "Save Changes" : "Add Type"}
+            {isSaving ? <Spinner size="sm" /> : editingId ? tx('Save Changes', 'حفظ التعديلات') : tx('Add Type', 'إضافة نوع')}
           </Button>
-          <Button variant="secondary" onClick={resetForm}>Cancel</Button>
+          <Button variant="secondary" onClick={resetForm}>{tx('Cancel', 'إلغاء')}</Button>
         </div>
         </div>
       </Form>
