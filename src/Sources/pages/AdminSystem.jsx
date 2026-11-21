@@ -57,7 +57,7 @@ function Errors() {
         )}
       </div>
       <p className="small text-muted">
-        Crashes from customers' browsers and from the server. The same error is grouped (see "Times") and emailed at most every 6 hours.
+        {tx('Crashes from customers’ browsers and from the server. The same error is grouped (see “Times”) and emailed at most every 6 hours.', 'الأعطال من متصفحات الزبائن ومن السيرفر. نفس الخطأ بينجمع (شوف «المرات») وبيوصلك إيميل مرة كل 6 ساعات أقصى شي.')}{' '}
         {tx('Mark it resolved after you fix it — if it happens again it re-opens and you get an email.', 'علّمه محلولاً بعد إصلاحه — إذا تكرر يُفتح من جديد وتصلك رسالة.')}
       </p>
       {err && <div className="alert alert-danger py-2">{err}</div>}
@@ -146,7 +146,7 @@ function Backups() {
         <Button size="sm" onClick={runNow} disabled={busy}>{busy ? <><Spinner size="sm" /> {tx('Backing up…', 'جارٍ النسخ…')}</> : tx('Backup now', 'انسخ الآن')}</Button>
       </div>
       <p className="small text-muted">
-        A backup is made automatically every day after 3:00 (Beirut) and kept in Supabase Storage (bucket "backups").
+        {tx('A backup is made automatically every day after 3:00 (Beirut) and kept in Supabase Storage (bucket “backups”).', 'كل يوم بعد الساعة 3 (بيروت) بتنعمل نسخة احتياطية لحالها وبتنحفظ بـSupabase Storage (bucket «backups»).')}{' '}
         {tx('The newest 14 are kept. If a backup fails you get an email.', 'نحتفظ بآخر 14 نسخة. إذا فشلت نسخة تصلك رسالة.')}
       </p>
       {info && !info.daily && <div className="alert alert-warning py-2">{tx('Daily backup is off (SUPABASE_DB_URL missing or BACKUP_DAILY=off on Railway).', 'النسخ اليومي متوقف (SUPABASE_DB_URL غير موجود أو BACKUP_DAILY=off على Railway).')}</div>}
@@ -177,11 +177,57 @@ function Backups() {
   );
 }
 
+// Photo search on "Our works": how many item photos have their AI fingerprint
+function PhotoSearch() {
+  const { tx } = useLang();
+  const [st, setSt] = useState(null);
+  const [err, setErr] = useState('');
+  const load = useCallback(async () => {
+    try {
+      const r = await fetch(`${API}/api/search/status`, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } });
+      const data = await r.json().catch(() => ({}));
+      if (!r.ok) throw new Error(data.error || `Error ${r.status}`);
+      setSt(data); setErr('');
+    } catch (e) { setErr(e.message); }
+  }, []);
+  useEffect(() => { load(); }, [load]);
+  const reindex = async () => {
+    try {
+      await fetch(`${API}/api/search/reindex`, { method: 'POST', headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } });
+      setTimeout(load, 3000);
+    } catch (e) { setErr(e.message); }
+  };
+  const li = st?.lastIndex;
+  return (
+    <section className="mb-5">
+      <div className="d-flex align-items-center gap-2 mb-2 flex-wrap">
+        <h5 className="mb-0 me-auto">{tx('Photo search', 'البحث بالصور')}</h5>
+        <Button size="sm" variant="outline-secondary" onClick={load}>{tx('Refresh', 'تحديث')}</Button>
+        <Button size="sm" onClick={reindex} disabled={!st?.enabled || st?.indexing}>{tx('Index new photos now', 'فهرس الصور الجديدة هلق')}</Button>
+      </div>
+      <p className="small text-muted mb-2">
+        {tx('Customers can upload a photo next to the search bar and see the works that look most like it. Each item’s first 3 photos are indexed automatically a minute after the server starts, every 6 hours, and 30 seconds after you save an item.', 'الزبون فيه يرفع صورة جنب خانة البحث ويشوف أقرب الشغل إلها. أول 3 صور من كل قطعة بيتفهرسوا لحالهم بعد دقيقة من تشغيل السيرفر، كل 6 ساعات، و30 ثانية بعد ما تحفظ قطعة.')}
+      </p>
+      {err && <p className="small text-danger mb-0">{err}</p>}
+      {st && (
+        <ul className="small mb-0">
+          <li>{st.enabled ? tx('On', 'شغّال') : tx('Off (IMAGE_SEARCH=off on Railway)', 'متوقف (IMAGE_SEARCH=off على Railway)')}</li>
+          <li>{tx('Indexed', 'مفهرس')}: <b>{st.items}</b> {tx('items', 'قطعة')} (<b>{st.photos}</b> {tx('photos', 'صورة')})</li>
+          {st.indexing && <li><Spinner size="sm" /> {tx('Indexing now…', 'عم يفهرس هلق…')}</li>}
+          {li && !li.error && <li>{tx('Last run', 'آخر مرة')}: {when(li.at)} — +{li.added} / −{li.removed}{li.failed ? ` / ${tx('failed', 'فشل')} ${li.failed}` : ''}</li>}
+          {li?.error && <li className="text-danger">{tx('Last run failed', 'آخر مرة فشلت')}: {li.error}</li>}
+        </ul>
+      )}
+    </section>
+  );
+}
+
 export default function AdminSystem() {
   return (
     <div>
       <Errors />
       <Backups />
+      <PhotoSearch />
     </div>
   );
 }

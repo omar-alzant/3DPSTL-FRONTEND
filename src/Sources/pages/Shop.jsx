@@ -41,7 +41,7 @@ export default function Items() {
   const { showToast } = useToast();
 
 
-  const pageSize = 8;
+  const pageSize = 20;
   const currentPage = parseInt(searchParams.get('page') || '1');
 
 const updateFilters = (updates) => {
@@ -90,7 +90,9 @@ const getSelectedOptions = (paramKey, metadataArray) => {
   const fetchItems = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/admin/products/item?${searchParams.toString()}`);
+      const params = new URLSearchParams(searchParams);
+      params.set('pageSize', String(pageSize));
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/admin/products/item?${params.toString()}`);
       const data = await res.json();
       setItems(data.items || []);
       setTotalItems(data.total || 0);
@@ -154,6 +156,22 @@ const getSelectedOptions = (paramKey, metadataArray) => {
   
   return (
     <Container className="py-4">
+      {searchParams.has("similar") && (
+        <div className="photo-search-banner mb-3">
+          {(() => { try { const p = sessionStorage.getItem("photoSearch"); return p ? <img src={p} alt="" /> : null; } catch { return null; } })()}
+          <div className="flex-grow-1">
+            <strong>{tx('Works like your photo', 'شغل متل صورتك')}</strong>
+            <div className="small text-muted">
+              {loading ? tx('Searching…', 'عم ندوّر…') : items.length
+                ? tx('Most similar first. Like one? Open it and order one like it.', 'الأقرب أوّل. عجبتك وحدة؟ افتحها واطلب متلها.')
+                : tx('We found nothing close to this photo. Send it to us on WhatsApp and we\'ll tell you if we can print it.', 'ما لقينا شي قريب من هالصورة. ابعتلنا ياها عالواتساب ومنقلّك إذا فينا نطبعها.')}
+            </div>
+          </div>
+          <Button variant="outline-secondary" size="sm" onClick={() => { const p = new URLSearchParams(searchParams); p.delete("similar"); p.set("page", "1"); setSearchParams(p); }}>
+            {tx('Show all works', 'كل الشغل')}
+          </Button>
+        </div>
+      )}
    {/* <Card className="mb-3 shadow-sm border-0 rounded-4">
         <Card.Body>
           <InputGroup size="lg">

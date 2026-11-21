@@ -460,3 +460,10 @@ html[data-theme='light'] .react-select__multi-value__remove:hover { color: #b91c
 /* Arabic: carousel "previous" sits on the right, so its arrow points right (and "next" points left) */
 [dir='rtl'] .carousel-control-prev svg, [dir='rtl'] .carousel-control-next svg { transform: scaleX(-1); }
 html[data-theme='light'] .sd-card-img { background: radial-gradient(circle at 50% 40%, #e3ddff, var(--brand-card) 75%); }
+
+/* photo search result banner on "Our works" */
+.photo-search-banner {
+  display: flex; align-items: center; gap: 14px; padding: 12px 14px; border-radius: 14px;
+  background: var(--brand-card); border: 1px solid var(--brand-border);
+}
+.photo-search-banner img { width: 56px; height: 56px; object-fit: cover; border-radius: 10px; flex: none; border: 1px solid var(--brand-border); }
