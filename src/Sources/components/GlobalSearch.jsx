@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Form, Button, InputGroup, Container, Spinner } from "react-bootstrap";
+import { Form, Button, InputGroup, Container, Spinner, Modal } from "react-bootstrap";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { IoSearch, IoCameraOutline } from "react-icons/io5";
+import { IoSearch, IoCameraOutline, IoImageOutline } from "react-icons/io5";
 import { CiCircleRemove } from "react-icons/ci";
 import { useLang } from '../i18n/LanguageContext';
 
@@ -36,17 +36,27 @@ export default function GlobalSearch({ onClose }) {
 
   const [query, setQuery] = useState("");
   const fileRef = useRef(null);
+  const cameraRef = useRef(null);
+  const [photoOpen, setPhotoOpen] = useState(false);
   const [photoBusy, setPhotoBusy] = useState(false);
   const [photoError, setPhotoError] = useState("");
+  const [photoPreview, setPhotoPreview] = useState(null);
+  const [dragOver, setDragOver] = useState(false);
 
-  // photo search: upload a picture → the most similar works
-  const searchByPhoto = async (e) => {
-    const file = e.target.files?.[0];
-    e.target.value = "";
-    if (!file) return;
+  const openPhoto = () => { setPhotoError(""); setPhotoPreview(null); setPhotoOpen(true); };
+  const closePhoto = () => { if (!photoBusy) setPhotoOpen(false); };
+
+  // photo search: upload / drop / paste a picture → the most similar works
+  const searchFile = async (file) => {
+    if (!file || photoBusy) return;
+    if (!/^image\//.test(file.type)) {
+      setPhotoError(tx("That isn't a photo. Use a JPG, PNG or WebP picture.", "هيدا مش صورة. استعمل صورة JPG أو PNG أو WebP."));
+      return;
+    }
     setPhotoError("");
     setPhotoBusy(true);
     try {
+      setPhotoPreview(await shrinkPhoto(file, 360));
       const image = await shrinkPhoto(file);
       const res = await fetch(`${process.env.REACT_APP_API_URL}/api/search/image`, {
         method: "POST",
@@ -57,6 +67,7 @@ export default function GlobalSearch({ onClose }) {
       if (!res.ok) throw new Error(res.status === 429 ? "busy" : "failed");
       try { sessionStorage.setItem("photoSearch", await shrinkPhoto(file, 160)); } catch {}
       const ids = (data.results || []).map((r) => r.id);
+      setPhotoOpen(false);
       navigate(`/our-works?similar=${ids.length ? ids.join(",") : "none"}`);
       onClose?.();
     } catch (err) {
@@ -67,6 +78,19 @@ export default function GlobalSearch({ onClose }) {
       setPhotoBusy(false);
     }
   };
+  const onPick = (e) => { const f = e.target.files?.[0]; e.target.value = ""; searchFile(f); };
+
+  // Ctrl+V while the photo window is open
+  useEffect(() => {
+    if (!photoOpen) return undefined;
+    const onPaste = (e) => {
+      const item = [...(e.clipboardData?.items || [])].find((i) => i.type.startsWith("image/"));
+      if (item) { e.preventDefault(); searchFile(item.getAsFile()); }
+    };
+    window.addEventListener("paste", onPaste);
+    return () => window.removeEventListener("paste", onPaste);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [photoOpen, photoBusy]);
 
   // Keep input synced with URL
   useEffect(() => {
@@ -136,7 +160,7 @@ export default function GlobalSearch({ onClose }) {
   
           <Button
             type="button"
-            onClick={() => fileRef.current?.click()}
+            onClick={openPhoto}
             disabled={photoBusy}
             aria-label={tx('Search with a photo', 'دوّر بصورة')}
             title={tx('Search with a photo', 'دوّر بصورة')}
@@ -164,14 +188,53 @@ export default function GlobalSearch({ onClose }) {
             </Button>
           )}
         </InputGroup>
-        <input ref={fileRef} type="file" accept="image/*" hidden onChange={searchByPhoto} />
-        {photoBusy && (
-          <small className="d-block mt-2 text-muted">
-            {tx('Looking for works like your photo… the first search can take up to half a minute.', 'عم ندوّر على شغل متل صورتك… أول بحث ممكن ياخد لنص دقيقة.')}
-          </small>
-        )}
-        {photoError && <small className="d-block mt-2 text-danger">{photoError}</small>}
       </Form>
+
+      <Modal show={photoOpen} onHide={closePhoto} centered size="lg" contentClassName="photo-search-modal">
+        <Modal.Header closeButton={!photoBusy}>
+          <Modal.Title as="h5">{tx('Search with a photo', 'دوّر بصورة')}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div
+            className={`photo-drop ${dragOver ? 'is-over' : ''} ${photoBusy ? 'is-busy' : ''}`}
+            role="button"
+            tabIndex={0}
+            onClick={() => !photoBusy && fileRef.current?.click()}
+            onKeyDown={(e) => { if ((e.key === 'Enter' || e.key === ' ') && !photoBusy) { e.preventDefault(); fileRef.current?.click(); } }}
+            onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+            onDragLeave={() => setDragOver(false)}
+            onDrop={(e) => { e.preventDefault(); setDragOver(false); searchFile(e.dataTransfer.files?.[0]); }}
+          >
+            {photoPreview ? (
+              <img src={photoPreview} alt="" className="photo-drop-preview" />
+            ) : (
+              <IoImageOutline className="photo-drop-icon" aria-hidden="true" />
+            )}
+            {photoBusy ? (
+              <div className="photo-drop-text">
+                <Spinner size="sm" className="me-2" />
+                {tx('Looking for works like your photo… the first search can take up to half a minute.', 'عم ندوّر على شغل متل صورتك… أول بحث ممكن ياخد لنص دقيقة.')}
+              </div>
+            ) : (
+              <div className="photo-drop-text">
+                {tx('Drag a photo here, paste it with Ctrl+V, or', 'اسحب صورة لهون، الصقها بـ Ctrl+V، أو')}{' '}
+                <span className="photo-drop-link">{tx('upload a photo', 'ارفع صورة')}</span>
+              </div>
+            )}
+          </div>
+          <div className="d-flex d-md-none justify-content-center mt-3">
+            <Button variant="outline-primary" disabled={photoBusy} onClick={() => cameraRef.current?.click()}>
+              <IoCameraOutline className="me-2" />{tx('Take a photo', 'صوّر هلق')}
+            </Button>
+          </div>
+          {photoError && <p className="text-danger small mt-3 mb-0">{photoError}</p>}
+          <p className="small text-muted mt-3 mb-0">
+            {tx('Tip: a clear photo of one piece on a plain background gives the best matches.', 'نصيحة: صورة واضحة لقطعة وحدة على خلفية سادة بتعطي أحسن نتايج.')}
+          </p>
+          <input ref={fileRef} type="file" accept="image/*" hidden onChange={onPick} />
+          <input ref={cameraRef} type="file" accept="image/*" capture="environment" hidden onChange={onPick} />
+        </Modal.Body>
+      </Modal>
     </Container>
   );
 }
