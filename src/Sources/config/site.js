@@ -21,7 +21,7 @@ export function orderLikeThisLink(item, variant, lang = 'en') {
     ar ? 'مرحبا 3DSTL! بدّي إطلب شي متل هالقطعة:' : `Hi 3DSTL! I'd like to order something like this piece:`,
     `• ${item?.name || ''}`,
   ];
-  if (variant?.color && variant.color !== 'simple') lines.push(`• ${ar ? 'اللون' : 'Color'}: ${variant.color}`);
+  if (SHOW_SHOP_DETAILS && variant?.color && variant.color !== 'simple') lines.push(`• ${ar ? 'اللون' : 'Color'}: ${variant.color}`);
   lines.push('', ar ? 'التعديلات يلي بدّي ياها (اسم، قياس، ألوان…):' : 'Changes I want (name, size, colors…):', '', `${window.location.origin}/item/${item?.id ?? ''}`);
   return whatsappLink(lines.join('\n'));
 }

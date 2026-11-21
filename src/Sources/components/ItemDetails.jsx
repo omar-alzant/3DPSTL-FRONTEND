@@ -205,6 +205,7 @@ export default function ItemDetails({
           </div>
         </div>
         }
+        {SHOW_SHOP_DETAILS && (
         <div className="mb-1">
           <label className="fw-bold mb-1">{tx('Color', 'اللون')}</label>
           <div className="d-flex gap-3">
@@ -225,6 +226,7 @@ export default function ItemDetails({
             ))}
           </div>
         </div>
+        )}
 
         {/* DESCRIPTION (HTML/QUILL CONTENT) */}
         <div className="mb-2">

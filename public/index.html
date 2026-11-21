@@ -32,6 +32,8 @@
         if (theme !== 'light' && theme !== 'dark') theme = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
         document.documentElement.setAttribute('data-theme', theme);
         document.documentElement.setAttribute('data-bs-theme', theme);
+        var tc = document.querySelector('meta[name="theme-color"]');
+        if (tc && theme === 'light') tc.setAttribute('content', '#f6f5ff');
         document.documentElement.lang = lang;
         document.documentElement.dir = rtl ? 'rtl' : 'ltr';
         document.write('<link id="bs-css" rel="stylesheet" href="%PUBLIC_URL%/vendor/bootstrap/bootstrap' + (rtl ? '.rtl' : '') + '.min.css">');
