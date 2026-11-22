@@ -22,9 +22,10 @@ import photoLampshade from './photoLampshade.js';
 import vase from './vase.js';
 import puzzle from './puzzle.js';
 import clicker from './clicker.js';
+import jobOutfit from './jobOutfit.js';
 
 export const TOOLS = [
-  keychain, qrCode, phoneCase, coaster, cookieCutter, stamp, ramadanTray, deskOrganizer, lebanonKeychain,
+  jobOutfit, keychain, qrCode, phoneCase, coaster, cookieCutter, stamp, ramadanTray, deskOrganizer, lebanonKeychain,
   lithophane, photoLampshade, vase, puzzle, clicker, initialSign, birthSign,
   dualName, lbPlate, plate, keycaps, pencilTopper, toteBag, flexiToy,
 ];

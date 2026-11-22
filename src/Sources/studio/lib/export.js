@@ -41,6 +41,16 @@ export function exportSTLByColor(parts, name) {
   download(zipSync(files), `${slug(name)}-colors.zip`, 'application/zip');
 }
 
+/** one STL per part inside a ZIP (parts printed separately, then put together) */
+export function exportSTLParts(parts, name) {
+  const files = {};
+  parts.forEach((p, i) => {
+    if (!p.geometry) return;
+    files[`${slug(name)}-${String(i + 1).padStart(2, '0')}-${slug(p.name)}-${(p.color || '').replace('#', '')}.stl`] = new Uint8Array(stl(p.geometry).buffer);
+  });
+  download(zipSync(files), `${slug(name)}-parts.zip`, 'application/zip');
+}
+
 const xml = (v) => String(v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
 /**

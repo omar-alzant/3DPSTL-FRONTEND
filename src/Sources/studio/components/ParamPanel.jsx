@@ -49,7 +49,7 @@ function ImageField({ value, set, maxSize }) {
 }
 
 /** colour dropdown: the chosen colour + name; opens a list of the colours in stock */
-function ColorSelect({ list, value, onChange, label, isAdmin }) {
+export function ColorSelect({ list, value, onChange, label, isAdmin }) {
   const { tx } = useLang();
   const [open, setOpen] = useState(false);
   const ref = useRef(null);

@@ -11,6 +11,9 @@ export function ToastProvider({ children }) {
   });
 
   const showToast = (message, bg = "success") => {
+    // an Error object (or anything that isn't text/JSX) would crash the whole page when rendered
+    if (message instanceof Error) message = message.message;
+    else if (message && typeof message === "object" && !message.$$typeof) message = message.message || String(message);
     setToast({ show: true, message, bg });
   };
 

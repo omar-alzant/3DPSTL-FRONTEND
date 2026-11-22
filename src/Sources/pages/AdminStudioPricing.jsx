@@ -1,10 +1,14 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { getSettings, saveSettings } from '../studio/lib/api.js';
 import { priceFor, TIME_DEFAULTS, formatMinutes } from '../studio/lib/pricing.js';
-import { TOOLS } from '../studio/tools/index.js';
+import { TOOLS as TEMPLATE_TOOLS } from '../studio/tools/index.js';
+import { SPLIT_TOOL } from '../studio/split/meta.js';
 import '../Style/Studio.css';
 import { PageLoader } from '../components/BrandSpinner';
 import { useLang } from '../i18n/LanguageContext';
+
+// templates + the split tool (it has a price and an on/off switch too)
+const TOOLS = [...TEMPLATE_TOOLS, { id: SPLIT_TOOL.id, name: SPLIT_TOOL.nameAr, params: [] }];
 
 // Admin → Studio Pricing: global prices + per-tool overrides, saved in Supabase (studio_settings)
 

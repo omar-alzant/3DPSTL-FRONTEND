@@ -179,9 +179,15 @@ export default function Credits() {
                         <b>{f.tool_name || f.tool_id}</b>
                         {f.label && <> — <span dir="auto">«{f.label}»</span></>}
                       </span>
-                      <button className="sd-btn sd-primary" disabled={opening === f.id} onClick={() => openFile(f)}>
-                        {opening === f.id ? tx('Opening…', 'جارٍ الفتح…') : tx('Open & download', 'افتح ونزّل')}
-                      </button>
+                      {f.tool_id === 'split' ? (
+                        <Link className="sd-btn" to="/studio/split" title={tx('Open the same file and draw the same cuts again — downloading it again is free.', 'افتح نفس الملف وارسم نفس القصّات — التنزيل مرة تانية ببلاش.')}>
+                          {tx('Split another model', 'قص مجسّم تاني')}
+                        </Link>
+                      ) : (
+                        <button className="sd-btn sd-primary" disabled={opening === f.id} onClick={() => openFile(f)}>
+                          {opening === f.id ? tx('Opening…', 'جارٍ الفتح…') : tx('Open & download', 'افتح ونزّل')}
+                        </button>
+                      )}
                       <small className="sd-muted">
                         {date(f.last_at)} · {f.charged ? tx(`Paid ${f.charged} credits`, `دُفع ${f.charged} كريدت`) : tx('Free', 'مجاني')} · {tx('downloading again is free', 'التنزيل مجدداً بلا خصم')}
                       </small>
