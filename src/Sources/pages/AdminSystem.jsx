@@ -146,11 +146,17 @@ function Backups() {
         <Button size="sm" onClick={runNow} disabled={busy}>{busy ? <><Spinner size="sm" /> {tx('Backing up…', 'جارٍ النسخ…')}</> : tx('Backup now', 'انسخ الآن')}</Button>
       </div>
       <p className="small text-muted">
-        {tx('A backup is made automatically every day after 3:00 (Beirut) and kept in Supabase Storage (bucket “backups”).', 'كل يوم بعد الساعة 3 (بيروت) بتنعمل نسخة احتياطية لحالها وبتنحفظ بـSupabase Storage (bucket «backups»).')}{' '}
-        {tx('The newest 14 are kept. If a backup fails you get an email.', 'نحتفظ بآخر 14 نسخة. إذا فشلت نسخة تصلك رسالة.')}
+        {tx('Supabase Pro already keeps a backup of the database every day for 7 days (Supabase → Database → Backups) — restore from there first.', 'Supabase Pro أصلاً بتحفظ نسخة من قاعدة البيانات كل يوم لمدّة 7 أيام (Supabase ← Database ← Backups) — الاسترجاع بيكون من هونيك أول شي.')}{' '}
+        {info?.daily
+          ? tx('An extra copy is also made here every day after 3:00 (Beirut); the newest 14 are kept and you get an email if one fails.', 'وكمان في نسخة إضافية هون كل يوم بعد الساعة 3 (بيروت)؛ منحتفظ بآخر 14 وبتوصلك رسالة إذا فشلت.')
+          : tx('Use “Backup now” for an extra copy before big changes.', 'استعمل «انسخ الآن» لتعمل نسخة إضافية قبل أي تغيير كبير.')}
       </p>
-      {info && !info.daily && <div className="alert alert-warning py-2">{tx('Daily backup is off (SUPABASE_DB_URL missing or BACKUP_DAILY=off on Railway).', 'النسخ اليومي متوقف (SUPABASE_DB_URL غير موجود أو BACKUP_DAILY=off على Railway).')}</div>}
-      {stale && <div className="alert alert-warning py-2">{tx('The last backup is older than a day — check the server logs.', 'آخر نسخة أقدم من يوم — راجع سجلات الخادم.')}</div>}
+      <div className="alert alert-info py-2 small">
+        {tx('Pictures and files (Supabase Storage) are not in any database backup. To copy them to your computer, run in the 3DPSTL-BACKEND folder:', 'الصور والملفات (Supabase Storage) مش موجودة بأي نسخة لقاعدة البيانات. لتنسخهم على كمبيوترك، شغّل بمجلد 3DPSTL-BACKEND:')}{' '}
+        <code dir="ltr">npm run backup:storage</code>
+        {' '}{tx('(only new files are downloaded each time).', '(كل مرّة بينزّل بس الملفات الجديدة).')}
+      </div>
+      {stale && info?.daily && <div className="alert alert-warning py-2">{tx('The last backup is older than a day — check the server logs.', 'آخر نسخة أقدم من يوم — راجع سجلات الخادم.')}</div>}
       {err && <div className="alert alert-danger py-2">{err}</div>}
       {msg && <div className="alert alert-success py-2">{msg}</div>}
       {!info ? <Spinner size="sm" /> : info.files.length === 0 ? (
