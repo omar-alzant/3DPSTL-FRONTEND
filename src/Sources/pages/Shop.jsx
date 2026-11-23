@@ -343,17 +343,21 @@ const getSelectedOptions = (paramKey, metadataArray) => {
         )}
       </Row>
 
-      {/* Pagination */}
-      <div className="d-flex justify-content-between align-items-center mt-5">
-        <small className="text-muted">Total: {totalItems} items</small>
-        <div className="d-flex gap-2">
-          <Button variant="outline-primary" size="sm" disabled={currentPage <= 1}
-            onClick={() => updateFilters({ page: currentPage - 1 })}>{tx('Previous', 'السابق')}</Button>
-          <span className="btn btn-primary px-3 py-1 rounded">Page {currentPage}</span>
-          <Button variant="outline-primary" size="sm" disabled={items.length < pageSize}
-            onClick={() => updateFilters({ page: currentPage + 1 })}>{tx('Next', 'التالي')}</Button>
+      {/* Pagination: its own panel (white in light mode, card colour in dark mode) */}
+      {totalItems > 0 && (
+        <div className="shop-pager mt-5">
+          <small className="text-muted">{tx(`${totalItems} pieces`, `${totalItems} قطعة`)}</small>
+          <div className="d-flex align-items-center gap-2">
+            <Button variant="outline-primary" size="sm" disabled={currentPage <= 1}
+              onClick={() => updateFilters({ page: currentPage - 1 })}>{tx('Previous', 'السابق')}</Button>
+            <span className="shop-pager-page">
+              {tx('Page', 'صفحة')} <b>{currentPage}</b> {tx('of', 'من')} {Math.max(1, Math.ceil(totalItems / pageSize))}
+            </span>
+            <Button variant="outline-primary" size="sm" disabled={currentPage >= Math.ceil(totalItems / pageSize)}
+              onClick={() => updateFilters({ page: currentPage + 1 })}>{tx('Next', 'التالي')}</Button>
+          </div>
         </div>
-      </div>
+      )}
     </Container>
   );
 }

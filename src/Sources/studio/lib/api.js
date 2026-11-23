@@ -2,6 +2,7 @@
 const API = process.env.REACT_APP_API_URL || '';
 
 export const DEFAULT_CONFIG = {
+  showPrices: false, // estimated prices are shown to customers only when the admin turns this on
   shopName: '3DSTL',
   currency: 'USD',
   pricePerGram: 0.12,

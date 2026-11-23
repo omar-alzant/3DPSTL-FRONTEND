@@ -1,65 +1,60 @@
 /* eslint-disable import/no-anonymous-default-export */
-// Job gift: a little outfit (shirt, suit, lab coat…) on a stand with the person's name,
-// and work tools on both sides. Clothes only: no body, no figures.
+// Job gift: a work outfit (sculpted 3DSTL models, hollow like a pen cup) on a stand with the
+// person's name, and work tools on both sides. The outfits live in public/media/outfits/<id>.glb.
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js';
 import { textBox } from '../lib/fonts.js';
-import { union, difference, intersection, offset, roundRect, circle, extrude, subtract, merge, intersect, add as add3, THREE } from '../lib/geo.js';
+import { union, difference, offset, roundRect, circle, extrude, subtract, merge, intersect, add as add3, THREE } from '../lib/geo.js';
+
+// size of each model as saved (mm): width (x), depth (y), height (z)
+const OUTFITS = [
+  { value: 'labcoat', label: 'روب طبيبة / صيدلانية', w: 75.6, d: 62.9, h: 99.7 },
+  { value: 'scrubs', label: 'سكراب (تمريض وطب)', w: 88.0, d: 62.7, h: 89.8 },
+  { value: 'suit', label: 'بدلة رسمية', w: 87.7, d: 75.7, h: 100 },
+  { value: 'shirt-tie', label: 'قميص رسمي (محامي وموظّف)', w: 96.7, d: 78.5, h: 100 },
+  { value: 'pilot', label: 'طيّار', w: 80.8, d: 63.5, h: 99.9 },
+  { value: 'chef', label: 'جاكيت شيف', w: 76.7, d: 66.1, h: 98.9 },
+  { value: 'work-vest', label: 'جيليه شغل (مهندس)', w: 100, d: 68.7, h: 88.2 },
+  { value: 'overalls', label: 'أفرول شغل', w: 80.5, d: 61.7, h: 100 },
+  { value: 'jersey', label: 'قميص رياضي', w: 79.9, d: 61.7, h: 99.9 },
+  { value: 'graduate', label: 'روب تخرّج', w: 99, d: 72.8, h: 99.4 },
+];
+const media = (f) => `${process.env.PUBLIC_URL || ''}/media/outfits/${f}`;
+OUTFITS.forEach((o) => { o.image = media(`${o.value}.png`); });
+
+const cache = new Map();
+function loadOutfit(id) {
+  if (!cache.has(id)) {
+    const loader = new GLTFLoader();
+    loader.setMeshoptDecoder(MeshoptDecoder);
+    const p = loader.loadAsync(media(`${id}.glb`)).then((gltf) => {
+      const geos = [];
+      gltf.scene.updateMatrixWorld(true);
+      gltf.scene.traverse((o) => {
+        if (o.isMesh) {
+          const g = o.geometry.clone();
+          g.applyMatrix4(o.matrixWorld);
+          geos.push(g.index ? g.toNonIndexed() : g);
+        }
+      });
+      const g = merge(geos);
+      g.computeBoundingBox();
+      const b = g.boundingBox;
+      g.translate(-(b.min.x + b.max.x) / 2, -(b.min.y + b.max.y) / 2, -b.min.z);
+      return g;
+    });
+    p.catch(() => cache.delete(id)); // try again next time if the download failed
+    cache.set(id, p);
+  }
+  return cache.get(id);
+}
 
 // ---------- small 2D helpers ----------
 const poly = (pts) => [pts];
 const mirror = (cs) => cs.map((c) => c.map(([x, y]) => [-x, y]).reverse());
-const both = (cs) => union(cs, mirror(cs));
 const ellipse = (cx, cy, rx, ry, seg = 40) =>
   [Array.from({ length: seg }, (_, i) => [cx + rx * Math.cos((i / seg) * 2 * Math.PI), cy + ry * Math.sin((i / seg) * 2 * Math.PI)])];
 const ring2 = (cs, w) => difference(cs, offset(cs, -w));
-
-// ---------- the body of the outfit (a closed loft of rounded sections) ----------
-// t = height / bust height; a = half width; b = half depth; n = squareness
-const KEYS = {
-  long: [
-    [0.0, 26, 15.5, 2.25], [0.3, 25.5, 15.5, 2.25], [0.58, 28, 17, 2.3], [0.74, 31, 17.5, 2.45],
-    [0.85, 32, 16, 2.6], [0.91, 26.5, 14, 2.4], [0.96, 17, 12, 2.15], [1.0, 11.5, 10.5, 2.0],
-  ],
-};
-
-function catmull(keys, t, k) {
-  let i = 0;
-  while (i < keys.length - 2 && keys[i + 1][0] < t) i++;
-  const p0 = keys[Math.max(0, i - 1)], p1 = keys[i], p2 = keys[i + 1], p3 = keys[Math.min(keys.length - 1, i + 2)];
-  const u = Math.min(1, Math.max(0, (t - p1[0]) / (p2[0] - p1[0] || 1)));
-  const a = p0[k], b = p1[k], c = p2[k], d = p3[k];
-  return 0.5 * (2 * b + (-a + c) * u + (2 * a - 5 * b + 4 * c - d) * u * u + (-a + 3 * b - 3 * c + d) * u * u * u);
-}
-
-function makeBody(H, W) {
-  const keys = KEYS.long;
-  const sec = (t, grow = 0) => ({
-    z: t * H,
-    a: catmull(keys, t, 1) * W + grow,
-    b: catmull(keys, t, 2) * W + grow,
-    n: catmull(keys, t, 3),
-  });
-  const front = (x, z) => {
-    const s = sec(Math.min(1, Math.max(0, z / H)));
-    const r = Math.min(0.999, Math.abs(x) / s.a);
-    return -s.b * Math.pow(1 - Math.pow(r, s.n), 1 / s.n);
-  };
-  const loft = (grow = 0, rows = 44, seg = 72) => {
-    const rings = [];
-    for (let j = 0; j <= rows; j++) {
-      const s = sec(j / rows, grow);
-      const z = j === 0 ? -grow : j === rows ? H + grow : s.z;
-      const ring = [];
-      for (let i = 0; i < seg; i++) {
-        const th = (i / seg) * 2 * Math.PI;
-        const c = Math.cos(th), sn = Math.sin(th);
-        ring.push([s.a * Math.sign(c) * Math.pow(Math.abs(c), 2 / s.n), s.b * Math.sign(sn) * Math.pow(Math.abs(sn), 2 / s.n), z]);
-      }
-      rings.push(ring);
-    }
-    return closedLoft(rings);
-  };
-  return { sec, front, loft };
-}
 
 /** triangles of a closed tube made of rings (+ flat caps) */
 function closedLoft(rings) {
@@ -169,190 +164,6 @@ const cyl = (r1, r2, h, seg = 32) => {
 const box = (w, d, h) => { const g = new THREE.BoxGeometry(w, d, h); g.translate(0, 0, h / 2); return g; };
 const sphere = (r, seg = 24) => new THREE.SphereGeometry(r, seg, Math.round(seg * 0.7));
 const at = (g, x, y, z) => { g.translate(x, y, z); return g; };
-
-// ---------- the outfits ----------
-// Each returns 2D regions on the front (in x, z with z from 0 to H) and some extras.
-// Region colours: 'main' (the outfit), 'inner' (shirt under it), 'accent' (tie, trim…).
-function outfitLayers(kind, neck, H, W) {
-  const zt = H; // top of body
-  const L = []; // { color, lift, cs, full }
-  const extras = { sleeves: 'long', collar: 'main', buttons: [] };
-  const vNeck = (tipZ, halfW = 11.5 * W) => poly([[-halfW, zt + 2], [halfW, zt + 2], [0, tipZ]]);
-  const lapels = (tipZ, width = 8 * W) => {
-    const left = poly([
-      [-11.5 * W, zt + 1], [-11.5 * W - width * 0.55, zt - 7], [-11.5 * W - width * 0.25, zt - 10],
-      [-11.5 * W - width, zt - 13], [-2.5 * W, tipZ - 6], [0, tipZ - 6], [0, tipZ],
-    ]);
-    return both(difference(left, vNeck(tipZ)));
-  };
-  const tieShape = (tipZ) => {
-    if (neck === 'tie') return union(poly([[-2.6, zt - 1], [2.6, zt - 1], [1.8, zt - 6], [-1.8, zt - 6]]),
-      poly([[-1.8, zt - 6], [1.8, zt - 6], [4.2, tipZ - 2], [0, tipZ - 6], [-4.2, tipZ - 2]]));
-    if (neck === 'bow') return union(poly([[0, zt - 4], [-8, zt], [-8, zt - 8]]), poly([[0, zt - 4], [8, zt - 8], [8, zt]]), roundRect(0, zt - 4, 4, 4.4, 1));
-    if (neck === 'scarf') return union(poly([[-9, zt + 1], [9, zt + 1], [0, zt - 8]]), poly([[-1, zt - 6], [-9, zt - 20], [-2, zt - 19]]),
-      poly([[1, zt - 6], [7, zt - 22], [1.5, zt - 18]]), circle(0, zt - 6, 3.2, 20));
-    return [];
-  };
-  const pocket = (cx, cz, w, h, lift = 0.7, color = 'main') => L.push({ color, lift, cs: ring2(roundRect(cx, cz, w, h, 1.2), 1.1) });
-  const placket = (fromZ, toZ, w = 5) => L.push({ color: 'main', lift: 0.7, cs: roundRect(0, (fromZ + toZ) / 2, w, fromZ - toZ, 0.8) });
-  const pointsCollar = (color, size = 1) =>
-    L.push({ color, lift: 1.4, cs: both(poly([[-1, zt - 2], [-11.5 * W, zt + 1], [-13 * W * size, zt - 5 * size], [-4 * size, zt - 13 * size]])) });
-
-  switch (kind) {
-    case 'suit': {
-      const tip = H * 0.48;
-      const tie = intersection(tieShape(tip), vNeck(tip));
-      L.push({ color: 'inner', lift: 0.5, cs: difference(vNeck(tip), tie) });
-      if (tie.length) L.push({ color: 'accent', lift: 1.4, cs: tie });
-      L.push({ color: 'main', lift: 1.8, cs: lapels(tip) });
-      L.push({ color: 'inner', lift: 1.9, cs: both(poly([[-1.5, zt - 1], [-11 * W, zt + 1], [-10 * W, zt - 6], [-3.5, zt - 9]])) });
-      pocket(-17 * W, H * 0.62, 9 * W, 1.6, 0.8);
-      pocket(-16 * W, H * 0.22, 12 * W, 1.6, 0.8);
-      pocket(16 * W, H * 0.22, 12 * W, 1.6, 0.8);
-      extras.buttons = [[0, H * 0.36], [0, H * 0.24]];
-      extras.collar = 'inner';
-      break;
-    }
-    case 'labcoat': {
-      const tip = H * 0.56;
-      const tie = intersection(tieShape(tip), vNeck(tip));
-      L.push({ color: 'inner', lift: 0.5, cs: difference(vNeck(tip), tie) });
-      if (tie.length) L.push({ color: 'accent', lift: 1.4, cs: tie });
-      L.push({ color: 'main', lift: 1.8, cs: lapels(tip, 9 * W) });
-      pocket(16 * W, H * 0.64, 11 * W, 10 * W);
-      pocket(-16 * W, H * 0.2, 12 * W, 11 * W);
-      pocket(16 * W, H * 0.2, 12 * W, 11 * W);
-      L.push({ color: 'main', lift: 0.6, cs: roundRect(0.8, tip / 2, 1.2, tip, 0) });
-      extras.buttons = [[3, H * 0.44], [3, H * 0.3], [3, H * 0.16]];
-      extras.pen = [12 * W, H * 0.64 + 5 * W];
-      extras.collar = 'inner';
-      break;
-    }
-    case 'scrubs': {
-      const tip = H * 0.7;
-      L.push({ color: 'inner', lift: 0.4, cs: poly([[-8 * W, zt + 2], [8 * W, zt + 2], [0, tip]]) });
-      L.push({ color: 'main', lift: 1.2, cs: ring2(poly([[-9.5 * W, zt + 2], [9.5 * W, zt + 2], [0, tip - 2.2]]), 2.2) });
-      pocket(-15 * W, H * 0.62, 10 * W, 9 * W);
-      extras.pen = [-12 * W, H * 0.62 + 4.5 * W];
-      extras.sleeves = 'short';
-      extras.collar = 'none';
-      break;
-    }
-    case 'shirt': {
-      const tie = tieShape(H * 0.3);
-      if (tie.length) L.push({ color: 'accent', lift: 1.6, cs: tie });
-      placket(zt - 2, 0, 5);
-      pointsCollar('main');
-      pocket(-15 * W, H * 0.64, 10 * W, 10 * W);
-      if (!tie.length) extras.buttons = [0.86, 0.68, 0.5, 0.32, 0.14].map((t) => [0, H * t]);
-      break;
-    }
-    case 'polo': {
-      placket(zt - 2, H * 0.68, 6);
-      pointsCollar('main', 0.85);
-      extras.buttons = [[0, H * 0.86], [0, H * 0.75]];
-      extras.sleeves = 'short';
-      extras.collar = 'main';
-      extras.logo = [-15 * W, H * 0.66];
-      break;
-    }
-    case 'work': {
-      // two-tone work jacket: shoulder yoke in the accent colour, zip down the middle
-      L.push({ color: 'accent', lift: 0.5, full: true, cs: roundRect(0, H * 0.865, 120, H * 0.15) });
-      L.push({ color: 'accent', lift: 0.6, cs: roundRect(0, H * 0.4, 3, H * 0.84) });
-      L.push({ color: 'main', lift: 1.1, cs: union(roundRect(-15 * W, H * 0.6, 12 * W, 10 * W, 1.5), roundRect(15 * W, H * 0.6, 12 * W, 10 * W, 1.5)) });
-      L.push({ color: 'accent', lift: 1.4, cs: union(roundRect(-15 * W, H * 0.6 + 4.6 * W, 12.4 * W, 2.4, 0.8), roundRect(15 * W, H * 0.6 + 4.6 * W, 12.4 * W, 2.4, 0.8)) });
-      extras.zip = true;
-      extras.collar = 'accent';
-      break;
-    }
-    case 'chef': {
-      L.push({ color: 'main', lift: 0.9, cs: poly([[-6, zt - 1], [11.5 * W, zt - 2], [20 * W, H * 0.62], [12 * W, 0], [-6, 0]]) });
-      extras.buttons = [];
-      for (const t of [0.78, 0.6, 0.42, 0.24]) extras.buttons.push([-9 * W, H * t], [9 * W, H * t]);
-      extras.btnColor = 'accent';
-      extras.collar = 'accent';
-      break;
-    }
-    case 'gown': {
-      // graduation gown with a stole on both sides
-      const tip = H * 0.62;
-      L.push({ color: 'inner', lift: 0.5, cs: vNeck(tip, 10 * W) });
-      L.push({ color: 'accent', lift: 1.5, cs: both(poly([[-10.5 * W, zt + 1], [-17.5 * W, zt - 2], [-11 * W, 0], [-4 * W, 0], [-3.5 * W, tip - 4], [-1, tip]])) });
-      L.push({ color: 'main', lift: 0.8, cs: both(roundRect(-20 * W, H * 0.35, 1.2, H * 0.5)) });
-      extras.collar = 'none';
-      break;
-    }
-    default:
-      break;
-  }
-  return { layers: L, extras };
-}
-
-function sleeve(side, kind, H, W, body) {
-  const s = (t) => body.sec(t);
-  const sh = s(0.84);
-  if (kind === 'short') {
-    const pts = [[side * (sh.a - 7), 0, H * 0.86], [side * (sh.a + 1), -1, H * 0.78], [side * (sh.a + 4), -2, H * 0.62]];
-    return sweep(pts, [9 * W, 10 * W, 10 * W], 28);
-  }
-  const pts = [
-    [side * (sh.a - 7), 0, H * 0.86], [side * (sh.a + 0.5), -1, H * 0.76], [side * (sh.a + 2.5), -2, H * 0.55],
-    [side * (sh.a + 2.2), -3.5, H * 0.32], [side * (sh.a + 0.6), -5, H * 0.1], [side * (sh.a), -5.5, 0],
-  ];
-  return sweep(pts, [9 * W, 9.5 * W, 8.6 * W, 8 * W, 7.6 * W, 7.6 * W], 28);
-}
-
-function stethoscope(H, W, body) {
-  // a tube lying on the shoulders around the neck, then down the chest on both sides
-  const restZ = (x, y) => {
-    for (let t = 0.8; t <= 1.0; t += 0.004) {
-      const s = body.sec(t);
-      const v = Math.pow(Math.abs(x) / s.a, s.n) + Math.pow(Math.abs(y) / s.b, s.n);
-      if (v >= 1) return t * H;
-    }
-    return H;
-  };
-  const A = 15.5 * W, B = 13.5 * W, r = 1.7;
-  const loop = [];
-  for (let i = 0; i <= 20; i++) {
-    const phi = -Math.PI / 2 + 0.6 + (i / 20) * (2 * Math.PI - 1.2);
-    const x = A * Math.cos(phi), y = B * Math.sin(phi);
-    loop.push([x, y, restZ(x, y) + r]);
-  }
-  const down = (x0, y0, z0, z1) => {
-    const out = [];
-    for (let i = 1; i <= 7; i++) {
-      const z = z0 + ((z1 - z0) * i) / 7;
-      const x = x0 * (1 - 0.3 * (i / 7));
-      out.push([x, Math.min(y0, body.front(x, z) - r - 0.2), z]);
-    }
-    return out;
-  };
-  const start = loop[0], end = loop[loop.length - 1];
-  const a = down(start[0], start[1], start[2], H * 0.56).reverse();
-  const b = down(end[0], end[1], end[2], H * 0.5);
-  const path = [...a, ...loop, ...b];
-  const tube = sweep(path, path.map(() => r), 14);
-  const last = b[b.length - 1];
-  const head = cyl(5.2, 5.2, 3.2, 28);
-  head.rotateX(Math.PI / 2);
-  head.translate(last[0], body.front(last[0], last[2] - 5) - 0.4, last[2] - 5);
-  const first = a[0];
-  const ear = sphere(2.6, 16); ear.translate(first[0], first[1], first[2]);
-  return merge([tube, prim(head), ear]);
-}
-
-function gradCap(zTop) {
-  const cap = cyl(12.5, 12.5, 7, 40);
-  cap.translate(0, 0, zTop - 1);
-  const board = box(32, 32, 2.2);
-  board.rotateZ(Math.PI / 4);
-  board.translate(0, 0, zTop + 6);
-  const button = cyl(2, 2, 1.2, 16); button.translate(0, 0, zTop + 8.2);
-  const tassel = sweep([[0, 0, zTop + 8.6], [8, -8, zTop + 8.4], [15, -15, zTop + 7.6], [15.5, -15.5, zTop + 1]], [0.9, 0.9, 0.9, 1.3], 10);
-  return { body: merge([prim(cap), prim(board)]), tassel: merge([prim(button), tassel]) };
-}
 
 // ---------- accessories (local: centred at 0,0; standing on z = 0; ≤ 32 mm footprint) ----------
 // each returns [{ geometry, color: 'a' | 'b' }]
@@ -579,29 +390,15 @@ const ACC_OPTIONS = [
   { value: 'ball', label: 'طابة', group: 'شغل وهوايات' },
 ];
 
-const OUTFITS = [
-  { value: 'suit', label: 'بدلة رسمية' },
-  { value: 'labcoat', label: 'روب طبيب / صيدلي' },
-  { value: 'scrubs', label: 'سكراب (تمريض وطب)' },
-  { value: 'shirt', label: 'قميص' },
-  { value: 'polo', label: 'كنزة بولو' },
-  { value: 'work', label: 'جاكيت شغل (ميكانيك وهندسة)' },
-  { value: 'chef', label: 'جاكيت شيف' },
-  { value: 'gown', label: 'روب تخرّج' },
-];
-
 export default {
   id: 'job-outfit',
   name: 'هدية المهنة: اللبس والاسم',
-  description: 'لبس المهنة (بدلة، روب طبيب، سكراب، جاكيت شيف…) على قاعدة عليها الاسم، ومع أغراض الشغل عالجنبين. هدية حلوة للتخرّج، للدكتور، للمعلّمة، أو لافتتاح محل.',
+  description: 'لبس المهنة منحوت بالتفاصيل (روب طبيب، سكراب، بدلة، شيف، طيّار…) ومجوّف من فوق متل كاسة أقلام، على قاعدة عليها الاسم ومع أغراض الشغل عالجنبين. هدية حلوة للتخرّج، للدكتور، للمعلّمة، أو لافتتاح محل.',
   category: 'هدايا',
   params: [
-    { key: 'outfit', label: 'اللبس', type: 'select', dropdown: true, default: 'labcoat', group: 'اللبس', options: OUTFITS },
-    { key: 'neck', label: 'عالرقبة', type: 'select', default: 'none', group: 'اللبس',
-      help: 'للبدلة والروب والقميص',
-      options: [{ value: 'none', label: 'بلا' }, { value: 'tie', label: 'كرافات' }, { value: 'bow', label: 'بابيون' }, { value: 'scarf', label: 'إيشارب' }] },
-    { key: 'stethoscope', label: 'سمّاعة طبيب', type: 'checkbox', default: true, group: 'اللبس' },
-    { key: 'cap', label: 'قبعة تخرّج', type: 'checkbox', default: false, group: 'اللبس' },
+    { key: 'outfit', label: 'اللبس', type: 'select', pictures: true, default: 'labcoat', group: 'اللبس', options: OUTFITS.map(({ value, label, image }) => ({ value, label, image })) },
+    { key: 'height', label: 'طول اللبس', type: 'number', min: 70, max: 140, step: 1, unit: 'مم', default: 95, group: 'اللبس' },
+    { key: 'mainColor', label: 'لون اللبس', type: 'color', default: '#f5f5f5', group: 'اللبس' },
 
     { key: 'name', label: 'الاسم', type: 'text', default: 'Dr. Yara', maxLength: 28, group: 'الاسم' },
     { key: 'title', label: 'السطر التاني (المهنة)', type: 'text', default: 'Pharmacist', maxLength: 34, group: 'الاسم', help: 'اتركه فاضي إذا بدك سطر واحد' },
@@ -609,130 +406,63 @@ export default {
 
     { key: 'left', label: 'عالشمال', type: 'select', dropdown: true, default: 'testTubes', group: 'الأغراض', options: ACC_OPTIONS },
     { key: 'right', label: 'عاليمين', type: 'select', dropdown: true, default: 'microscope', group: 'الأغراض', options: ACC_OPTIONS },
-
-    { key: 'mainColor', label: 'لون اللبس', type: 'color', default: '#f5f5f5', group: 'الألوان' },
-    { key: 'innerColor', label: 'لون القميص من جوّا', type: 'color', default: '#4a90d9', group: 'الألوان' },
-    { key: 'accentColor', label: 'لون الكرافات والتفاصيل', type: 'color', default: '#1a1a1a', group: 'الألوان' },
     { key: 'accColor', label: 'لون الأغراض', type: 'color', default: '#1e5bd8', group: 'الألوان' },
     { key: 'accColor2', label: 'لون تاني للأغراض', type: 'color', default: '#f5f5f5', group: 'الألوان' },
     { key: 'baseColor', label: 'لون القاعدة', type: 'color', default: '#f5f5f5', group: 'الألوان' },
     { key: 'plateColor', label: 'لون لوحة الاسم', type: 'color', default: '#1a1a1a', group: 'الألوان' },
     { key: 'textColor', label: 'لون الاسم', type: 'color', default: '#f5f5f5', group: 'الألوان' },
-
-    { key: 'size', label: 'طول القاعدة', type: 'number', min: 130, max: 220, step: 1, unit: 'مم', default: 160, group: 'المقاس' },
   ],
   fonts: (p) => ((p.name?.trim() || p.title?.trim()) ? [p.font] : []),
-  build(p, fonts) {
-    const k = p.size / 160; // everything scales with the base length
-    const L = p.size, D = 78 * k, HB = 28 * k;
-    const H = 92 * k, W = 0.9 * k; // bust height / width scale
-    const by = 5 * k; // bust sits a bit towards the back
+  async build(p, fonts) {
+    const o = OUTFITS.find((x) => x.value === p.outfit) || OUTFITS[0];
+    const src = await loadOutfit(o.value);
+    const s = p.height / o.h;
+    const W = o.w * s, Dm = o.d * s;
     const parts = [];
     const add = (name, color, geometry) => { if (geometry && geometry.attributes.position.count) parts.push({ name, color, geometry }); };
 
-    // ----- base: a wide step + the block, name plate on the front -----
-    const step = extrude(roundRect(0, 0, L, D, 6 * k), 5 * k, 0);
-    const block = extrude(roundRect(0, 1.5 * k, L - 8 * k, D - 7 * k, 4 * k), HB - 5 * k, 5 * k);
+    // ----- base: sized to the outfit and the tools on its sides -----
+    const hasL = ACCESSORIES[p.left], hasR = ACCESSORIES[p.right];
+    const zone = 40; // room for one tool
+    const L = Math.max(120, W + (hasL ? zone : 8) + (hasR ? zone : 8) + 12);
+    const D = Math.max(66, Dm + 18);
+    const HB = 26;
+    const k = Math.min(1.25, Math.max(0.8, L / 160)); // name plate scale
+    const step = extrude(roundRect(0, 0, L, D, 6), 5, 0);
+    const block = extrude(roundRect(0, 1.5, L - 8, D - 7, 4), HB - 5, 5);
     add('القاعدة', p.baseColor, merge([step, block]));
 
     const name = p.name?.trim(), title = p.title?.trim();
-    const faceY = 1.5 * k - (D - 7 * k) / 2; // front face of the block
+    const faceY = 1.5 - (D - 7) / 2; // front face of the block
     if (name || title) {
-      const pw = L - 26 * k, ph = HB - 7.5 * k, pz = 5 * k + (HB - 5 * k) / 2;
-      const plate = prism(roundRect(0, pz, pw, ph, 2.2 * k), faceY + 0.01, faceY - 1.2);
-      add('لوحة الاسم', p.plateColor, plate);
+      const pw = L - 22, ph = HB - 8, pz = 5 + (HB - 5) / 2;
+      add('لوحة الاسم', p.plateColor, prism(roundRect(0, pz, pw, ph, 2.2), faceY + 0.01, faceY - 1.2));
       const f = fonts[p.font];
       let text = [];
       const two = name && title;
-      if (name) {
-        const tb = textBox(f, name, { height: ph * (two ? 0.4 : 0.56), maxWidth: pw - 8 * k, cx: 0, cy: two ? pz + ph * 0.2 : pz });
-        text = union(text, tb.contours);
-      }
-      if (title) {
-        const tb = textBox(f, title, { height: ph * (two ? 0.22 : 0.5), maxWidth: pw - 12 * k, cx: 0, cy: two ? pz - ph * 0.28 : pz });
-        text = union(text, tb.contours);
-      }
+      if (name) text = union(text, textBox(f, name, { height: ph * (two ? 0.4 : 0.56), maxWidth: pw - 8 * k, cx: 0, cy: two ? pz + ph * 0.2 : pz }).contours);
+      if (title) text = union(text, textBox(f, title, { height: ph * (two ? 0.22 : 0.5), maxWidth: pw - 12 * k, cx: 0, cy: two ? pz - ph * 0.28 : pz }).contours);
       if (!text.length) throw new Error('ما قدرنا نرسم الاسم بهالخط');
       add('الاسم', p.textColor, prism(text, faceY - 1.19, faceY - 2.0));
     }
 
-    // ----- the outfit -----
-    const body = makeBody(H, W);
-    const torso = fixWinding(body.loft(0));
-    const { layers, extras } = outfitLayers(p.outfit, p.neck, H, W);
-    const colorOf = { main: p.mainColor, inner: p.innerColor, accent: p.accentColor };
-    const lift = (g) => at(g, 0, by, HB);
+    // ----- the outfit: centred between the tools, a little towards the back -----
+    const ox = ((hasL ? zone : 8) - (hasR ? zone : 8)) / 2;
+    const oy = 1.5 + Math.max(0, (D - 7 - Dm) / 2 - 3);
+    const g = src.clone();
+    g.scale(s, s, s);
+    g.translate(ox, oy, HB);
+    add('اللبس', p.mainColor, g);
 
-    const pieces = { main: [lift(torso.clone())], inner: [], accent: [] };
-    const sleeves = [-1, 1].map((s) => lift(sleeve(s, extras.sleeves, H, W, body)));
-    pieces.main.push(...sleeves.map((g) => subtract(g, lift(torso.clone()))));
-
-    // the details: a thin layer that follows the body (prism ∩ grown body) − body
-    for (const lay of layers) {
-      if (!lay.cs?.length) continue;
-      const shell = fixWinding(body.loft(lay.lift));
-      const pr = prism(lay.cs, lay.full ? 80 : 0, -80);
-      const piece = intersect(pr, shell);
-      if (!piece) continue;
-      pieces[lay.color].push(lift(subtract(piece, torso)));
-    }
-
-    // collar ring around the neck (hollow look)
-    const ringCol = extras.collar === 'none' ? 'main' : extras.collar;
-    const top = body.sec(1);
-    const ringH = extras.collar === 'none' ? 2.5 : 4.5 * k;
-    const collar = subtract(prim(cyl(top.a + 1.2, top.a + 0.6, ringH, 48)), at(prim(cyl(top.a - 1.2, top.a - 1.2, ringH + 2, 48)), 0, 0, 1.6));
-    pieces[ringCol].push(lift(at(collar, 0, 0, H - 2)));
-    const hole = at(prim(cyl(top.a - 1.4, top.a - 1.4, 0.8, 48)), 0, 0, H);
-    pieces.accent.push(lift(hole));
-
-    for (const [x, z] of extras.buttons) {
-      const b = cyl(1.9 * W, 1.9 * W, 2.2, 20);
-      b.rotateX(Math.PI / 2);
-      b.translate(x, body.front(x, z) - 0.6, z);
-      pieces[extras.btnColor || 'accent'].push(lift(prim(b)));
-    }
-    if (extras.pen) {
-      const [x, z] = extras.pen;
-      const pen = cyl(1.3, 1.3, 9 * W, 16); pen.translate(x, body.front(x, z) - 1.8, z - 3 * W);
-      pieces.accent.push(lift(prim(pen)));
-    }
-    if (extras.zip) {
-      const z = H * 0.83;
-      const pull = box(2.6, 1.6, 6); pull.translate(0, body.front(0, z) - 1.2, z - 6);
-      pieces.main.push(lift(prim(pull)));
-    }
-    if (extras.logo) {
-      const [x, z] = extras.logo;
-      const lg = cyl(3.2, 3.2, 1.6, 24); lg.rotateX(Math.PI / 2); lg.translate(x, body.front(x, z) - 0.4, z);
-      pieces.accent.push(lift(prim(lg)));
-    }
-
-    add('اللبس', p.mainColor, merge(pieces.main));
-    if (pieces.inner.length) add('القميص', colorOf.inner, merge(pieces.inner));
-    if (pieces.accent.length) add('التفاصيل', colorOf.accent, merge(pieces.accent));
-
-    if (p.stethoscope) {
-      const st = stethoscope(H, W, body);
-      add('السمّاعة', p.accentColor, lift(subtract(st, body.loft(0.2))));
-    }
-    if (p.cap) {
-      const c = gradCap(H + ringH - 3);
-      add('قبعة التخرّج', p.accentColor, lift(c.body));
-      add('شرّابة القبعة', p.accColor, lift(c.tassel));
-    }
-
-    // ----- accessories on both sides -----
-    const slotX = L / 2 - 4 * k - Math.max(18, (L / 2 - 4 * k - 44 * k) / 2 + 2);
+    // ----- tools on both sides -----
     for (const [side, key] of [[-1, 'left'], [1, 'right']]) {
       const fn = ACCESSORIES[p[key]];
       if (!fn) continue;
-      const list = fn().filter((x) => x && x.geometry);
-      for (const it of list) {
-        const g = it.geometry.clone();
-        g.scale(k, k, k);
-        g.translate(side * slotX, 1 * k, HB);
-        add(key === 'left' ? 'غرض الشمال' : 'غرض اليمين', it.color === 'b' ? p.accColor2 : p.accColor, g);
+      const x = ox + side * (W / 2 + zone / 2 + 2);
+      for (const it of fn().filter((t) => t && t.geometry)) {
+        const tg = it.geometry.clone();
+        tg.translate(x, 1, HB);
+        add(key === 'left' ? 'غرض الشمال' : 'غرض اليمين', it.color === 'b' ? p.accColor2 : p.accColor, tg);
       }
     }
     return mergeSameColor(parts);

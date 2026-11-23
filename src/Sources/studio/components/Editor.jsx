@@ -59,6 +59,9 @@ export default function Editor({ tool, initial, config, orderId, downloadId }) {
   const colors = parts ? new Set(parts.map((p) => p.color)).size : 0;
   const minutes = stats ? printMinutes(stats, config) : 0;
   const price = stats ? priceFor(config, tool.id, stats.grams, colors, minutes) : 0;
+  // prices are shown to customers only if the admin turned them on; the admin always sees them
+  const showPrice = config.showPrices === true || isAdmin;
+  const adminOnly = !config.showPrices && isAdmin ? <span className="sd-muted"> (admin)</span> : null;
 
   // ——— الكريدت: كل تنزيل ملف يخصم قيمة الأداة (الأدمن مجاني، ونفس التصميم لا يُخصم مرتين) ———
   const cost = isAdmin ? 0 : toolCredits(config, tool.id);
@@ -143,7 +146,7 @@ export default function Editor({ tool, initial, config, orderId, downloadId }) {
           {stats && (
             <div className="sd-mini">
               <span>
-                <b>{price.toFixed(2)} {config.currency}</b>{isAdmin && <> · {formatMinutes(minutes)}</>}
+                {showPrice && <b>{price.toFixed(2)} {config.currency}</b>}{isAdmin && <> · {formatMinutes(minutes)}</>}
               </span>
               <button
                 type="button"
@@ -162,7 +165,7 @@ export default function Editor({ tool, initial, config, orderId, downloadId }) {
               <div><dt>{tx('Approx. weight', 'الوزن التقريبي')}</dt><dd>{stats.grams.toFixed(1)} {tx('g', 'غ')}</dd></div>
               {isAdmin && <div><dt>{tx('Approx. print time', 'وقت الطباعة التقريبي')} <span className="sd-muted">(admin)</span></dt><dd>{formatMinutes(minutes)}</dd></div>}
               <div><dt>{tx('Colours', 'الألوان')}</dt><dd>{colors}</dd></div>
-              <div><dt>{tx('Approx. price', 'السعر التقريبي')}</dt><dd><b>{price.toFixed(2)} {config.currency}</b></dd></div>
+              {showPrice && <div><dt>{tx('Approx. price', 'السعر التقريبي')}{adminOnly}</dt><dd><b>{price.toFixed(2)} {config.currency}</b></dd></div>}
             </dl>
           )}
           <div className="sd-actions">

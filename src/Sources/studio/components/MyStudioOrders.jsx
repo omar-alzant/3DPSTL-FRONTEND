@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Badge, Card, Col, Row } from 'react-bootstrap';
-import { listMyOrders, designPath } from '../lib/api.js';
+import { listMyOrders, designPath, getConfig } from '../lib/api.js';
 import { useLang } from '../../i18n/LanguageContext';
 import { useT } from '../i18n/index.js';
 
@@ -38,6 +38,8 @@ function Progress({ status }) {
 export default function MyStudioOrders() {
   const [orders, setOrders] = useState(null);
   const [error, setError] = useState(null);
+  const [showPrices, setShowPrices] = useState(false);
+  useEffect(() => { getConfig().then((c) => setShowPrices(c?.showPrices === true)).catch(() => {}); }, []);
   const { tx, lang } = useLang();
   const t = useT();
 
@@ -74,7 +76,7 @@ export default function MyStudioOrders() {
       <Row>
         <Col>
           {tx('Qty', 'الكمية')} {o.qty}
-          {o.estimate?.price != null && <> · {tx('Estimated total:', 'المجموع التقريبي:')} <bdi dir="ltr">{o.estimate.price} {o.estimate.currency}</bdi></>}
+          {showPrices && o.estimate?.price != null && <> · {tx('Estimated total:', 'المجموع التقريبي:')} <bdi dir="ltr">{o.estimate.price} {o.estimate.currency}</bdi></>}
         </Col>
       </Row>
       <Progress status={o.status} />

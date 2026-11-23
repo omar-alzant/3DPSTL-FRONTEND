@@ -482,3 +482,21 @@ html[data-theme='light'] .sd-card-img { background: radial-gradient(circle at 50
 .photo-drop-preview { max-width: 180px; max-height: 180px; border-radius: 12px; object-fit: contain; box-shadow: 0 8px 24px var(--brand-shadow); }
 .photo-drop-text { max-width: 420px; color: var(--brand-muted); }
 .photo-drop-link { color: var(--brand-light); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+
+/* Our works: pagination panel */
+.shop-pager {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px;
+  background: var(--brand-card); border: 1px solid var(--brand-border); border-radius: 14px;
+  padding: 10px 14px; box-shadow: 0 4px 18px var(--brand-shadow);
+}
+.shop-pager-page { font-size: 0.875rem; padding: 4px 10px; border-radius: 8px; background: var(--brand-primary); color: #fff; white-space: nowrap; }
+@media (max-width: 575.98px) {
+  .shop-pager { justify-content: center; text-align: center; }
+  .shop-pager > small { flex-basis: 100%; }
+}
+
+/* product card: keep "Order similar" on one line next to the Instagram button */
+.order-similar-btn { white-space: nowrap; }
+@media (max-width: 575.98px) {
+  .order-similar-btn { padding: 4px 7px; font-size: 0.78rem; }
+}

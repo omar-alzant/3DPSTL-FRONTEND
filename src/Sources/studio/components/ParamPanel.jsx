@@ -142,6 +142,20 @@ function Field({ def, value, onChange, params, tool, palette, isAdmin }) {
       return <FontPicker value={value} onChange={set} sample={sample} />;
     }
     case 'select':
+      if (def.pictures) {
+        // a grid of pictures (each option has an image)
+        return (
+          <div className="sd-pics" role="radiogroup">
+            {def.options.map((o) => (
+              <button key={o.value} type="button" role="radio" aria-checked={o.value === value}
+                className={o.value === value ? 'on' : ''} onClick={() => set(o.value)} title={t(o.label)}>
+                <img src={o.image} alt="" loading="lazy" />
+                <span>{t(o.label)}</span>
+              </button>
+            ))}
+          </div>
+        );
+      }
       if (def.dropdown) {
         // قائمة منسدلة مقسّمة بمجموعات (للقوائم الطويلة مثل موديلات الهواتف)
         const groups = [...new Set(def.options.map((o) => o.group || ''))];

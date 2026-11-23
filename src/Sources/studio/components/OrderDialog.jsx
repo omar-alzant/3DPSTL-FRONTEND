@@ -107,8 +107,9 @@ export default function OrderDialog({ tool, params, stats, price, minutes = 0, c
           <form onSubmit={submit}>
             <h3>{tx('Order a print of this design', 'اطلب طباعة التصميم')}</h3>
             <p className="sd-muted">
-              {t(tool.name)} · <span dir="ltr">{stats.size.x.toFixed(0)}×{stats.size.y.toFixed(0)}×{stats.size.z.toFixed(0)}</span> {tx('mm', 'مم')} · {tx('approx. price', 'السعر التقريبي')}{' '}
-              <b>{(price * (Number(form.qty) || 1)).toFixed(2)} {config.currency}</b>
+              {t(tool.name)} · <span dir="ltr">{stats.size.x.toFixed(0)}×{stats.size.y.toFixed(0)}×{stats.size.z.toFixed(0)}</span> {tx('mm', 'مم')}
+              {config.showPrices === true && <> · {tx('approx. price', 'السعر التقريبي')}{' '}
+              <b>{(price * (Number(form.qty) || 1)).toFixed(2)} {config.currency}</b></>}
             </p>
             <label>{tx('Name', 'الاسم')}<input required value={form.name} onChange={set('name')} /></label>
             <label>{tx('Phone / WhatsApp', 'رقم الهاتف / واتساب')}<input required dir="ltr" value={form.phone} onChange={set('phone')} placeholder="+961 …" /></label>

@@ -496,3 +496,19 @@
 .sd-guide-label { position: absolute; inset-inline: 0; bottom: 0; padding: 10px 14px; background: rgba(13, 13, 51, .82); color: #fff; font-weight: 600; font-size: 14px; }
 .sd-modal.sd-guide-modal { width: min(980px, 96vw); max-width: none; }
 .sd-guide-modal video { display: block; width: 100%; border-radius: 12px; background: #000; margin-top: 10px; }
+
+/* picture picker (e.g. the job outfits) */
+.sd-pics { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 8px; }
+.sd-pics button {
+  display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 4px 8px;
+  background: var(--sd-surface); border: 1.5px solid var(--sd-line);
+  border-radius: 10px; color: inherit; cursor: pointer; font-size: 0.78rem; line-height: 1.2; text-align: center;
+}
+.sd-pics button img { width: 100%; aspect-ratio: 1; object-fit: contain; }
+.sd-pics button:hover { border-color: var(--sd-accent); }
+.sd-pics button.on { border-color: var(--sd-accent); box-shadow: 0 0 0 2px rgba(106, 77, 255, .35); }
+.sd-pics button:focus-visible { outline: 2px solid var(--sd-accent); outline-offset: 2px; }
+
+/* admin pricing: "show prices to customers" switch */
+.sd-form-grid .sd-check { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.sd-form-grid .sd-check small { flex-basis: 100%; }

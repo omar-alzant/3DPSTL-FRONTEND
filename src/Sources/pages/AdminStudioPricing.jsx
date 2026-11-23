@@ -23,6 +23,7 @@ const toForm = (s) => ({
   startupMinutes: s.startupMinutes ?? TIME_DEFAULTS.startupMinutes,
   whatsapp: s.whatsapp || '',
   creditsPerDownload: s.creditsPerDownload ?? 0,
+  showPrices: s.showPrices === true,
   payment: s.payment || {}, // edited in Admin → Credits; kept as-is here
   tools: Object.fromEntries(
     TOOLS.map((t) => {
@@ -135,6 +136,14 @@ export default function AdminStudioPricing() {
             <label>Fee per extra colour ({cur})<Num value={form.colorFee} onChange={set('colorFee')} /></label>
             <label>Price per print hour ({cur})<Num value={form.pricePerHour} onChange={set('pricePerHour')} /></label>
             <label>{tx('Credits per file download (default)', 'كريدت لكل تنزيل ملف (افتراضي)')}<Num value={form.creditsPerDownload} onChange={set('creditsPerDownload')} step="1" /></label>
+            <label className="sd-span-2 sd-check">
+              <span className="sd-switch">
+                <input type="checkbox" checked={form.showPrices} onChange={(e) => set('showPrices')(e.target.checked)} />
+                <span />
+              </span>
+              {tx('Show the approximate price to customers', 'بيّن السعر التقريبي للزبون')}
+              <small className="sd-muted d-block">{tx('Off: customers see no price in the Studio, the order form or “My orders”. You always see it.', 'مطفي: الزبون ما بيشوف سعر بالاستوديو ولا بنموذج الطلب ولا بـ«طلباتي». إنت دايماً بتشوفه.')}</small>
+            </label>
             <label className="sd-span-2">WhatsApp number for orders (international, no +)
               <input type="text" value={form.whatsapp} placeholder="96176118290" onChange={(e) => set('whatsapp')(e.target.value)} />
             </label>

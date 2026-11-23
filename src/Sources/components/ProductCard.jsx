@@ -113,7 +113,7 @@ function ProductCard({ product, cart, onAddToCart }) {
                     <FaInstagram size={16} />
                   </a>
                 )}
-                <Button variant="outline-success" size="sm" onClick={(e) => { e.stopPropagation(); navigate(`/item/${product.id}`); }}>
+                <Button variant="outline-success" size="sm" className="order-similar-btn" onClick={(e) => { e.stopPropagation(); navigate(`/item/${product.id}`); }}>
                   {tx('Order similar', 'اطلب متلها')}
                 </Button>
               </div>

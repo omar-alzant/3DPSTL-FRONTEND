@@ -98,7 +98,7 @@
 /* ways to order: the Studio leads, the other two support */
 .hm-ways { display: grid; grid-template-columns: 1.3fr 1fr 1fr; gap: 16px; }
 .hm-way {
-  padding: 26px 24px; border-radius: 16px;
+  padding: 26px 24px; border-radius: 28px;
   background: var(--brand-card); border: 1px solid var(--brand-border);
   display: flex; flex-direction: column;
 }
