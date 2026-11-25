@@ -30,6 +30,7 @@ import FilamentColors from './Sources/pages/FilamentColors';
 import AboutUs from './Sources/pages/AboutUs';
 import AdminStudioOrders from './Sources/pages/AdminStudioOrders';
 import AdminStudioPricing from './Sources/pages/AdminStudioPricing';
+import AdminWorkCard from './Sources/pages/AdminWorkCard';
 import AdminCredits from './Sources/pages/AdminCredits';
 import Credits from './Sources/pages/Credits';
 import AdminSystem from './Sources/pages/AdminSystem';
@@ -95,6 +96,7 @@ export default function AppRoutes() {
            <Route path="models" element={<AdminModels />} />
            <Route path="items" element={<AdminItems />} />
            <Route path="carousel" element={<AdminCarousel />} />
+           <Route path="work-card" element={<AdminWorkCard />} />
            <Route path="orders" element={<AdminOrders />} />
            <Route path="colors" element={<AdminColors />} />
            <Route path="studio" element={<AdminStudioOrders />} />

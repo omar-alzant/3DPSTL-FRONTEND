@@ -321,7 +321,7 @@ a.hm-occ:focus-visible { outline: 3px solid var(--brand-primary); outline-offset
 }
 .hm-logos-arrow.prev { inset-inline-start: -14px; }
 .hm-logos-arrow.next { inset-inline-end: -14px; }
-[dir='rtl'] .hm-logos-arrow { transform: translateY(-50%) scaleX(-1); }
+/* ‹ and › already turn round by themselves in Arabic (the browser mirrors them), so no flip here */
 .hm-logos-arrow:hover { border-color: var(--brand-primary); color: var(--brand-primary); }
 .hm-logos-arrow:focus-visible { outline: 2px solid var(--brand-primary); outline-offset: 2px; }
 @media (hover: none), (max-width: 575px) { .hm-logos-arrow { display: none; } } /* phones: swipe */

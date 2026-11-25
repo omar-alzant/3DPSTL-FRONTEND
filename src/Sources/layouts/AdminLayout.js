@@ -15,6 +15,7 @@ import {
   BsCurrencyDollar,
   BsCoin,
   BsActivity,
+  BsPostcard,
 } from "react-icons/bs";
 
 import "../Style/AdminLayout.css";
@@ -40,6 +41,7 @@ const ADMIN_MENU = [
       { label: "Models", ar: "الموديلات", path: "models", icon: <BsBoxes /> },
       { label: "Brands", ar: "الماركات", path: "brands", icon: <BsTags /> },
       { label: "Carousel", ar: "الصور المتحركة", path: "carousel", icon: <BsImages /> },
+      { label: "Work picture", ar: "صورة شغلنا", path: "work-card", icon: <BsPostcard /> },
     ],
   },
   {

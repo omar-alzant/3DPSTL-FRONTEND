@@ -500,3 +500,24 @@ html[data-theme='light'] .sd-card-img { background: radial-gradient(circle at 50
 @media (max-width: 575.98px) {
   .order-similar-btn { padding: 4px 7px; font-size: 0.78rem; }
 }
+
+/* ---------- Admin items: picture grid (like Our Works) ---------- */
+.adm-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 18px; }
+.adm-card { display: flex; flex-direction: column; background: var(--brand-card); border: 1px solid var(--brand-border); border-radius: 18px; overflow: hidden; transition: border-color .15s, transform .15s; }
+.adm-card:hover { border-color: var(--brand-primary); transform: translateY(-2px); }
+.adm-card.is-editing { border: 2px solid var(--brand-primary); box-shadow: 0 0 0 4px var(--brand-glow); }
+.adm-card.is-off .adm-card-pic img { filter: grayscale(.8); opacity: .6; }
+.adm-card-pic { position: relative; display: grid; place-items: center; width: 100%; aspect-ratio: 1; padding: 0; border: 0; border-bottom: 1px solid var(--brand-border); background: var(--brand-card); cursor: zoom-in; overflow: hidden; }
+.adm-card-pic img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.adm-card-pic > span:not([class]) { color: var(--brand-muted); font-size: 13px; }
+.adm-card-flag, .adm-card-count { position: absolute; top: 8px; font-size: 12px; font-weight: 600; padding: 3px 9px; border-radius: 999px; }
+.adm-card-flag { inset-inline-start: 8px; background: var(--brand-danger); color: #fff; }
+.adm-card-count { inset-inline-end: 8px; background: rgba(13, 13, 51, .78); color: #fff; }
+.adm-card-body { display: flex; flex-direction: column; gap: 4px; padding: 10px 12px 12px; flex: 1; }
+.adm-card-body h3 { font-size: 15px; font-weight: 600; margin: 0; color: var(--brand-strong); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.adm-card-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+.adm-card-tags .badge { font-weight: 500; max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+.adm-card-actions { display: flex; gap: 6px; margin-top: auto; padding-top: 8px; flex-wrap: wrap; }
+.adm-card-actions .btn { flex: 1 1 auto; min-height: 34px; padding-inline: 8px; }
+.adm-details .modal-body > .card { transform: none !important; }
+@media (max-width: 575px) { .adm-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; } }

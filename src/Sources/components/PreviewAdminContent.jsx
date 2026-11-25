@@ -10,10 +10,11 @@ import Col from "react-bootstrap/esm/Col";
 import MultiImageInput from "./MultiImageInput";
 import ConfirmationModal from "./ConfirmationModal";
 import Form from "react-bootstrap/Form";
-import { Badge, Image, ListGroup } from "react-bootstrap";
+import { Badge, Image, ListGroup, Modal } from "react-bootstrap";
 import { PageLoader } from './BrandSpinner';
 import { FaInstagram } from 'react-icons/fa';
 import { useLang } from '../i18n/LanguageContext';
+import { toImageList } from '../lib/imageList';
 
 // Under each item in the admin: its Instagram post, or a note that it has none
 function InstagramLink({ url }) {
@@ -27,7 +28,7 @@ function InstagramLink({ url }) {
 }
 
 // search/onSearch اختياريان: إن مرّرتهما الصفحة يصبح البحث على الخادم (لكل العناصر وليس الصفحة الحالية فقط)
-const PreviewAdminContent = ({ materials, editingId, startEditing, deleteMaterial, copyMaterial, canDelete, withVariants = false, flatView = false, search, onSearch, loading = false }) => {
+const PreviewAdminContent = ({ materials, editingId, startEditing, deleteMaterial, copyMaterial, canDelete, withVariants = false, flatView = false, gridView = false, onMakeCard, search, onSearch, loading = false }) => {
   const { tx } = useLang();
   const [showModal, setShowModal] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
@@ -69,30 +70,8 @@ const PreviewAdminContent = ({ materials, editingId, startEditing, deleteMateria
         );
       });
 
-  return (
-    <>
-    <Container className="p-4">
-    {/* خانة بحث واحدة لا تختفي (كانت تُستبدل بخانة أخرى عند عدم وجود نتائج فيضيع التركيز أثناء الكتابة) */}
-    <Form className="mb-4" onSubmit={(e) => e.preventDefault()}>
-        <Form.Control
-            type="search"
-            placeholder={tx('Search by name...', 'ابحث بالاسم…')}
-            value={term}
-            onChange={(e) => (serverSearch ? onSearch(e.target.value) : setSearchTerm(e.target.value))}
-            className="shadow-lg border-primary border-2 rounded-pill p-3"
-        />
-    </Form>
-
-    {loading && <PageLoader />}
-    {!loading && !filteredMaterials.length && (
-      <p className="empty-list text-center">{term ? `No results for “${term}”.` : "No data found."}</p>
-    )}
-
-    {/* Use a larger grid for better card display */}
-    <Row xs={1} md={2} lg={2} className="g-4">
-        {Array.isArray(filteredMaterials) && filteredMaterials.map((m) => (
-            // Card wrapper for visual separation and shadow effect
-            <Col key={m.id}>
+  // the full card (all details); used in the list view and in the details window of the grid view
+  const renderCard = (m) => (
                 <Card 
                     className={` shadow-sm transition-shadow ${editingId === m.id ? "border-primary border-3 selectedCard" : "border-0"} ${
                         (m?.isDisabled) ? "opacity-75" : "shadow-hover" // Add a custom shadow-hover class for interaction
@@ -494,10 +473,81 @@ const PreviewAdminContent = ({ materials, editingId, startEditing, deleteMateria
                 }
 
             </Card>
-            </Col>
+  );
+
+  const [details, setDetails] = useState(null); // grid view: the item whose details are open
+
+  return (
+    <>
+    <Container className="p-4">
+    {/* خانة بحث واحدة لا تختفي (كانت تُستبدل بخانة أخرى عند عدم وجود نتائج فيضيع التركيز أثناء الكتابة) */}
+    <Form className="mb-4" onSubmit={(e) => e.preventDefault()}>
+        <Form.Control
+            type="search"
+            placeholder={tx('Search by name...', 'ابحث بالاسم…')}
+            value={term}
+            onChange={(e) => (serverSearch ? onSearch(e.target.value) : setSearchTerm(e.target.value))}
+            className="shadow-lg border-primary border-2 rounded-pill p-3"
+        />
+    </Form>
+
+    {loading && <PageLoader />}
+    {!loading && !filteredMaterials.length && (
+      <p className="empty-list text-center">{term ? `No results for “${term}”.` : "No data found."}</p>
+    )}
+
+    {/* gridView: picture cards like "Our Works"; click the picture to edit */}
+    {gridView ? (
+    <div className="adm-grid">
+      {filteredMaterials.map((m) => {
+        const pic = toImageList(m.galleryurls?.length ? m.galleryurls : m.image)[0];
+        return (
+          <article key={m.id} className={`adm-card${editingId === m.id ? " is-editing" : ""}${m.isDisabled ? " is-off" : ""}`}>
+            <button type="button" className="adm-card-pic" onClick={() => setDetails(m)} aria-label={`${tx('Details', 'التفاصيل')}: ${m.name || ""}`}>
+              {pic ? <img src={pic} alt="" loading="lazy" decoding="async" /> : <span>{tx('No picture', 'ما في صورة')}</span>}
+              {m.isDisabled && <span className="adm-card-flag">{tx('Hidden', 'مخفي')}</span>}
+              {withVariants && m.variants?.length > 1 && <span className="adm-card-count">{m.variants.length} {tx('variants', 'أنواع')}</span>}
+            </button>
+            <div className="adm-card-body">
+              <h3 title={m.name}>{m.name || tx('Untitled', 'بلا اسم')}</h3>
+              {(m.category_name || m.type_name) && (
+                <div className="adm-card-tags">
+                  {m.category_name && <Badge bg="primary">{m.category_name}</Badge>}
+                  {m.type_name && <Badge bg="info">{m.type_name}</Badge>}
+                </div>
+              )}
+              <div className="adm-card-actions">
+                <button type="button" className="btn btn-sm btn-outline-primary" onClick={() => setDetails(m)}>{tx('Details', 'التفاصيل')}</button>
+                <button type="button" className="btn btn-sm btn-secondary" onClick={() => startEditing(m)}>{tx('Edit', 'تعديل')}</button>
+                {onMakeCard && <button type="button" className="btn btn-sm btn-outline-success" onClick={() => onMakeCard(m)}>{tx('Work picture', 'صورة شغلنا')}</button>}
+                {copyMaterial && <button type="button" className="btn btn-sm btn-outline-info" onClick={() => copyMaterial(m)}>{tx('Copy', 'نسخ')}</button>}
+                {canDelete && <button type="button" className="btn btn-sm btn-outline-danger" onClick={() => handleShow(m)}>{tx('Remove', 'حذف')}</button>}
+              </div>
+            </div>
+          </article>
+        );
+      })}
+    </div>
+    ) : (
+    <Row xs={1} md={2} lg={2} className="g-4">
+        {Array.isArray(filteredMaterials) && filteredMaterials.map((m) => (
+            // Card wrapper for visual separation and shadow effect
+            <Col key={m.id}>{renderCard(m)}</Col>
         ))}
     </Row>
+    )}
 </Container>
+
+<Modal show={!!details} onHide={() => setDetails(null)} size="lg" centered scrollable className="adm-details">
+    <Modal.Header closeButton>
+        <Modal.Title className="text-truncate">{details?.name || tx('Item', 'القطعة')}</Modal.Title>
+    </Modal.Header>
+    <Modal.Body className="p-2 p-md-3">{details && renderCard(details)}</Modal.Body>
+    <Modal.Footer>
+        <Button variant="secondary" onClick={() => setDetails(null)}>{tx('Close', 'سكّر')}</Button>
+        {details && <Button variant="primary" onClick={() => { const m = details; setDetails(null); startEditing(m); }}>{tx('Edit', 'تعديل')}</Button>}
+    </Modal.Footer>
+</Modal>
 
 <ConfirmationModal
     show={showModal}

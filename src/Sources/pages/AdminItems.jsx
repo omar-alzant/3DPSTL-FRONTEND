@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { Form, Button, Spinner, Container } from 'react-bootstrap';
+import { Form, Button, Spinner, Container, Modal } from 'react-bootstrap';
+import WorkCardMaker from '../components/WorkCardMaker';
+import { toImageList } from '../lib/imageList';
 import PreviewAdminContent from "../components/PreviewAdminContent";
 import AdminForm from '../components/AdminForm';
 import "../Style/AdminLayout.css";
@@ -20,9 +22,10 @@ export default function AdminItems() {
   const [metadata, setMetadata] = useState({ models: [], brands: [] });
   const [validationErrors, setValidationErrors] = useState({});
   const { showToast } = useToast();
+  const [cardFor, setCardFor] = useState(null); // the item a "work picture" is being made for
 
   const [page, setPage] = useState(1);
-  const pageSize = 10;
+  const pageSize = 50; // items per page in the admin grid
   const [totalItems, setTotalItems] = useState(0);
   // البحث على الخادم (في كل العناصر) بعد توقّف الكتابة بقليل، مع العودة للصفحة 1
   const [search, setSearch] = useState('');
@@ -395,12 +398,37 @@ const handleDescriptionChange = (html) => {
       search={search}
       onSearch={setSearch}
       withVariants
+      gridView
+      onMakeCard={setCardFor}
       startEditing={startEditing}
       deleteMaterial={deleteMaterial}
       canDelete
       copyMaterial={copyMaterial}
       editingId={editingId}
     />
+
+    <Modal show={!!cardFor} onHide={() => setCardFor(null)} size="xl" fullscreen="md-down" scrollable>
+      <Modal.Header closeButton>
+        <Modal.Title className="text-truncate">{tx('Work picture', 'صورة شغلنا')}: {cardFor?.name}</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        {cardFor && (
+          <WorkCardMaker
+            key={cardFor.id}
+            initialPhotos={toImageList(cardFor.galleryurls).slice(0, 3)}
+            initialTitle={cardFor.name || ''}
+            onUse={(dataUrl) => {
+              const m = cardFor;
+              setCardFor(null);
+              startEditing(m);
+              // the new picture goes first; it is uploaded when the item is saved
+              setForm((prev) => ({ ...prev, galleryurls: [dataUrl, ...(prev.galleryurls || [])] }));
+              showToast(tx('Picture added as the first photo. Press Save to keep it.', 'انزادت الصورة كأول صورة. كبوس «حفظ» لتنحفظ.'));
+            }}
+          />
+        )}
+      </Modal.Body>
+    </Modal>
 
     {/* ✅ PAGINATION HERE */}
     <div className="d-flex justify-content-between align-items-center mt-4">

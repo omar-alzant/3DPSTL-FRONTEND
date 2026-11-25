@@ -6,11 +6,16 @@ let count = 0;
 
 const NOISE = /ResizeObserver loop|^Script error\.?$|chrome-extension:|moz-extension:|safari-extension:|AbortError|Load failed$|Failed to fetch$|NetworkError when attempting/i;
 
+// in-app browser scripts: Instagram / Facebook "iabjs://", Android WebView bridges ("Java object is gone")
+const FOREIGN = /iabjs:\/\/|Java object is gone|Java bridge method invocation error/i;
+
 export function reportError(err, extra = {}) {
   try {
     if (process.env.NODE_ENV !== 'production') return;
     const message = String(err?.message || err || 'Unknown error').slice(0, 1000);
     if (!message || NOISE.test(message)) return;
+    // errors thrown by scripts that apps inject into their in-app browsers (Instagram, Facebook…), not by our site
+    if (FOREIGN.test(String(err?.stack || '')) || FOREIGN.test(message)) return;
     const key = message + (err?.stack || '').slice(0, 200);
     if (sent.has(key) || count >= 10) return;
     sent.add(key);
