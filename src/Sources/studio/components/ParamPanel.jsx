@@ -2,10 +2,12 @@ import { useState, useEffect, useRef } from 'react';
 import FontPicker from './FontPicker.jsx';
 import ImagePrep from './ImagePrep.jsx';
 import { colorsFor } from '../lib/palette.js';
+import { sampleImage } from '../lib/samples.js';
+import { lim, visibleOptions } from '../lib/limits.js';
 import { useT } from '../i18n/index.js';
 import { useLang } from '../../i18n/LanguageContext';
 
-function ImageField({ value, set, maxSize }) {
+function ImageField({ value, set, maxSize, sample }) {
   const { tx } = useLang();
   const [err, setErr] = useState(null);
   const [editing, setEditing] = useState(null); // مصدر الصورة داخل نافذة التجهيز
@@ -23,7 +25,12 @@ function ImageField({ value, set, maxSize }) {
   };
   return (
     <div className="sd-image-field">
-      {value ? <img src={value} alt="" /> : <div className="sd-img-empty">{tx('No picture', 'لا توجد صورة')}</div>}
+      {value ? <img src={value} alt="" /> : sample ? (
+        <div className="sd-img-sample">
+          <img src={sampleImage(sample)} alt="" />
+          <span>{tx('Sample picture: upload yours', 'صورة تجريبية: ارفع صورتك')}</span>
+        </div>
+      ) : <div className="sd-img-empty">{tx('No picture', 'لا توجد صورة')}</div>}
       <div className="sd-img-actions">
         <label className="sd-btn">
           {value ? tx('Change', 'تغيير') : tx('Upload picture', 'رفع صورة')}
@@ -119,12 +126,37 @@ export function ColorSelect({ list, value, onChange, label, isAdmin }) {
   );
 }
 
+/** typed numbers: applied while inside the allowed range, brought into it when the field is left */
+function NumberBox({ value, min, max, step, set }) {
+  const [text, setText] = useState(null); // what is being typed (null = show the value)
+  const ok = (n) => Number.isFinite(n) && (min === undefined || n >= min) && (max === undefined || n <= max);
+  return (
+    <input
+      type="number"
+      min={min}
+      max={max}
+      step={step}
+      value={text ?? value}
+      onChange={(e) => {
+        setText(e.target.value);
+        const n = parseFloat(e.target.value);
+        if (ok(n)) set(n);
+      }}
+      onBlur={() => {
+        const n = parseFloat(text);
+        if (text !== null && Number.isFinite(n) && !ok(n)) set(Math.min(max ?? n, Math.max(min ?? n, n)));
+        setText(null);
+      }}
+    />
+  );
+}
+
 function Field({ def, value, onChange, params, tool, palette, isAdmin }) {
   const t = useT();
   const set = (v) => onChange(def.key, v);
   switch (def.type) {
     case 'image':
-      return <ImageField value={value} set={set} maxSize={def.maxSize || 256} />;
+      return <ImageField value={value} set={set} maxSize={def.maxSize || 256} sample={def.samplePic === false ? null : def.samplePic || 'photo'} />;
     case 'text':
       return (
         <input
@@ -146,7 +178,7 @@ function Field({ def, value, onChange, params, tool, palette, isAdmin }) {
         // a grid of pictures (each option has an image)
         return (
           <div className="sd-pics" role="radiogroup">
-            {def.options.map((o) => (
+            {visibleOptions(def, params).map((o) => (
               <button key={o.value} type="button" role="radio" aria-checked={o.value === value}
                 className={o.value === value ? 'on' : ''} onClick={() => set(o.value)} title={t(o.label)}>
                 <img src={o.image} alt="" loading="lazy" />
@@ -158,11 +190,12 @@ function Field({ def, value, onChange, params, tool, palette, isAdmin }) {
       }
       if (def.dropdown) {
         // قائمة منسدلة مقسّمة بمجموعات (للقوائم الطويلة مثل موديلات الهواتف)
-        const groups = [...new Set(def.options.map((o) => o.group || ''))];
+        const opts0 = visibleOptions(def, params);
+        const groups = [...new Set(opts0.map((o) => o.group || ''))];
         return (
           <select className="sd-dropdown" value={value} onChange={(e) => set(e.target.value)}>
             {groups.map((g) => {
-              const opts = def.options.filter((o) => (o.group || '') === g).map((o) => (
+              const opts = opts0.filter((o) => (o.group || '') === g).map((o) => (
                 <option key={o.value} value={o.value}>{t(o.label)}</option>
               ));
               return g ? <optgroup key={g} label={t(g)}>{opts}</optgroup> : opts;
@@ -172,7 +205,7 @@ function Field({ def, value, onChange, params, tool, palette, isAdmin }) {
       }
       return (
         <div className="sd-seg">
-          {def.options.map((o) => (
+          {visibleOptions(def, params).map((o) => (
             <button key={o.value} type="button" className={o.value === value ? 'on' : ''} onClick={() => set(o.value)}>
               {t(o.label)}
             </button>
@@ -205,20 +238,13 @@ function Field({ def, value, onChange, params, tool, palette, isAdmin }) {
         <div className="sd-range">
           <input
             type="range"
-            min={def.min}
-            max={def.max}
+            min={lim(def, params, 'min')}
+            max={lim(def, params, 'max')}
             step={def.step}
             value={value}
             onChange={(e) => set(parseFloat(e.target.value))}
           />
-          <input
-            type="number"
-            min={def.min}
-            max={def.max}
-            step={def.step}
-            value={value}
-            onChange={(e) => e.target.value !== '' && set(parseFloat(e.target.value))}
-          />
+          <NumberBox value={value} min={lim(def, params, 'min')} max={lim(def, params, 'max')} step={def.step} set={set} />
           {def.unit && <span className="sd-unit">{t(def.unit)}</span>}
         </div>
       );

@@ -4,12 +4,12 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { MdWhatsapp } from "react-icons/md";
 import { FaInstagram } from "react-icons/fa";
-import ImageSlide from "../components/ImageSlide";
-import CarouselComp from "../components/CarouselComp";
+import PrinterScene from "../components/PrinterScene";
+import WorksWall from "../components/WorksWall";
+import LogoMarquee from "../components/LogoMarquee";
 import CartItem from "../components/CartItem";
 import RelatedItemsSlider from "../components/RelatedItemsSlider";
 import MultiImageInput from "../components/MultiImageInput";
-import { PageLoader } from "../components/BrandSpinner";
 import { useCart } from "../context/CartContext";
 import { useToast } from "../context/ToastProvider";
 import { CART_ENABLED, WORKS_PATH, whatsappLink } from "../config/site";
@@ -25,9 +25,18 @@ const loadLS = (key, fallback = []) => {
   try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; } catch { return fallback; }
 };
 const arr = (d) => (Array.isArray(d) ? d : []);
+// a picture field can be a list, a list saved as text ('["https://…"]') or one link
+const firstImage = (v) => {
+  if (Array.isArray(v)) return v.find(Boolean) || "";
+  if (typeof v !== "string" || !v.trim()) return "";
+  const t = v.trim();
+  if (t.startsWith("[")) { try { const a = JSON.parse(t); return Array.isArray(a) ? a.find(Boolean) || "" : ""; } catch { return ""; } }
+  return t;
+};
 
 // Studio tools shown on the home page (ids from src/Sources/studio/tools/*). Order = what people ask for most.
 const STUDIO_TOOLS = [
+  { id: "job-outfit", name: "Job gift: outfit and name", text: "A sculpted work outfit on a stand with the name.", nameAr: "هدية المهنة", textAr: "لبس المهنة منحوت على قاعدة عليها الاسم." },
   { id: "name-keychain", name: "Name keychain", text: "Any name, your font, two colours.", nameAr: "ميدالية باسم", textAr: "أي اسم، بالخط يلي بيعجبك، بلونين." },
   { id: "phone-case", name: "Phone case", text: "Fitted to your model, with a name, photo or pattern.", nameAr: "كفر موبايل", textAr: "على قياس موبايلك، مع اسم أو صورة أو نقشة." },
   { id: "qr-code", name: "3D QR code", text: "Your link, Wi-Fi or WhatsApp on a plate people can scan.", nameAr: "كود QR مطبوع", textAr: "رابطك أو الـ Wi-Fi أو واتساب على لوحة بتنمسح بالكاميرا." },
@@ -76,12 +85,13 @@ export default function Home() {
   const { showToast } = useToast();
   const { updateQuantity, removeFromCart, addTocart, updateVariant } = useCart();
 
-  const [carouselItems, setCarouselItems] = useState(() => loadLS("carousel"));
-  const [brands, setBrands] = useState(() => loadLS("markets"));
+  const [carouselItems, setCarouselItems] = useState(() => loadLS("occasions"));
+  const [brands, setBrands] = useState(() => loadLS("brandLogos"));
   const [saleItems, setSaleItems] = useState(() => loadLS("items"));
   const [homeTypes, setHomeTypes] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [, setLoading] = useState(true);
   const [config, setConfig] = useState(null);
+  const [showAllTools, setShowAllTools] = useState(false); // the Studio list shows 6 until "See more"
 
   useEffect(() => {
     window.scrollTo({ top: 0 });
@@ -96,43 +106,25 @@ export default function Home() {
     Promise.all([
       getJSON(`${base}/api/home/types`).catch(() => []),
       getJSON(`${base}/api/admin/products/carousel`).catch(() => []),
-      getJSON(`${base}/api/admin/products/market`).catch(() => ({})),
+      getJSON(`${base}/api/admin/products/market?pageSize=100`).catch(() => ({})),
       CART_ENABLED ? getJSON(`${base}/api/admin/products/item/onsale`).catch(() => []) : Promise.resolve([]),
     ])
       .then(([types, carouselRaw, marketsRaw, itemsRaw]) => {
         setHomeTypes(arr(types));
 
+        // occasions & offers (edited in Admin → Carousel)
         const carousel = arr(carouselRaw)
-          .filter((c) => !c.isDisabled)
-          .map((item) => ({
-            TemplateComponent: ImageSlide,
-            templateProps: {
-              src: item.image || "/thumbnail.png",
-              altText: item.name,
-              enableOnClick: true,
-              seeMore: () => navigate(`${item.linkedPath}`),
-            },
-            title: item.name,
-            description: item.description || "",
-          }));
+          .filter((c) => !c.isDisabled && c.image)
+          .map((c) => ({ id: c.id, name: c.name, description: c.description || "", image: c.image, link: c.linkedPath || "" }));
         setCarouselItems(carousel);
-        saveLS("carousel", carousel);
+        saveLS("occasions", carousel);
 
+        // brands we worked for: shown as a wall of logos
         const markets = arr(marketsRaw?.items)
-          .filter((m) => !m.isdisabled)
-          .map((m) => ({
-            TemplateComponent: ImageSlide,
-            templateProps: {
-              src: m.image?.[0] || "/thumbnail.png",
-              altText: m.name,
-              enableOnClick: true,
-              seeMore: () => navigate(`${WORKS_PATH}?brand_id=${m.id}`),
-            },
-            title: m.name,
-            description: m.description || "",
-          }));
+          .map((m) => ({ id: m.id, name: m.name, image: firstImage(m.image), off: m.isdisabled }))
+          .filter((m) => !m.off && m.image);
         setBrands(markets);
-        saveLS("markets", markets);
+        saveLS("brandLogos", markets);
 
         setSaleItems(arr(itemsRaw));
         saveLS("items", arr(itemsRaw));
@@ -148,7 +140,7 @@ export default function Home() {
   return (
     <div className="hm">
       {/* ───────── hero ───────── */}
-      <section className={`hm-hero ${hasCarousel ? "has-media" : ""}`}>
+      <section className="hm-hero has-media">
         <div className="hm-hero-copy">
           <PrintedHeadline>{tx("Your idea, printed layer by layer.", "فكرتك، مطبوعة طبقة طبقة.")}</PrintedHeadline>
           <p className="hm-lead">
@@ -165,12 +157,60 @@ export default function Home() {
             <li>{tx("Price confirmed before printing", "السعر بيتأكّد قبل الطباعة")}</li>
           </ul>
         </div>
-        {hasCarousel && (
-          <div className="hm-hero-media">
-            <CarouselComp items={carouselItems} label="Carousel" />
-          </div>
-        )}
+        <div className="hm-hero-media hm-hero-art">
+          <PrinterScene />
+        </div>
       </section>
+
+      {/* ───────── a wall of real photos from our works ───────── */}
+      <WorksWall />
+      {/* ───────── our works by type (only when types are set up for the home page) ───────── */}
+      {homeTypes.length > 0 && (
+        <section className="hm-section">
+          {homeTypes.map((type) => (
+            <div key={type.id} className="hm-type">
+              <div className="hm-type-head">
+                <h3>{type.name}</h3>
+                <Link to={`${WORKS_PATH}?type_id=${type.id}`}>{tx("See", "شوف")} {type.name}</Link>
+              </div>
+              <MultiImageInput
+                label=""
+                controlId={`${type.id}-img`}
+                formData={type}
+                readOnly
+                seeMore={() => navigate(`${WORKS_PATH}?type_id=${type.id}`)}
+                ratio="16x9"
+              />
+              <RelatedItemsSlider items={type.items} onSeeMore={() => navigate(`${WORKS_PATH}?type_id=${type.id}`)} />
+            </div>
+          ))}
+        </section>
+      )}
+
+
+      {/* ───────── occasions & offers (Admin → Carousel) ───────── */}
+      {hasCarousel && (
+        <section className="hm-section hm-occasions" aria-label={tx("Occasions and offers", "مناسبات وعروض")}>
+          <div className="hm-occ-grid">
+            {carouselItems.map((o) => {
+              const inner = (
+                <>
+                  <img src={o.image} alt="" loading="lazy" decoding="async" />
+                  <span className="hm-occ-text">
+                    <b>{o.name}</b>
+                    {o.description && <span>{o.description}</span>}
+                  </span>
+                </>
+              );
+              return o.link
+                ? (/^https?:/.test(o.link)
+                  ? <a key={o.id} className="hm-occ" href={o.link} target="_blank" rel="noopener noreferrer">{inner}</a>
+                  : <Link key={o.id} className="hm-occ" to={o.link}>{inner}</Link>)
+                : <div key={o.id} className="hm-occ">{inner}</div>;
+            })}
+          </div>
+        </section>
+      )}
 
       {/* ───────── ways to order ───────── */}
       <section className="hm-section">
@@ -205,55 +245,31 @@ export default function Home() {
           </div>
           <Link to="/studio" className="hm-btn hm-btn-ghost hm-btn-sm">{tx("All templates", "كل القوالب")}</Link>
         </div>
-        <ul className="hm-tools">
-          {tools.map((t) => (
+        <ul className="hm-tools" id="hm-tools">
+          {(showAllTools ? tools : tools.slice(0, 6)).map((t) => (
             <li key={t.id}>
               <Link to={`/studio/${t.id}`} className="hm-tool">
+                <span className="hm-tool-pic">
+                  <img src={`${process.env.PUBLIC_URL || ""}/media/tools/${t.id}.webp`} alt="" loading="lazy" decoding="async" width="320" height="320" />
+                </span>
                 <span className="hm-tool-name">{tx(t.name, t.nameAr)}</span>
                 <span className="hm-tool-text">{tx(t.text, t.textAr)}</span>
               </Link>
             </li>
           ))}
         </ul>
+        {tools.length > 6 && (
+          <div className="hm-more">
+            <button type="button" className="hm-btn hm-btn-ghost" aria-expanded={showAllTools} aria-controls="hm-tools" onClick={() => setShowAllTools((v) => !v)}>
+              {showAllTools ? tx("Show less", "خفّف") : tx(`See more (${tools.length - 6})`, `شوف المزيد (${tools.length - 6})`)}
+            </button>
+          </div>
+        )}
         <p className="hm-sub hm-free">
           {tx("Free tools, no sign-up:", "أدوات مجانية بلا تسجيل:")} <Link to="/tools#fix-3mf">{tx("fix a 3MF file WhatsApp turned into .zip", "صلّح ملف 3MF حوّله واتساب لـ zip")}</Link> ·{" "}
           <Link to="/tools#arabic-text">{tx("Arabic text for your slicer", "نص عربي للـ slicer")}</Link> ·{" "}
           <Link to="/tools#cost">{tx("print cost & profit calculators", "حاسبة الكلفة والربح")}</Link>
         </p>
-      </section>
-
-      {/* ───────── our works ───────── */}
-      <section className="hm-section">
-        <div className="hm-section-head">
-          <div>
-            <h2 className="hm-h2">{tx("Our works", "شغلنا")}</h2>
-            <p className="hm-sub">{tx("Pieces we've printed. Open one to order something like it.", "قطع طبعناها. افتح وحدة لتطلب متلها.")}</p>
-          </div>
-          <Link to={WORKS_PATH} className="hm-btn hm-btn-ghost hm-btn-sm">{tx("See all", "شوف الكل")}</Link>
-        </div>
-        {loading && !homeTypes.length ? (
-          <PageLoader text="" size={44} />
-        ) : homeTypes.length === 0 ? (
-          <p className="hm-sub">{tx("New pieces are on the way. Meanwhile,", "في قطع جديدة جايّة. لهلّق،")} <Link to="/studio">{tx("design your own", "صمّم قطعتك")}</Link>.</p>
-        ) : (
-          homeTypes.map((type) => (
-            <div key={type.id} className="hm-type">
-              <div className="hm-type-head">
-                <h3>{type.name}</h3>
-                <Link to={`${WORKS_PATH}?type_id=${type.id}`}>{tx("See", "شوف")} {type.name}</Link>
-              </div>
-              <MultiImageInput
-                label=""
-                controlId={`${type.id}-img`}
-                formData={type}
-                readOnly
-                seeMore={() => navigate(`${WORKS_PATH}?type_id=${type.id}`)}
-                ratio="16x9"
-              />
-              <RelatedItemsSlider items={type.items} onSeeMore={() => navigate(`${WORKS_PATH}?type_id=${type.id}`)} />
-            </div>
-          ))
-        )}
       </section>
 
       {/* ───────── on sale (only while the shop/cart is on) ───────── */}
@@ -313,9 +329,15 @@ export default function Home() {
 
       {/* ───────── brands ───────── */}
       {brands.length > 0 && (
-        <section className="hm-section">
-          <h2 className="hm-h2">{tx("Brands", "الماركات")}</h2>
-          <CarouselComp withDetails={false} items={brands} label="Brands" />
+        <section className="hm-section hm-brands">
+          <h2 className="hm-h2">{tx("They trusted us", "وثقوا فينا")}</h2>
+          <p className="hm-sub">{tx("Shops and companies we've printed for. Tap one to see what we made them.", "محلات وشركات طبعنالهم. اكبس على وحدة لتشوف شو عملنالهم.")}</p>
+          <LogoMarquee
+            brands={brands}
+            linkTo={(b) => `${WORKS_PATH}?brand_id=${b.id}`}
+            backLabel={tx("Scroll back", "رجوع")}
+            nextLabel={tx("Scroll on", "قدّام")}
+          />
         </section>
       )}
 

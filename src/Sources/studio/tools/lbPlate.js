@@ -18,7 +18,7 @@ export default {
     { key: 'digits', label: 'الرقم', type: 'text', default: '193180', group: 'اللوحة', dir: 'ltr', maxLength: 7 },
     { key: 'name', label: 'الاسم فوق الرقم', type: 'text', default: '3DSTL', group: 'اللوحة', maxLength: 30,
       help: 'اتركه فارغاً ليكبر الرقم ويتوسّط اللوحة' },
-    { key: 'logo', label: 'الشعار', type: 'image', default: '', group: 'الشعار', show: isBrand,
+    { key: 'logo', label: 'الشعار', type: 'image', samplePic: 'drawing', default: '', group: 'الشعار', show: isBrand,
       help: 'PNG أو SVG بخلفية شفافة أو بيضاء. استخدم شعاراً تملك حق طباعته' },
     { key: 'logoSize', label: 'حجم الشعار', type: 'number', min: 4, max: 14, step: 0.5, unit: 'مم', default: 8, group: 'الشعار', show: isBrand },
     { key: 'threshold', label: 'حساسية التحويل', type: 'number', min: 10, max: 90, step: 1, unit: '%', default: 50, group: 'الشعار', show: isBrand },

@@ -7,6 +7,7 @@ import { useToast } from "../context/ToastProvider";
 import AdminForm from "../components/AdminForm";
 import PreviewAdminContent from "../components/PreviewAdminContent";
 import { useLang } from '../i18n/LanguageContext';
+import { toImageList } from "../lib/imageList";
 
 export default function AdminBrands() {
   const { tx } = useLang();
@@ -114,7 +115,7 @@ export default function AdminBrands() {
       name: material.name || "",
       description: material.description || "",
       isdisabled: material.isdisabled || false,
-      galleryurls: Array.isArray(material.image) ? material.image : [],
+      galleryurls: toImageList(material.image),
     });
 
     window.scrollTo({ top: 0, behavior: "smooth" });

@@ -118,7 +118,7 @@ export default function AdminItems() {
       try {
         const [ modelRes, marketsRes] = await Promise.all([
           fetch(adminModelURL).then(r => r.json()),
-          fetch(adminBrandURL).then(r => r.json()),
+          fetch(`${adminBrandURL}?pageSize=100`).then(r => r.json()),
         ]);
   
         // Setting the state for all three at once

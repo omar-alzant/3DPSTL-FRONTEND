@@ -95,7 +95,7 @@ export default {
     { key: 'labelFont', label: 'خط الكتابة', type: 'font', sample: ['label'], default: 'cairo-black', group: 'الكتابة', show: (p) => !!p.label?.trim() },
     { key: 'labelSize', label: 'حجم الكتابة', type: 'number', min: 4, max: 20, step: 0.5, unit: 'مم', default: 8, group: 'الكتابة', show: (p) => !!p.label?.trim() },
 
-    { key: 'size', label: 'حجم الكود', type: 'number', min: 25, max: 150, step: 1, unit: 'مم', default: 60, group: 'الشكل' },
+    { key: 'size', label: 'حجم الكود', type: 'number', min: 30, max: 150, step: 1, unit: 'مم', default: 60, group: 'الشكل' },
     { key: 'margin', label: 'الهامش حول الكود', type: 'number', min: 1, max: 6, step: 0.5, unit: 'مربع', default: 2, group: 'الشكل' },
     { key: 'corner', label: 'استدارة زوايا اللوحة', type: 'number', min: 0, max: 15, step: 0.5, unit: 'مم', default: 4, group: 'الشكل' },
     { key: 'soft', label: 'مربعات بزوايا ناعمة', type: 'checkbox', default: false, group: 'الشكل' },

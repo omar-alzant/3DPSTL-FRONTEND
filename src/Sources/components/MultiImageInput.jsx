@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Form, Carousel, Image, Ratio, Button } from 'react-bootstrap';
 import { IoIosArrowForward, IoIosArrowBack  } from "react-icons/io";
+import { toImageList } from "../lib/imageList";
 
 const MAX_IMAGE_SIZE = 1 * 1024 * 1024; // 1 MB
  
@@ -16,7 +17,7 @@ export default function MultiImageInput({
 }) {
   const fileInputRef = useRef(null);
   const [images, setImages] = useState(
-    formData.galleryurls || formData.image || []
+    () => toImageList(formData.galleryurls || formData.image)
   );
   const [activeIndex, setActiveIndex] = useState(0);
   const [files, setFiles] = useState([]);
@@ -30,15 +31,13 @@ export default function MultiImageInput({
   }, [pendingImages, onChange]);
   
   useEffect(() => {
-    const newImages = normalizeImages(formData.galleryurls || formData.image);
+    const newImages = toImageList(formData.galleryurls || formData.image);
   
     if (JSON.stringify(newImages) !== JSON.stringify(images)) {
       setImages(newImages);
     }
   }, [formData.galleryurls, formData.image]);
   
-  const normalizeImages = (value) =>
-    Array.isArray(value) ? value : value ? [value] : [];
   
  
   const updateFileInput = (newFiles) => {

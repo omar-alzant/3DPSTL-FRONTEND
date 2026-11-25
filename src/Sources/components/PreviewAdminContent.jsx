@@ -148,7 +148,7 @@ const PreviewAdminContent = ({ materials, editingId, startEditing, deleteMateria
                                src={m.icon_url} 
                                alt={m.name}
                            />}
-                    {(m.image && m?.image !== '')  && 
+                    {(typeof m.image === 'string' && m.image.trim() !== '' && !m.image.trim().startsWith('['))  && 
                         <Image   width="150px" height="150px" 
                                src={m.image} 
                                alt={m.name}

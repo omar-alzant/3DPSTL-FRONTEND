@@ -28,7 +28,7 @@ export default {
   params: [
     { key: 'design', label: 'على الغطا', type: 'select', default: 'text', group: 'التصميم',
       options: [{ value: 'image', label: 'صورة أو رسمة' }, { value: 'text', label: 'اسم أو حرف' }] },
-    { key: 'image', label: 'الصورة', type: 'image', default: '', group: 'التصميم', maxSize: 500, show: (p) => p.design === 'image' },
+    { key: 'image', label: 'الصورة', type: 'image', samplePic: 'drawing', default: '', group: 'التصميم', maxSize: 500, show: (p) => p.design === 'image' || p.shapeFrom === 'image' },
     { key: 'bgTol', label: 'حساسية إزالة الخلفية', type: 'number', min: 5, max: 120, step: 1, default: 40, group: 'التصميم', show: (p) => p.design === 'image' },
     { key: 'imageColors', label: 'ألوان الصورة', type: 'number', min: 1, max: 3, step: 1, default: 2, group: 'التصميم', show: (p) => p.design === 'image' },
     { key: 'shapeFrom', label: 'شكل الكليكر', type: 'select', default: 'round', group: 'التصميم',

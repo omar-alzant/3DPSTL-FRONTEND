@@ -50,10 +50,10 @@ export default {
   params: [
     { key: 'profile', label: 'الشكل', type: 'select', default: 'classic', group: 'الشكل',
       options: [{ value: 'classic', label: 'كلاسيكي (بطن ورقبة)' }, { value: 'cylinder', label: 'أسطوانة' }, { value: 'cone', label: 'مخروط' }, { value: 'hourglass', label: 'ساعة رملية' }, { value: 'bowl', label: 'وعاء' }] },
-    { key: 'height', label: 'الطول', type: 'number', min: 40, max: 250, step: 1, unit: 'مم', default: 160, group: 'الشكل' },
+    { key: 'height', label: 'الطول', type: 'number', min: 55, max: 250, step: 1, unit: 'مم', default: 160, group: 'الشكل' },
     { key: 'baseD', label: 'قطر القاعدة', type: 'number', min: 30, max: 200, step: 1, unit: 'مم', default: 70, group: 'الشكل' },
-    { key: 'bellyD', label: 'قطر البطن', type: 'number', min: 30, max: 240, step: 1, unit: 'مم', default: 110, group: 'الشكل', show: (p) => p.profile === 'classic' },
-    { key: 'topD', label: 'قطر الفتحة', type: 'number', min: 20, max: 240, step: 1, unit: 'مم', default: 60, group: 'الشكل', show: (p) => p.profile !== 'cylinder' },
+    { key: 'bellyD', label: 'قطر البطن', type: 'number', min: 30, max: 200, step: 1, unit: 'مم', default: 110, group: 'الشكل', show: (p) => p.profile === 'classic' },
+    { key: 'topD', label: 'قطر الفتحة', type: 'number', min: 30, max: 240, step: 1, unit: 'مم', default: 60, group: 'الشكل', show: (p) => p.profile !== 'cylinder' },
     { key: 'ribs', label: 'عدد الخطوط', type: 'number', min: 0, max: 48, step: 1, default: 12, group: 'النقشة' },
     { key: 'ribDepth', label: 'عمق الخطوط', type: 'number', min: 0, max: 12, step: 0.5, unit: 'مم', default: 5, group: 'النقشة', show: (p) => p.ribs > 0 },
     { key: 'wave', label: 'شكل الخطوط', type: 'select', default: 'round', group: 'النقشة', show: (p) => p.ribs > 0,

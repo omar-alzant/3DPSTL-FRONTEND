@@ -255,7 +255,7 @@ export default {
   description: 'ارفع صورة فتتحوّل إلى لعبة مفصّلية ملوّنة تتحرّك، تُطبع قطعة واحدة بمفاصلها بلا تركيب. المفاصل توضع تلقائياً عند الأجزاء النحيلة.',
   category: 'ألعاب',
   params: [
-    { key: 'image', label: 'الصورة', type: 'image', default: '', group: 'الصورة', maxSize: 400,
+    { key: 'image', label: 'الصورة', type: 'image', samplePic: false, default: '', group: 'الصورة', maxSize: 400,
       help: 'بعد الرفع يمكنك إزالة الخلفية والقصّ. اتركها فارغة لتجربة السمكة' },
     { key: 'bgTol', label: 'حساسية فصل الخلفية', type: 'number', min: 5, max: 120, step: 1, default: 40, group: 'الصورة', show: (p) => !!p.image,
       help: 'للصور بخلفية سادة غير مُزالة. زِدها إن بقيت أجزاء من الخلفية' },

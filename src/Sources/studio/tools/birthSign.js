@@ -136,7 +136,7 @@ export default {
     { key: 'message', label: 'رسالة', type: 'text', default: 'Hello World', group: 'المولود', maxLength: 30 },
 
     { key: 'nameFont', label: 'خط الاسم', type: 'font', sample: ['name'], default: 'pacifico', group: 'الخطوط' },
-    { key: 'font', label: 'خط التفاصيل', type: 'font', sample: ['date', 'weight', 'message'], default: 'fredoka', group: 'الخطوط' },
+    { key: 'font', label: 'خط التفاصيل', type: 'font', sample: ['date', 'time', 'weight', 'length', 'message'], default: 'fredoka', group: 'الخطوط' },
     { key: 'msgFont', label: 'خط الرسالة', type: 'font', sample: ['message'], default: 'dancing', group: 'الخطوط' },
 
     { key: 'icons', label: 'أيقونات التفاصيل', type: 'checkbox', default: true, group: 'الزخارف' },

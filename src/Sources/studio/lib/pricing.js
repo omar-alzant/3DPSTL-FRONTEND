@@ -34,10 +34,12 @@ export function printMinutes(st, config) {
 }
 
 /** «2 س 35 د» */
-export function formatMinutes(m) {
+/** print time: "1 h 25 min" in English, "1 س 25 د" in Arabic */
+export function formatMinutes(m, lang = 'ar') {
   const total = Math.max(1, Math.round(m));
   const h = Math.floor(total / 60), mm = total % 60;
-  return h ? `${h} س ${mm} د` : `${mm} د`;
+  const [H, M] = lang === 'en' ? ['h', 'min'] : ['س', 'د'];
+  return h ? `${h} ${H} ${mm} ${M}` : `${mm} ${M}`;
 }
 
 export function priceFor(config, toolId, grams, colors = 1, minutes = 0) {

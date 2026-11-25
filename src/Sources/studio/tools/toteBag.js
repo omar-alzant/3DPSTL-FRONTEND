@@ -117,9 +117,9 @@ export default {
   description: 'حقيبة يد مرنة تُطبع قطعة واحدة بخيط TPU، بجدران مثقّبة بنمط تختاره ومقبضين. تُطبع واقفة بلا دعامات.',
   category: 'حقائب',
   params: [
-    { key: 'width', label: 'العرض', type: 'number', min: 100, max: 240, step: 1, unit: 'مم', default: 200, group: 'المقاس' },
+    { key: 'width', label: 'العرض', type: 'number', min: (p) => (p.handles ? Math.max(100, p.handleWidth + 2 * p.strap + 36) : 100), max: 240, step: 1, unit: 'مم', default: 200, group: 'المقاس' },
     { key: 'depth', label: 'العمق', type: 'number', min: 40, max: 160, step: 1, unit: 'مم', default: 70, group: 'المقاس' },
-    { key: 'height', label: 'ارتفاع الحقيبة', type: 'number', min: 60, max: 200, step: 1, unit: 'مم', default: 150, group: 'المقاس' },
+    { key: 'height', label: 'ارتفاع الحقيبة', type: 'number', min: 60, max: (p) => (p.handles ? Math.min(200, 250 - Math.max(p.handleHeight, p.handleWidth / 2) - p.strap) : 200), step: 1, unit: 'مم', default: 150, group: 'المقاس' },
     { key: 'corner', label: 'تدوير الزوايا', type: 'number', min: 4, max: 40, step: 1, unit: 'مم', default: 18, group: 'المقاس' },
 
     { key: 'pattern', label: 'النمط', type: 'select', default: 'hex', group: 'النمط',
@@ -131,9 +131,9 @@ export default {
     { key: 'bottomBand', label: 'الحافة السفلية', type: 'number', min: 2, max: 30, step: 1, unit: 'مم', default: 6, group: 'النمط' },
 
     { key: 'handles', label: 'مقبضان', type: 'checkbox', default: true, group: 'المقابض' },
-    { key: 'handleWidth', label: 'عرض فتحة اليد', type: 'number', min: 60, max: 160, step: 1, unit: 'مم', default: 96, group: 'المقابض', show: (p) => p.handles },
-    { key: 'handleHeight', label: 'ارتفاع فتحة اليد', type: 'number', min: 40, max: 120, step: 1, unit: 'مم', default: 62, group: 'المقابض', show: (p) => p.handles },
-    { key: 'strap', label: 'عرض المقبض', type: 'number', min: 8, max: 40, step: 1, unit: 'مم', default: 18, group: 'المقابض', show: (p) => p.handles },
+    { key: 'handleWidth', label: 'عرض فتحة اليد', type: 'number', min: 60, max: (p) => Math.min(160, p.width - 2 * p.strap - 36, 2 * (250 - p.height - p.strap)), step: 1, unit: 'مم', default: 96, group: 'المقابض', show: (p) => p.handles },
+    { key: 'handleHeight', label: 'ارتفاع فتحة اليد', type: 'number', min: 40, max: (p) => Math.min(120, 250 - p.height - p.strap), step: 1, unit: 'مم', default: 62, group: 'المقابض', show: (p) => p.handles },
+    { key: 'strap', label: 'عرض المقبض', type: 'number', min: 8, max: (p) => Math.min(40, 250 - p.height - Math.max(p.handleHeight, p.handleWidth / 2), Math.floor((p.width - p.handleWidth - 36) / 2)), step: 1, unit: 'مم', default: 18, group: 'المقابض', show: (p) => p.handles },
 
     { key: 'wall', label: 'سماكة الجدار', type: 'number', min: 0.8, max: 4, step: 0.1, unit: 'مم', default: 1.6, group: 'الطباعة',
       help: 'يُفضّل مضاعفات قطر الفوهة (0.4)' },

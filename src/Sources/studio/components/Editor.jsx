@@ -15,10 +15,12 @@ import ParamPanel from './ParamPanel.jsx';
 import Viewer from './Viewer.jsx';
 import OrderDialog from './OrderDialog.jsx';
 import { loadPalette, snapColors, setStockPalette } from '../lib/palette.js';
+import { forBuild } from '../lib/samples.js';
+import { fitParams } from '../lib/limits.js';
 
 export default function Editor({ tool, initial, config, orderId, downloadId }) {
   const { token, isAdmin } = useAuth();
-  const { tx } = useLang();
+  const { tx, lang } = useLang();
   const t = useT();
   // a design saved before the customer went to log in comes back here (with its logo)
   const [pending] = useState(() => peekPending(tool.id));
@@ -26,7 +28,7 @@ export default function Editor({ tool, initial, config, orderId, downloadId }) {
     if (pending) clearPending();
     try { sessionStorage.removeItem('studioIntent'); } catch {}
   }, [pending]);
-  const [params, setParams] = useState(() => ({ ...defaults(tool), ...(initial || {}), ...(pending || {}) }));
+  const [params, setParams] = useState(() => fitParams(tool, { ...defaults(tool), ...(initial || {}), ...(pending || {}) }));
   // رجع من تسجيل الدخول: افتح نافذة الطلب، إلا إذا ذهب ليُنزّل ملفاً أو ليشحن رصيده
   const [order, setOrder] = useState(() => {
     try { if (sessionStorage.getItem('studioIntent') === 'download') return false; } catch {}
@@ -37,6 +39,9 @@ export default function Editor({ tool, initial, config, orderId, downloadId }) {
     try { sessionStorage.setItem('studioIntent', 'download'); } catch {}
   };
   const [copied, setCopied] = useState(false);
+  // size reference next to the design (a phone or a bank card), remembered between tools
+  const [compare, setCompare] = useState(() => { try { return localStorage.getItem('sdCompare') || 'none'; } catch { return 'none'; } });
+  const pickCompare = (v) => { setCompare(v); try { localStorage.setItem('sdCompare', v); } catch {} };
   // colours: only the filament colours in stock (admins can still pick any colour)
   const [palette, setPalette] = useState([]);
   useEffect(() => { loadPalette().then(setPalette); }, []);
@@ -47,13 +52,21 @@ export default function Editor({ tool, initial, config, orderId, downloadId }) {
 
   // photo colours snap to the stock list too, so rebuild once it arrives
   useEffect(() => { setStockPalette(palette); }, [palette]);
-  const buildParams = useMemo(() => (palette.length ? { ...params, _stock: palette.length } : params), [params, palette.length]);
+  // pictures not uploaded yet → a sample picture, so the customer sees a design straight away
+  // + Arabic typed with an English-only font is drawn with an Arabic font
+  const { params: prepared, swapped } = useMemo(() => forBuild(tool, params), [tool, params]);
+  const buildParams = useMemo(() => (palette.length ? { ...prepared, _stock: palette.length } : prepared), [prepared, palette.length]);
   const { parts, stats, error, busy } = useBuild(tool, buildParams);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => setParams({ ...defaults(tool), ...(initial || {}), ...(pending || {}) }), [tool]);
+  useEffect(() => setParams(fitParams(tool, { ...defaults(tool), ...(initial || {}), ...(pending || {}) })), [tool]);
 
-  const onChange = (k, v) => setParams((p) => ({ ...p, [k]: v }));
+  // every change stays inside what the tool can build (limits can depend on other settings)
+  // a build that didn't work: a short hint (never the word "error"); the last good design stays on screen
+  const friendly = (msg) => (msg === 'empty'
+    ? tx('Type something to start your design', 'اكتب شي لنبلّش التصميم')
+    : /[\u0600-\u06FF]/.test(msg) ? t(msg) : tx('That change didn’t work here — try another value', 'هالتعديل ما زبط هون، جرّب قيمة تانية'));
+  const onChange = (k, v) => setParams((p) => fitParams(tool, { ...p, [k]: v }));
   // التصميم المفتوح من طلب: كل الملفات المنزّلة تبدأ برقم الطلب (مثل ST-261118-A3F9-birth-sign.3mf)
   const name = orderId ? `${orderId}-${tool.id}` : `${tool.id}-${params.text || params.name || params.digits || ''}`;
   const colors = parts ? new Set(parts.map((p) => p.color)).size : 0;
@@ -140,13 +153,29 @@ export default function Editor({ tool, initial, config, orderId, downloadId }) {
 
       <section className="sd-stage">
         <div className="sd-canvas-wrap">
-          <Viewer parts={parts} fitKey={tool.id} />
+          <Viewer parts={parts} fitKey={tool.id} compare={compare} />
+          {parts?.length > 0 && (
+            <div className="sd-compare" role="group" aria-label={tx('Compare the size', 'قارن الحجم')}>
+              <span>{tx('Compare size:', 'قارن الحجم:')}</span>
+              {[['phone', tx('Phone', 'تلفون')], ['card', tx('Bank card', 'بطاقة بنك')]].map(([k, label]) => (
+                <button key={k} type="button" aria-pressed={compare === k} className={compare === k ? 'on' : ''} onClick={() => pickCompare(compare === k ? 'none' : k)}>
+                  {label}
+                </button>
+              ))}
+              {compare === 'phone' && <small>{tx('a phone is about 14.7 × 7.2 cm', 'التلفون تقريباً 14.7 × 7.2 سم')}</small>}
+              {compare === 'card' && <small>{tx('a bank card is 8.6 × 5.4 cm', 'البطاقة 8.6 × 5.4 سم')}</small>}
+            </div>
+          )}
           {busy && <div className="sd-badge">{tx('Updating…', 'جارٍ التحديث…')}</div>}
-          {error && <div className="sd-badge sd-err">{tx('Error:', 'خطأ:')} {t(error)}</div>}
+          {error ? (
+            <div className="sd-badge sd-hint" role="status">{friendly(error)}</div>
+          ) : swapped.length > 0 && (
+            <div className="sd-badge sd-hint" role="status">{tx('This font is English-only, so the Arabic is written in Cairo', 'هالخط للإنكليزي بس، فكتبنا العربي بخط القاهرة')}</div>
+          )}
           {stats && (
             <div className="sd-mini">
               <span>
-                {showPrice && <b>{price.toFixed(2)} {config.currency}</b>}{isAdmin && <> · {formatMinutes(minutes)}</>}
+                {showPrice && <b>{price.toFixed(2)} {config.currency}</b>}{isAdmin && <> · {formatMinutes(minutes, lang)}</>}
               </span>
               <button
                 type="button"
@@ -163,16 +192,16 @@ export default function Editor({ tool, initial, config, orderId, downloadId }) {
             <dl className="sd-stats">
               <div><dt>{tx('Size', 'المقاس')}</dt><dd dir="ltr">{stats.size.x.toFixed(1)} × {stats.size.y.toFixed(1)} × {stats.size.z.toFixed(1)} mm</dd></div>
               <div><dt>{tx('Approx. weight', 'الوزن التقريبي')}</dt><dd>{stats.grams.toFixed(1)} {tx('g', 'غ')}</dd></div>
-              {isAdmin && <div><dt>{tx('Approx. print time', 'وقت الطباعة التقريبي')} <span className="sd-muted">(admin)</span></dt><dd>{formatMinutes(minutes)}</dd></div>}
+              {isAdmin && <div><dt>{tx('Approx. print time', 'وقت الطباعة التقريبي')} <span className="sd-muted">(admin)</span></dt><dd>{formatMinutes(minutes, lang)}</dd></div>}
               <div><dt>{tx('Colours', 'الألوان')}</dt><dd>{colors}</dd></div>
               {showPrice && <div><dt>{tx('Approx. price', 'السعر التقريبي')}{adminOnly}</dt><dd><b>{price.toFixed(2)} {config.currency}</b></dd></div>}
             </dl>
           )}
           <div className="sd-actions">
-            <button className="sd-btn sd-primary" disabled={!parts?.length} onClick={() => setOrder(true)}>{tx('Order the print', 'اطلب الطباعة')}</button>
-            <button className="sd-btn" disabled={!parts?.length} onClick={() => download(() => exportSTL(parts, name))}>{tx('Download STL', 'تحميل STL')}{tag}</button>
-            <button className="sd-btn" disabled={!parts?.length} onClick={() => download(() => exportBambu3MF(parts, name))} title={tx('Bambu Studio project (A1 printer) that opens with the colours you chose', 'مشروع Bambu Studio (طابعة A1) يفتح بنفس الألوان التي اخترتها')}>{tx('3MF file', '3MF ملف')}{tag}</button>
-            <button className="sd-btn" disabled={!parts?.length} onClick={() => download(() => exportSTLByColor(parts, name))}>{tx('STL per colour', 'STL لكل لون')}{tag}</button>
+            <button className="sd-btn sd-primary" disabled={!parts?.length || !!error} onClick={() => setOrder(true)}>{tx('Order the print', 'اطلب الطباعة')}</button>
+            <button className="sd-btn" disabled={!parts?.length || !!error} onClick={() => download(() => exportSTL(parts, name))}>{tx('Download STL', 'تحميل STL')}{tag}</button>
+            <button className="sd-btn" disabled={!parts?.length || !!error} onClick={() => download(() => exportBambu3MF(parts, name))} title={tx('Bambu Studio project (A1 printer) that opens with the colours you chose', 'مشروع Bambu Studio (طابعة A1) يفتح بنفس الألوان التي اخترتها')}>{tx('3MF file', '3MF ملف')}{tag}</button>
+            <button className="sd-btn" disabled={!parts?.length || !!error} onClick={() => download(() => exportSTLByColor(parts, name))}>{tx('STL per colour', 'STL لكل لون')}{tag}</button>
             <button className="sd-btn sd-link" onClick={copyLink}>{copied ? tx('Copied ✓', 'تم النسخ ✓') : tx('Copy design link', 'نسخ رابط التصميم')}</button>
           </div>
           {cost > 0 && (

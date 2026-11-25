@@ -121,7 +121,7 @@ const getSelectedOptions = (paramKey, metadataArray) => {
         const [typesRes, modelRes, marketsRes] = await Promise.all([
           fetch(`${process.env.REACT_APP_API_URL}/api/admin/products/type`).then(r => r.json()),
           fetch(`${process.env.REACT_APP_API_URL}/api/admin/products/model`).then(r => r.json()),
-          fetch(`${process.env.REACT_APP_API_URL}/api/admin/products/market`).then(r => r.json()),
+          fetch(`${process.env.REACT_APP_API_URL}/api/admin/products/market?pageSize=100`).then(r => r.json()),
         ]);
   
         // Setting the state for all three at once

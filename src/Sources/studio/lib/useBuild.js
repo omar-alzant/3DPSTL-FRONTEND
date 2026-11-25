@@ -37,6 +37,7 @@ export function useBuild(tool, params, delay) {
         if (id !== seq.current) return;
         const parts = await tool.build(params, fonts);
         if (id !== seq.current) return;
+        if (!parts?.length) throw new Error('empty'); // nothing to show yet (e.g. no text typed)
         setState({ parts, stats: parts.length ? stats(parts) : null, error: null, busy: false });
       } catch (e) {
         console.error(e);

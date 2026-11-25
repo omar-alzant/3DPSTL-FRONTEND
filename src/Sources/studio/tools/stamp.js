@@ -27,7 +27,7 @@ export default {
     { key: 'line2', label: 'السطر الثاني', type: 'text', default: 'طرابلس - لبنان', maxLength: 36, group: 'النص' },
     { key: 'line3', label: 'السطر الثالث', type: 'text', default: '', maxLength: 36, group: 'النص' },
     { key: 'font', label: 'الخط', type: 'font', sample: ['line1', 'line2'], default: 'cairo-black', group: 'النص' },
-    { key: 'logo', label: 'شعار (اختياري)', type: 'image', default: '', group: 'الشعار', maxSize: 400 },
+    { key: 'logo', label: 'شعار (اختياري)', type: 'image', samplePic: false, default: '', group: 'الشعار', maxSize: 400 },
     { key: 'logoDark', label: 'قتامة الشعار', type: 'number', min: 10, max: 90, step: 1, unit: '%', default: 50, group: 'الشعار', show: (p) => !!p.logo },
     { key: 'logoPos', label: 'مكان الشعار', type: 'select', default: 'top', group: 'الشعار', show: (p) => !!p.logo,
       options: [{ value: 'top', label: 'فوق النص' }, { value: 'side', label: 'جنب النص' }, { value: 'only', label: 'الشعار وحده' }] },

@@ -53,7 +53,7 @@ function Num({ value, onChange, placeholder, step = '0.01' }) {
 }
 
 export default function AdminStudioPricing() {
-  const { tx } = useLang();
+  const { tx, lang } = useLang();
   const [form, setForm] = useState(null);
   const [saved, setSaved] = useState(null);
   const [state, setState] = useState({ saving: false, error: null, ok: false });
@@ -174,7 +174,7 @@ export default function AdminStudioPricing() {
         <small className="sd-muted d-block mb-2">
           Time = plastic volume ÷ print speed + layers × 2 s + filament swaps × swap time + start-up.
           {tx('Compare with Bambu Studio\'s estimate for one of your prints and adjust the speed until they match.', 'قارن مع تقدير Bambu Studio لإحدى طبعاتك وعدّل السرعة حتى يتطابقا.')}
-          Example with these settings: 100 g, 2 colours, 40 swaps ≈ {formatMinutes(((100 / 1.24) * 1000) / (Number(form.printFlow) || 7) / 60 + (40 * (Number(form.swapSeconds) || 0)) / 60 + (Number(form.startupMinutes) || 0))}.
+          Example with these settings: 100 g, 2 colours, 40 swaps ≈ {formatMinutes(((100 / 1.24) * 1000) / (Number(form.printFlow) || 7) / 60 + (40 * (Number(form.swapSeconds) || 0)) / 60 + (Number(form.startupMinutes) || 0), lang)}.
         </small>
         <div className="sd-form-grid">
           <label>{tx('Average print speed (mm³/s)', 'متوسط سرعة الطباعة (مم³/ث)')}<Num value={form.printFlow} onChange={set('printFlow')} step="0.5" /></label>

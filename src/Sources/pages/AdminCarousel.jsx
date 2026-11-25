@@ -93,7 +93,7 @@ export default function AdminCarousel() {
       const [t, m, b] = await Promise.all([
         fetch(`${process.env.REACT_APP_API_URL}/api/admin/products/type`).then(r => r.json()),
         fetch(`${process.env.REACT_APP_API_URL}/api/admin/products/model`).then(r => r.json()),
-        fetch(`${process.env.REACT_APP_API_URL}/api/admin/products/market`).then(r => r.json()),
+        fetch(`${process.env.REACT_APP_API_URL}/api/admin/products/market?pageSize=100`).then(r => r.json()),
       ]);
   
       setTypes(t || []);

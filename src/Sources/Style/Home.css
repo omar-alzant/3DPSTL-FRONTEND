@@ -113,20 +113,40 @@
 .hm-way-main p { color: #d6d1ff; }
 .hm-way-main a { color: var(--brand-strong); }
 
-/* studio templates: a dense, scannable list rather than cards */
+/* studio templates: picture cards (a 3D render of each template) */
 .hm-tools {
   list-style: none; margin: 0; padding: 0;
-  display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  border-top: 1px solid var(--brand-border);
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 14px;
 }
-.hm-tools li { border-bottom: 1px solid var(--brand-border); }
 .hm-tool {
-  display: flex; flex-direction: column; gap: 2px; height: 100%;
-  padding-block: 16px; padding-inline: 0 14px; text-decoration: none;
+  display: flex; flex-direction: column; gap: 4px; height: 100%; padding: 10px 12px 14px; text-decoration: none;
+  background: var(--brand-card); border: 1px solid var(--brand-border); border-radius: 22px;
+  transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
 }
-.hm .hm-tool-name { color: var(--brand-text); font-weight: 600; }
-.hm .hm-tool-text { color: var(--brand-muted); font-size: .92rem; }
-.hm-tool:hover .hm-tool-name { color: var(--brand-light); }
+.hm-tool-pic {
+  display: block; aspect-ratio: 1; margin: -2px -4px 6px; border-radius: 16px;
+  background: radial-gradient(circle at 50% 40%, var(--brand-bg-2), transparent 72%);
+}
+.hm-tool-pic img { width: 100%; height: 100%; object-fit: contain; display: block; transition: transform .3s ease; }
+.hm .hm-tool-name { color: var(--brand-text); font-weight: 600; line-height: 1.3; }
+.hm .hm-tool-text { color: var(--brand-muted); font-size: .85rem; line-height: 1.4; }
+.hm-tool:hover, .hm-tool:focus-visible { transform: translateY(-3px); border-color: var(--brand-primary); box-shadow: 0 12px 28px var(--brand-shadow); }
+.hm-tool:hover .hm-tool-pic img { transform: scale(1.06) rotate(-2deg); }
+.hm-tool:focus-visible { outline: 2px solid var(--brand-primary); outline-offset: 2px; }
+/* phones: one row you swipe through instead of a long list */
+@media (max-width: 575px) {
+  .hm-tools {
+    grid-auto-flow: column; grid-template-columns: none; grid-auto-columns: 46%;
+    overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 8px; scrollbar-width: none;
+  }
+  .hm-tools::-webkit-scrollbar { display: none; }
+  .hm-tools li { scroll-snap-align: start; }
+  .hm .hm-tool-text { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hm-tool, .hm-tool-pic img { transition: none; }
+  .hm-tool:hover, .hm-tool:hover .hm-tool-pic img { transform: none; }
+}
 
 /* works by type */
 .hm-type { margin-bottom: 40px; }
@@ -198,3 +218,113 @@ html[lang="ar"] .hm-title, html[lang="ar"] .hm-h2, html[lang="ar"] .hm-h3, html[
   font-family: 'IBM Plex Sans Arabic', sans-serif; letter-spacing: 0;
 }
 html[lang="ar"] .hm-title { line-height: 1.25; max-width: 16ch; }
+
+/* ── hero art: an enclosed multi-colour printer printing a vase (always shown) ── */
+.hm-hero-art { border: 0; background: none; overflow: visible; display: grid; place-items: center; }
+.hm-printer { margin: 0; width: min(100%, 470px); }
+.hm-printer svg { width: 100%; height: auto; display: block; filter: drop-shadow(0 26px 44px var(--brand-shadow)); }
+.hm-pr-body, .hm-pr-box { fill: #2b2b36; stroke: #44445a; stroke-width: 2; }
+.hm-pr-boxwin { fill: #17171f; stroke: #3d3d50; stroke-width: 1.5; }
+.hm-pr-spool { opacity: .6; transition: opacity .2s; }
+.hm-pr-spool.on { opacity: 1; filter: drop-shadow(0 0 4px rgba(255, 255, 255, .25)); }
+.hm-pr-hub { fill: #17171f; }
+.hm-pr-lamp { fill: #fff; opacity: .55; }
+.hm-pr-plate { fill: #6b6b80; }
+.hm-pr-bed { fill: #33333f; }
+.hm-pr-gantry { fill: #565669; }
+.hm-pr-head { fill: #1d1d26; stroke: #4c4c62; stroke-width: 1.5; }
+.hm-pr-nozzle { fill: #c9c9d6; }
+.hm-pr-hot { fill: #ffb02e; }
+.hm-pr-door { stroke: rgba(255, 255, 255, .22); stroke-width: 2; }
+.hm-pr-handle { fill: #5c5c72; }
+.hm-pr-screen { fill: #14141b; stroke: #3d3d50; stroke-width: 1.5; }
+.hm-pr-screenline { fill: #4a4a5e; }
+.hm-pr-brand { font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: 20px; letter-spacing: .1em; fill: #d9d6f5; }
+.hm-pr-led { fill: #ffb02e; }
+.hm-pr-led.done { fill: #22c55e; }
+@media (max-width: 991px) { .hm-printer { width: min(78%, 340px); } }
+
+/* ── works wall: real photos drifting under the hero ── */
+.hm-wall {
+  padding: 8px 0 4px; overflow: hidden;
+  display: grid; gap: 14px;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+          mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+}
+.hm-wall-row { overflow: hidden; }
+.hm-wall-track {
+  display: flex; gap: 14px; width: max-content;
+  animation: hm-wall calc(var(--n) * 4.5s) linear infinite;
+}
+.hm-wall-row.rev .hm-wall-track { animation-direction: reverse; }
+[dir='rtl'] .hm-wall-track { animation-name: hm-wall-rtl; }
+.hm-wall-row:hover .hm-wall-track, .hm-wall-row:focus-within .hm-wall-track { animation-play-state: paused; }
+@keyframes hm-wall { to { transform: translateX(calc(-50% - 7px)); } }
+@keyframes hm-wall-rtl { to { transform: translateX(calc(50% + 7px)); } }
+.hm-wall-tile {
+  flex: none; display: block; width: 210px; height: 210px; border-radius: 24px; overflow: hidden;
+  background: var(--brand-card); border: 1px solid var(--brand-border);
+  transition: transform .25s ease, box-shadow .25s ease;
+}
+.hm-wall-tile img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.hm-wall-tile:hover, .hm-wall-tile:focus-visible { transform: translateY(-4px) rotate(-1deg); box-shadow: 0 14px 30px var(--brand-shadow); }
+.hm-wall-tile:focus-visible { outline: 3px solid var(--brand-primary); outline-offset: 3px; }
+.hm-wall-foot { display: flex; justify-content: center; padding-top: 10px; }
+@media (max-width: 575px) {
+  .hm-wall-tile { width: 140px; height: 140px; border-radius: 18px; }
+  .hm-wall, .hm-wall-track { gap: 10px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hm-wall-track { animation: none; }
+  .hm-wall-row { overflow-x: auto; scrollbar-width: none; }
+  .hm-wall-row::-webkit-scrollbar { display: none; }
+}
+
+/* ── occasions & offers (from Admin → Carousel): big picture cards ── */
+.hm-occasions { margin-top: clamp(32px, 5vw, 56px); }
+.hm-occ-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+.hm-occ {
+  position: relative; display: block; min-height: 220px; border-radius: 28px; overflow: hidden;
+  background: var(--brand-card); border: 1px solid var(--brand-border); text-decoration: none; isolation: isolate;
+}
+.hm-occ img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1; transition: transform .5s ease; }
+.hm-occ::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(to top, rgba(10, 8, 40, .78), rgba(10, 8, 40, .05) 60%); }
+.hm-occ-text { position: absolute; inset-inline: 20px; bottom: 18px; display: grid; gap: 4px; color: #fff; }
+.hm-occ-text b { font-family: 'Fredoka', sans-serif; font-size: 1.35rem; line-height: 1.15; }
+.hm-occ-text span { font-size: .92rem; opacity: .9; }
+a.hm-occ:hover img, a.hm-occ:focus-visible img { transform: scale(1.05); }
+a.hm-occ:focus-visible { outline: 3px solid var(--brand-primary); outline-offset: 3px; }
+
+/* ── brands: one row of round logos you scroll sideways ── */
+.hm-logos-wrap { position: relative; margin-top: 18px; }
+.hm-logos {
+  overflow: hidden; padding: 8px 0 12px; touch-action: pan-y; cursor: grab; user-select: none;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 48px, #000 calc(100% - 48px), transparent);
+          mask-image: linear-gradient(90deg, transparent, #000 48px, #000 calc(100% - 48px), transparent);
+}
+.hm-logos:active { cursor: grabbing; }
+.hm-logos-track { list-style: none; margin: 0; padding: 0; display: flex; width: max-content; will-change: transform; }
+.hm-logos-track li { flex: none; padding-inline-end: 16px; } /* spacing lives on each logo so every copy is the same width */
+.hm-logo {
+  display: block; width: 96px; height: 96px; border-radius: 50%; overflow: hidden; padding: 0;
+  background: #fff; border: 1px solid var(--brand-border); box-shadow: 0 0 0 4px var(--brand-card);
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.hm-logo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.hm-logo:hover, .hm-logo:focus-visible { transform: translateY(-3px) scale(1.04); box-shadow: 0 0 0 4px var(--brand-primary), 0 10px 24px var(--brand-shadow); }
+.hm-logo:focus-visible { outline: none; }
+.hm-logos-arrow {
+  position: absolute; top: 50%; transform: translateY(-50%); z-index: 2;
+  width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center;
+  font-size: 24px; line-height: 1; padding: 0 0 3px; cursor: pointer;
+  background: var(--brand-card); color: var(--brand-text); border: 1px solid var(--brand-border); box-shadow: 0 6px 16px var(--brand-shadow);
+}
+.hm-logos-arrow.prev { inset-inline-start: -14px; }
+.hm-logos-arrow.next { inset-inline-end: -14px; }
+[dir='rtl'] .hm-logos-arrow { transform: translateY(-50%) scaleX(-1); }
+.hm-logos-arrow:hover { border-color: var(--brand-primary); color: var(--brand-primary); }
+.hm-logos-arrow:focus-visible { outline: 2px solid var(--brand-primary); outline-offset: 2px; }
+@media (hover: none), (max-width: 575px) { .hm-logos-arrow { display: none; } } /* phones: swipe */
+@media (max-width: 575px) { .hm-logos-track li { padding-inline-end: 12px; } .hm-logo { width: 72px; height: 72px; } }
+.hm-wall-section { margin-top: clamp(16px, 3vw, 32px); }
+.hm-more { display: flex; justify-content: center; margin-top: 18px; }

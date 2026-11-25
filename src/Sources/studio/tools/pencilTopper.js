@@ -25,6 +25,7 @@ export default {
   ],
   fonts: (p) => [p.font],
   build(p, fonts) {
+    if (!String(p.text || '').trim()) throw new Error('اكتب الاسم');
     const glyphs = union(shapeText(fonts[p.font], p.text, p.size, { spacing: p.spacing }).contours);
     const outline = offset(glyphs, p.border);
     const b = bounds2(outline);

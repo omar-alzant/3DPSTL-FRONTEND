@@ -402,7 +402,7 @@ export default {
 
     { key: 'name', label: 'الاسم', type: 'text', default: 'Dr. Yara', maxLength: 28, group: 'الاسم' },
     { key: 'title', label: 'السطر التاني (المهنة)', type: 'text', default: 'Pharmacist', maxLength: 34, group: 'الاسم', help: 'اتركه فاضي إذا بدك سطر واحد' },
-    { key: 'font', label: 'الخط', type: 'font', sample: ['name'], default: 'lilita', group: 'الاسم' },
+    { key: 'font', label: 'الخط', type: 'font', sample: ['name', 'title'], default: 'lilita', group: 'الاسم' },
 
     { key: 'left', label: 'عالشمال', type: 'select', dropdown: true, default: 'testTubes', group: 'الأغراض', options: ACC_OPTIONS },
     { key: 'right', label: 'عاليمين', type: 'select', dropdown: true, default: 'microscope', group: 'الأغراض', options: ACC_OPTIONS },

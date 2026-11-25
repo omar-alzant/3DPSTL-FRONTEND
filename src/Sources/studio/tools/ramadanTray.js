@@ -34,7 +34,7 @@ export default {
     { key: 'shape', label: 'شكل الصينية', type: 'select', default: 'rect', group: 'الصينية',
       options: [{ value: 'rect', label: 'مستطيل' }, { value: 'oval', label: 'بيضاوي' }, { value: 'crescent', label: 'هلال' }] },
     { key: 'length', label: 'الطول', type: 'number', min: 100, max: 230, step: 1, unit: 'مم', default: 180, group: 'الصينية' },
-    { key: 'width', label: 'العرض', type: 'number', min: 60, max: 160, step: 1, unit: 'مم', default: 110, group: 'الصينية', show: (p) => p.shape !== 'crescent' },
+    { key: 'width', label: 'العرض', type: 'number', min: 60, max: 155, step: 1, unit: 'مم', default: 110, group: 'الصينية', show: (p) => p.shape !== 'crescent' },
     { key: 'wallH', label: 'ارتفاع الحافة', type: 'number', min: 8, max: 40, step: 1, unit: 'مم', default: 18, group: 'الصينية' },
     { key: 'wall', label: 'سماكة الحافة', type: 'number', min: 1.6, max: 4, step: 0.1, unit: 'مم', default: 2.4, group: 'الصينية' },
     { key: 'dividers', label: 'عدد الفواصل', type: 'number', min: 0, max: 5, step: 1, default: 2, group: 'الصينية', show: (p) => p.shape !== 'crescent' },
@@ -43,7 +43,7 @@ export default {
     { key: 'text1', label: 'الكتابة', type: 'text', default: 'رمضان كريم', maxLength: 20, group: 'اللافتة', show: (p) => p.sign },
     { key: 'text2', label: 'السطر الثاني (اسم العيلة)', type: 'text', default: 'عائلة زنط', maxLength: 24, group: 'اللافتة', show: (p) => p.sign },
     { key: 'font', label: 'الخط', type: 'font', sample: ['text1', 'text2'], default: 'ruqaa', group: 'اللافتة', show: (p) => p.sign },
-    { key: 'signH', label: 'ارتفاع اللافتة', type: 'number', min: 40, max: 120, step: 1, unit: 'مم', default: 70, group: 'اللافتة', show: (p) => p.sign },
+    { key: 'signH', label: 'ارتفاع اللافتة', type: 'number', min: 40, max: 115, step: 1, unit: 'مم', default: 70, group: 'اللافتة', show: (p) => p.sign },
     { key: 'decor', label: 'هلال ونجمة', type: 'checkbox', default: true, group: 'اللافتة', show: (p) => p.sign },
 
     { key: 'trayColor', label: 'لون الصينية', type: 'color', default: '#f5f5f5', group: 'الألوان' },
