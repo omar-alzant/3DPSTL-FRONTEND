@@ -49,12 +49,12 @@ function Rig({ box, fitKey, apiRef }) {
   return null;
 }
 
-function Part({ part, selected }) {
+function Part({ part, selected, shift }) {
   useEffect(() => {
     if (!part.geometry.boundsTree) part.geometry.computeBoundsTree();
   }, [part.geometry]);
   return (
-    <mesh geometry={part.geometry} userData={{ partId: part.id }}>
+    <mesh geometry={part.geometry} userData={{ partId: part.id }} position={shift || [0, 0, 0]}>
       <meshStandardMaterial
         color={part.color}
         roughness={0.5}
@@ -66,7 +66,7 @@ function Part({ part, selected }) {
   );
 }
 
-export default function SplitViewer({ parts, points, setPoints, drawing, fitKey, apiRef, selectedId }) {
+export default function SplitViewer({ parts, points, setPoints, drawing, fitKey, apiRef, selectedId, line = false, explode = false }) {
   const light = useTheme().theme === 'light';
   const [drag, setDrag] = useState(null);
   const dragRef = useRef(null);
@@ -80,6 +80,20 @@ export default function SplitViewer({ parts, points, setPoints, drawing, fitKey,
     return b.isEmpty() ? null : b;
   }, [parts]);
   const r = box ? box.getSize(new THREE.Vector3()).length() : 100;
+
+  // "pull apart" view: every part moves away from the middle of the model
+  const shifts = useMemo(() => {
+    if (!explode || !box) return {};
+    const mid = box.getCenter(new THREE.Vector3());
+    const out = {};
+    for (const p of parts) {
+      p.geometry.computeBoundingBox();
+      const c = p.geometry.boundingBox.getCenter(new THREE.Vector3());
+      const d = c.sub(mid).multiplyScalar(0.55);
+      out[p.id] = [d.x, d.y, d.z];
+    }
+    return out;
+  }, [explode, box, parts]);
   const dot = Math.max(0.35, r * 0.007);
 
   // dragging a point (also off the model) and releasing it anywhere
@@ -112,9 +126,16 @@ export default function SplitViewer({ parts, points, setPoints, drawing, fitKey,
 
   const curve = useMemo(() => {
     if (points.length < 2) return null;
+    if (line) {
+      // a straight cut: show the line well past both points, so it reads as a knife across the part
+      const a = new THREE.Vector3(points[0].x, points[0].y, points[0].z);
+      const b = new THREE.Vector3(points[1].x, points[1].y, points[1].z);
+      const d = b.clone().sub(a);
+      return [a.clone().addScaledVector(d, -0.6), b.clone().addScaledVector(d, 0.6)].map((p) => [p.x, p.y, p.z]);
+    }
     const pts = points.length >= 3 ? loopCurve(points, Math.max(64, points.length * 24)) : points.map((p) => new THREE.Vector3(p.x, p.y, p.z));
     return pts.map((p) => [p.x, p.y, p.z]);
-  }, [points]);
+  }, [points, line]);
 
   return (
     <div className="sd-split-view" onPointerDownCapture={onDownCapture} onPointerUp={onUp} style={{ position: 'absolute', inset: 0 }}>
@@ -125,7 +146,7 @@ export default function SplitViewer({ parts, points, setPoints, drawing, fitKey,
         <directionalLight position={[-90, 60, 60]} intensity={0.8} />
         <directionalLight position={[0, 120, -40]} intensity={0.4} />
         {parts.filter((p) => !p.hidden).map((p) => (
-          <Part key={p.id} part={p} selected={p.id === selectedId} />
+          <Part key={p.id} part={p} selected={p.id === selectedId} shift={shifts[p.id]} />
         ))}
         {curve && <Line points={curve} color="#ff3b5c" lineWidth={2.5} depthTest={false} renderOrder={10} transparent />}
         {points.map((p, i) => (

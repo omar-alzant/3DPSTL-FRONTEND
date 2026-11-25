@@ -46,6 +46,21 @@ export async function createOrder(order) {
   return json(r, 'تعذّر إرسال الطلب');
 }
 
+// the print-ready file for an order (tools that use the customer's own 3D file, e.g. the mold maker)
+export async function uploadOrderFile(id, bytes) {
+  const r = await fetch(`${API}/api/studio/orders/${encodeURIComponent(id)}/file`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/octet-stream', ...authHeader() },
+    body: bytes,
+  });
+  return json(r, 'تعذّر رفع ملف الطلب');
+}
+
+export async function orderFileLink(id) {
+  const r = await fetch(`${API}/api/studio/orders/admin/${encodeURIComponent(id)}/file`, { headers: authHeader() });
+  return json(r, 'No file for this order');
+}
+
 // طلبات Studio الخاصة بالزبون المسجّل (Profile → My Orders)
 export async function listMyOrders() {
   const r = await fetch(`${API}/api/studio/orders/my`, { headers: authHeader() });

@@ -6,6 +6,8 @@ import { sampleImage } from '../lib/samples.js';
 import { lim, visibleOptions } from '../lib/limits.js';
 import { useT } from '../i18n/index.js';
 import { useLang } from '../../i18n/LanguageContext';
+import { putModel, getModel, parseRef } from '../lib/modelStore.js';
+import { loadPrepared, MODEL_EXT } from '../lib/loadModel.js';
 
 function ImageField({ value, set, maxSize, sample }) {
   const { tx } = useLang();
@@ -51,6 +53,87 @@ function ImageField({ value, set, maxSize, sample }) {
           }}
         />
       )}
+    </div>
+  );
+}
+
+const MAX_MODEL_MB = 80;
+
+/** upload of a 3D file (STL / OBJ / 3MF): kept in this browser, the settings keep a short reference */
+function ModelField({ value, set }) {
+  const { tx } = useLang();
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState(null);
+  const [info, setInfo] = useState(null);
+  const ref = parseRef(value);
+
+  useEffect(() => {
+    let alive = true;
+    setInfo(null);
+    setErr(null);
+    if (!value) return undefined;
+    loadPrepared(value, getModel)
+      .then((m) => alive && setInfo(m))
+      .catch((e) => alive && setErr(e.message === 'missingModel'
+        ? tx('This file isn’t saved on this device, upload it again', 'الملف مش محفوظ على هالجهاز، ارفعه من جديد')
+        : tx('We couldn’t read this file', 'ما قدرنا نقرا هالملف')));
+    return () => { alive = false; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value]);
+
+  const pick = async (e) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+    const ext = (file.name.split('.').pop() || '').toLowerCase();
+    if (!MODEL_EXT.includes(ext)) return setErr(tx('Choose an STL, OBJ or 3MF file', 'اختار ملف STL أو OBJ أو 3MF'));
+    if (file.size > MAX_MODEL_MB * 1024 * 1024) return setErr(tx(`The file is bigger than ${MAX_MODEL_MB} MB`, `الملف أكبر من ${MAX_MODEL_MB} ميغا`));
+    setErr(null);
+    setBusy(true);
+    try {
+      const buffer = await file.arrayBuffer();
+      const r = await putModel(buffer, file.name);
+      await loadPrepared(r, getModel); // reads it once now, so a broken file shows here
+      set(r);
+    } catch (x) {
+      setErr(x.message === 'badType'
+        ? tx('Choose an STL, OBJ or 3MF file', 'اختار ملف STL أو OBJ أو 3MF')
+        : tx('We couldn’t read this file, try exporting it as STL again', 'ما قدرنا نقرا هالملف، جرّب تصدّره STL من جديد'));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <div className="sd-model-field">
+      {ref ? (
+        <div className="sd-model-name">
+          <strong dir="auto">{ref.name}</strong>
+          {info && (
+            <small>
+              {info.original > info.tris
+                ? tx(`${info.original.toLocaleString()} triangles, simplified to ${info.tris.toLocaleString()}`, `${info.original.toLocaleString()} مثلّث، خفّفناه لـ ${info.tris.toLocaleString()}`)
+                : tx(`${info.tris.toLocaleString()} triangles`, `${info.tris.toLocaleString()} مثلّث`)}
+            </small>
+          )}
+          {info?.open > 0 && (
+            <small className="sd-warn">{tx('The file has gaps in its surface, the mold may come out wrong. Repair it if you can (e.g. in your slicer).', 'الملف فيه فتحات بسطحه، ممكن القالب يطلع غلط. إذا فيك صلّحه (مثلاً بالسلايسر).')}</small>
+          )}
+        </div>
+      ) : (
+        <div className="sd-img-sample">
+          <span>{tx('Sample shape: upload your file', 'مجسّم تجريبي: ارفع ملفك')}</span>
+        </div>
+      )}
+      <div className="sd-img-actions">
+        <label className="sd-btn">
+          {busy ? tx('Reading…', 'عم نقرا…') : value ? tx('Change', 'تغيير') : tx('Upload file', 'رفع ملف')}
+          <input type="file" accept=".stl,.obj,.3mf" onChange={pick} hidden disabled={busy} />
+        </label>
+        {value && !busy && <button type="button" className="sd-btn sd-link" onClick={() => { setErr(null); set(''); }}>{tx('Remove', 'حذف')}</button>}
+      </div>
+      <small className="sd-muted">{tx('The file stays on your device, we only use it to make the mold.', 'الملف بيضل على جهازك، منستعمله بس لنعمل القالب.')}</small>
+      {err && <small className="sd-error">{err}</small>}
     </div>
   );
 }
@@ -155,6 +238,8 @@ function Field({ def, value, onChange, params, tool, palette, isAdmin }) {
   const t = useT();
   const set = (v) => onChange(def.key, v);
   switch (def.type) {
+    case 'model':
+      return <ModelField value={value} set={set} />;
     case 'image':
       return <ImageField value={value} set={set} maxSize={def.maxSize || 256} sample={def.samplePic === false ? null : def.samplePic || 'photo'} />;
     case 'text':

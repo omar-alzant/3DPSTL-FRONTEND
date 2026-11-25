@@ -5,7 +5,9 @@ import * as THREE from 'three';
 import { useTheme } from '../../context/ThemeContext';
 
 function Fit({ box, trigger }) {
-  const { camera, controls } = useThree();
+  const { camera, controls, size: view } = useThree();
+  // refit when the preview changes shape a lot (e.g. it opens full screen)
+  const shape = view.height ? Math.round((view.width / view.height) * 5) : 0;
   useEffect(() => {
     if (!box || !controls) return;
     const size = box.getSize(new THREE.Vector3());
@@ -20,7 +22,7 @@ function Fit({ box, trigger }) {
     camera.updateProjectionMatrix();
     controls.update();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [trigger, controls, !!box]);
+  }, [trigger, controls, !!box, shape]);
   return null;
 }
 
@@ -68,7 +70,9 @@ function Card({ x }) {
   );
 }
 
-export default function Viewer({ parts, fitKey, compare = 'none' }) {
+const CAP = '#ff5a7a'; // the colour of the cut faces in the inside view
+
+export default function Viewer({ parts, fitKey, compare = 'none', section = null }) {
   const light = useTheme().theme === 'light';
   // توسيط المجسّم على سطح الطباعة
   const { offset, box } = useMemo(() => {
@@ -83,6 +87,20 @@ export default function Viewer({ parts, fitKey, compare = 'none' }) {
     return { offset: [-c.x, -c.y, -b.min.z], box: new THREE.Box3(new THREE.Vector3(-size.x / 2, -size.y / 2, 0), new THREE.Vector3(size.x / 2, size.y / 2, size.z)) };
   }, [parts]);
 
+  // inside view: a plane cuts the preview (only on screen); everything past it is hidden,
+  // and the solid behind the cut shows in CAP colour so the section reads as solid
+  const planes = useMemo(() => {
+    if (!section || !box) return null;
+    const ax = section.axis || 'x';
+    const lo = box.min[ax];
+    const hi = box.max[ax];
+    const pos = lo + (hi - lo) * Math.min(1, Math.max(0, section.at ?? 0.5));
+    // keep the side the camera looks into (behind for front-to-back, below for height), so the cut faces the viewer
+    if (ax === 'y') return [new THREE.Plane(new THREE.Vector3(0, 1, 0), -pos)];
+    const n = new THREE.Vector3(ax === 'x' ? -1 : 0, 0, ax === 'z' ? -1 : 0);
+    return [new THREE.Plane(n, pos)];
+  }, [section, box]);
+
   // the size reference stands to the right of the design, 15 mm away
   const ref = COMPARE[compare];
   const refX = box && ref ? box.max.x + 15 + ref.w / 2 : 0;
@@ -94,16 +112,23 @@ export default function Viewer({ parts, fitKey, compare = 'none' }) {
   }, [box, ref, refX]);
 
   return (
-    <Canvas camera={{ up: [0, 0, 1], fov: 35, position: [0, -120, 110] }} dpr={[1, 2]} gl={{ preserveDrawingBuffer: true }}>
+    <Canvas camera={{ up: [0, 0, 1], fov: 35, position: [0, -120, 110] }} dpr={[1, 2]} gl={{ preserveDrawingBuffer: true }} onCreated={({ gl }) => { gl.localClippingEnabled = true; }}>
       <color attach="background" args={[light ? '#ece9fd' : '#11113f']} />
       <hemisphereLight args={['#ffffff', '#8a84c8', 1.5]} />
       <directionalLight position={[60, -80, 140]} intensity={2.2} />
       <directionalLight position={[-90, 60, 60]} intensity={0.7} />
       <group position={offset}>
         {parts?.map((p, i) => (
-          <mesh key={i} geometry={p.geometry}>
-            <meshStandardMaterial color={p.color} roughness={0.55} metalness={0.02} />
-          </mesh>
+          <group key={i}>
+            <mesh geometry={p.geometry}>
+              <meshStandardMaterial color={p.color} roughness={0.55} metalness={0.02} clippingPlanes={planes} />
+            </mesh>
+            {planes && (
+              <mesh geometry={p.geometry}>
+                <meshBasicMaterial color={CAP} side={THREE.BackSide} clippingPlanes={planes} />
+              </mesh>
+            )}
+          </group>
         ))}
       </group>
       {box && compare === 'phone' && <Phone x={refX} />}

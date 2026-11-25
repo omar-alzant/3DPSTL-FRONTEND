@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { listOrders, updateOrder, designPath } from '../studio/lib/api.js';
+import { listOrders, updateOrder, designPath, orderFileLink } from '../studio/lib/api.js';
 import '../Style/Studio.css';
 import { refreshAdminSummary } from '../hooks/useAdminSummary';
 import { useLang } from '../i18n/LanguageContext';
@@ -13,13 +13,26 @@ const STATUSES = [
   { value: 'cancelled', label: 'Cancelled', ar: 'ملغى' },
 ];
 
-const summary = (p = {}) => [p.text || p.name, p.letter || p.letters, p.digits].filter(Boolean).join(' · ');
+const fileName = (ref) => (typeof ref === 'string' && ref.startsWith('idb:') ? ref.split(':').slice(2).join(':') : '');
+const summary = (p = {}) => [p.text || p.name, p.letter || p.letters, p.digits, fileName(p.model)].filter(Boolean).join(' · ');
 
 export default function AdminStudioOrders() {
   const { tx } = useLang();
   const [orders, setOrders] = useState(null);
   const [error, setError] = useState(null);
   const [filter, setFilter] = useState('all');
+
+  // the ready mold file the customer's browser sent with the order (a link that works for 10 minutes)
+  const openFile = async (id) => {
+    const win = window.open('', '_blank');
+    try {
+      const { url } = await orderFileLink(id);
+      if (win) win.location.href = url; else window.location.href = url;
+    } catch (e) {
+      if (win) win.close();
+      setError(e.message);
+    }
+  };
 
   const load = async () => {
     setError(null);
@@ -88,9 +101,15 @@ export default function AdminStudioOrders() {
               <select className="sd-select" value={o.status} onChange={(e) => setStatus(o.id, e.target.value)}>
                 {STATUSES.map((s) => <option key={s.value} value={s.value}>{tx(s.label, s.ar)}</option>)}
               </select>
-              <Link className="sd-btn" to={designPath(o.tool_id)} state={{ params: o.params, orderId: o.id }}>
-                Open design &amp; download file
-              </Link>
+              {o.tool_id === 'mold-maker' ? (
+                <button type="button" className="sd-btn" onClick={() => openFile(o.id)}>
+                  {tx('Download the mold (3MF)', 'نزّل ملف القالب (3MF)')}
+                </button>
+              ) : (
+                <Link className="sd-btn" to={designPath(o.tool_id)} state={{ params: o.params, orderId: o.id }}>
+                  Open design &amp; download file
+                </Link>
+              )}
             </div>
           </article>
         ))}

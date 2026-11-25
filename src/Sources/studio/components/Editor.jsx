@@ -42,6 +42,18 @@ export default function Editor({ tool, initial, config, orderId, downloadId }) {
   // size reference next to the design (a phone or a bank card), remembered between tools
   const [compare, setCompare] = useState(() => { try { return localStorage.getItem('sdCompare') || 'none'; } catch { return 'none'; } });
   const pickCompare = (v) => { setCompare(v); try { localStorage.setItem('sdCompare', v); } catch {} };
+  // inside view: cut the preview open to check the inside (on screen only, the files stay whole)
+  const [section, setSection] = useState(null); // null | { axis: 'x' | 'y' | 'z', at: 0..1 }
+  // the 3D preview can open over the whole screen and back (Esc closes it)
+  const [big, setBig] = useState(false);
+  useEffect(() => {
+    if (!big) return undefined;
+    const onKey = (e) => { if (e.key === 'Escape') setBig(false); };
+    const before = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    window.addEventListener('keydown', onKey);
+    return () => { document.body.style.overflow = before; window.removeEventListener('keydown', onKey); };
+  }, [big]);
   // colours: only the filament colours in stock (admins can still pick any colour)
   const [palette, setPalette] = useState([]);
   useEffect(() => { loadPalette().then(setPalette); }, []);
@@ -152,8 +164,51 @@ export default function Editor({ tool, initial, config, orderId, downloadId }) {
       </aside>
 
       <section className="sd-stage">
-        <div className="sd-canvas-wrap">
-          <Viewer parts={parts} fitKey={tool.id} compare={compare} />
+        <div className={`sd-canvas-wrap${big ? ' is-big' : ''}`}>
+          <Viewer parts={parts} fitKey={big ? `${tool.id}-big` : tool.id} compare={compare} section={section} />
+          <button
+            type="button"
+            className={`sd-zoom-btn sd-section-btn${section ? ' on' : ''}`}
+            onClick={() => setSection((x) => (x ? null : { axis: 'y', at: 0.5 }))}
+            aria-pressed={!!section}
+            aria-label={section ? tx('Close the inside view', 'سكّر الشوف من جوّا') : tx('See inside', 'شوف من جوّا')}
+            title={section ? tx('Close the inside view', 'سكّر الشوف من جوّا') : tx('See inside', 'شوف من جوّا')}
+          >
+            <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M4 5h7v14H4zM14 5h6M14 19h6M14 12h6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+          </button>
+          {section && (
+            <div className="sd-section" role="group" aria-label={tx('Inside view', 'الشوف من جوّا')}>
+              <div className="sd-section-axes">
+                {[['x', tx('Across', 'بالعرض')], ['y', tx('Front to back', 'من قدّام لورا')], ['z', tx('Height', 'بالارتفاع')]].map(([k, label]) => (
+                  <button key={k} type="button" className={section.axis === k ? 'on' : ''} aria-pressed={section.axis === k} onClick={() => setSection((x) => ({ ...x, axis: k }))}>{label}</button>
+                ))}
+              </div>
+              <input
+                type="range"
+                min="0"
+                max="1"
+                step="0.005"
+                value={section.at}
+                onChange={(e) => setSection((x) => ({ ...x, at: Number(e.target.value) }))}
+                aria-label={tx('Where to cut the view', 'وين تقص الشوف')}
+              />
+              <small>{tx('Only the view is cut, your files stay whole.', 'القص عالشاشة بس، ملفاتك بتضل كاملة.')}</small>
+            </div>
+          )}
+          <button
+            type="button"
+            className="sd-zoom-btn"
+            onClick={() => setBig((b) => !b)}
+            aria-pressed={big}
+            aria-label={big ? tx('Make the preview smaller', 'صغّر المعاينة') : tx('Make the preview full screen', 'كبّر المعاينة')}
+            title={big ? tx('Smaller (Esc)', 'صغّر (Esc)') : tx('Full screen', 'كبّر')}
+          >
+            {big ? (
+              <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+            ) : (
+              <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+            )}
+          </button>
           {parts?.length > 0 && (
             <div className="sd-compare" role="group" aria-label={tx('Compare the size', 'قارن الحجم')}>
               <span>{tx('Compare size:', 'قارن الحجم:')}</span>
@@ -254,7 +309,7 @@ export default function Editor({ tool, initial, config, orderId, downloadId }) {
       )}
 
       {order && stats && (
-        <OrderDialog tool={tool} params={params} stats={stats} price={price} minutes={minutes} config={config} onClose={() => setOrder(false)} />
+        <OrderDialog tool={tool} params={params} parts={parts} stats={stats} price={price} minutes={minutes} config={config} onClose={() => setOrder(false)} />
       )}
     </div>
   );

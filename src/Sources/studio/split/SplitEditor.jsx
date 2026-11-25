@@ -38,6 +38,15 @@ export default function SplitEditor({ config }) {
   const [mode, setMode] = useState('through');
   const [depth, setDepth] = useState(3);
   const [tolerance, setTolerance] = useState(0.15);
+  const [connector, setConnector] = useState('pins'); // straight cuts: 'pins' | 'peg' | 'none'
+  const [explodeOn, setExplode] = useState(false); // pull the parts apart in the view (drawing is paused)
+  const explode = explodeOn && parts.length > 1; // one part: nothing to pull apart
+  const isLine = mode === 'line';
+  // a straight cut uses exactly two points: a new click moves the second one
+  const placePoints = (next) => setPoints((ps) => {
+    const v = typeof next === 'function' ? next(ps) : next;
+    return isLine && v.length > 2 ? [v[0], v[v.length - 1]] : v;
+  });
   const [busy, setBusy] = useState(null); // 'loading' | 'cutting'
   const [error, setError] = useState('');
   const [dragOver, setDragOver] = useState(false);
@@ -77,6 +86,7 @@ export default function SplitEditor({ config }) {
       setPoints([]);
       setSelectedId(list[0].id);
       setDrawing(true);
+      setExplode(false);
       setFitKey((k) => k + 1);
     } catch (e) {
       setError(e.message === 'type' ? tx('Choose an .stl or .3mf file.', 'اختار ملف ‎.stl أو ‎.3mf.')
@@ -92,11 +102,14 @@ export default function SplitEditor({ config }) {
   const onPart = points.find((p) => p.partId);
   const target = points.length ? parts.find((p) => p.id === (onPart ? onPart.partId : selectedId) && !p.hidden) : null;
   const doSplit = async () => {
-    if (points.length < 3 || !target || busy) return;
+    if (points.length < (isLine ? 2 : 3) || !target || busy) return;
     const cam = apiRef.current?.camera;
     const c = points.reduce((a, p) => a.add(new THREE.Vector3(p.x, p.y, p.z)), new THREE.Vector3()).divideScalar(points.length);
     const dir = cam ? c.clone().sub(cam.position).normalize() : new THREE.Vector3(0, 1, 0);
-    const opts = { points: points.map(({ x, y, z }) => ({ x, y, z })), dir: { x: dir.x, y: dir.y, z: dir.z }, mode, depth: Number(depth), tolerance: Number(tolerance) };
+    const pts = points.map(({ x, y, z }) => ({ x, y, z }));
+    const opts = isLine
+      ? { kind: 'line', a: pts[0], b: pts[1], dir: { x: dir.x, y: dir.y, z: dir.z }, connector, tolerance: Number(tolerance), points: pts }
+      : { points: pts, dir: { x: dir.x, y: dir.y, z: dir.z }, mode, depth: Number(depth), tolerance: Number(tolerance) };
     setBusy('cutting');
     setError('');
     try {
@@ -107,15 +120,19 @@ export default function SplitEditor({ config }) {
           tooSmall: tx('The loop is too small. Spread the points out more.', 'الحلقة صغيرة كتير. بعّد النقاط عن بعض.'),
           missed: tx('From this angle the loop doesn’t cover the model. Turn the view to look straight at the area and try again.', 'من هالزاوية الحلقة ما بتغطّي المجسّم. لفّ الشوف لتطلّع عالمنطقة من قدّام وجرّب مرة تانية.'),
           everything: tx('That cut would take the whole part. Draw a smaller loop.', 'هالقصة بتاخد القطعة كلها. ارسم حلقة أصغر.'),
+          tooShort: tx('Draw a longer line across the part.', 'ارسم خط أطول عبر القطعة.'),
+          ...(isLine ? { missed: tx('The line doesn’t cross the part from this angle. Draw it right across the part, from one side to the other.', 'الخط ما بيقطع القطعة من هالزاوية. ارسمه من جهة لجهة عبر القطعة كلها.') } : {}),
         }[r.error] || tx('The cut failed. Try a slightly different loop or angle.', 'القص ما زبط. جرّب حلقة أو زاوية مختلفة شوي.');
         setError(msg);
         return;
       }
       const used = parts.map((p) => p.color);
       const piece = { id: nextId++, name: `${tx('Part', 'قطعة')} ${parts.length + 1}`, color: pickColor(used), geometry: r.piece, hidden: false };
+      const pins = (r.pins || []).map((g, i) => ({ id: nextId++, name: `${tx('Pin', 'مسمار وصل')} ${parts.filter((p) => p.pin).length + i + 1}`, color: '#f2f0ea', geometry: g, hidden: false, pin: true }));
       setHistory((h) => [...h.slice(-9), { parts, cuts }]);
-      setParts((ps) => [...ps.map((p) => (p.id === target.id ? { ...p, geometry: r.rest } : p)), piece]);
-      setCuts((cs) => [...cs, { part: target.id, mode, depth: r2(depth), tol: r2(tolerance), dir: [r2(dir.x), r2(dir.y), r2(dir.z)], pts: opts.points.map((p) => [r2(p.x), r2(p.y), r2(p.z)]) }]);
+      setParts((ps) => [...ps.map((p) => (p.id === target.id ? { ...p, geometry: r.rest } : p)), piece, ...pins]);
+      setCuts((cs) => [...cs, { part: target.id, mode, ...(isLine ? { conn: connector } : { depth: r2(depth) }), tol: r2(tolerance), dir: [r2(dir.x), r2(dir.y), r2(dir.z)], pts: opts.points.map((p) => [r2(p.x), r2(p.y), r2(p.z)]) }]);
+      if (r.note === 'thin') setError(tx('Cut done. The face is too thin for a connector, so none was added.', 'تمّت القصة. الوجه رفيع كتير على مسمار وصل، فما زدنا.'));
       setSelectedId(piece.id);
       setPoints([]);
     } finally {
@@ -204,17 +221,23 @@ export default function SplitEditor({ config }) {
             <fieldset>
               <legend>{tx('1 · Draw the cut', '١ · ارسم القصة')}</legend>
               <p className="sd-help">
-                {tx('Turn the model so you look straight at the area. Click to place points around it — at least 3 — and drag a point to move it. To cut off a whole piece (a base, an arm), put the points beside the model, all around it.',
-                  'لفّ المجسّم لتطلّع عالمنطقة من قدّام. كبوس لتحط نقاط حواليها — 3 عالأقل — واسحب أي نقطة لتحرّكها. لتقص قطعة كاملة (قاعدة، إيد)، حط النقاط برّا المجسّم، حواليها كلها.')}
+                {isLine
+                  ? tx('Turn the model so you see the cut from the side. Click two points, one on each side of the part: the line cuts straight through it, front to back. Drag a point to move it.',
+                    'لفّ المجسّم لتشوف مكان القصة من الجنب. كبوس نقطتين، وحدة من كل جهة من القطعة: الخط بيقصها مستقيم من قدّام لورا. اسحب أي نقطة لتحرّكها.')
+                  : tx('Turn the model so you look straight at the area. Click to place points around it — at least 3 — and drag a point to move it. To cut off a whole piece (a base, an arm), put the points beside the model, all around it.',
+                    'لفّ المجسّم لتطلّع عالمنطقة من قدّام. كبوس لتحط نقاط حواليها — 3 عالأقل — واسحب أي نقطة لتحرّكها. لتقص قطعة كاملة (قاعدة، إيد)، حط النقاط برّا المجسّم، حواليها كلها.')}
               </p>
               <div className="sd-seg" role="group" aria-label={tx('Cut type', 'نوع القص')}>
                 <button type="button" className={mode === 'through' ? 'on' : ''} aria-pressed={mode === 'through'} onClick={() => setMode('through')}>{tx('Through', 'قص كامل')}</button>
                 <button type="button" className={mode === 'depth' ? 'on' : ''} aria-pressed={mode === 'depth'} onClick={() => setMode('depth')}>{tx('Depth (inlay)', 'قص بعمق (تلبيسة)')}</button>
+                <button type="button" className={mode === 'line' ? 'on' : ''} aria-pressed={mode === 'line'} onClick={() => { setMode('line'); setPoints((p) => p.slice(0, 2)); }}>{tx('Straight line', 'خط مستقيم')}</button>
               </div>
               <small className="sd-hint">
                 {mode === 'through'
                   ? tx('Cuts straight through the whole model, along your view.', 'بيقص عالمجسّم كلو من قدّام لورا، باتجاه نظرك.')
-                  : tx('Cuts only a layer from the surface — great for faces, eyes, logos.', 'بيقص طبقة من الوجه بس — حلو للوجوه والعيون والشعارات.')}
+                  : mode === 'line'
+                    ? tx('Splits a part in two along a flat cut — for big models that don’t fit the printer, or to print without supports.', 'بيقسم القطعة لتنين بقصة مسطّحة — للمجسّمات الكبيرة اللي ما بتساع بالطابعة، أو لتنطبع بلا سبورت.')
+                    : tx('Cuts only a layer from the surface — great for faces, eyes, logos.', 'بيقص طبقة من الوجه بس — حلو للوجوه والعيون والشعارات.')}
               </small>
               {mode === 'depth' && (
                 <div className="sd-field">
@@ -224,6 +247,23 @@ export default function SplitEditor({ config }) {
                     <input type="number" min="0.6" max="40" step="0.2" value={depth} onChange={(e) => setDepth(e.target.value)} aria-label={tx('Depth in mm', 'العمق بالمم')} />
                     <span className="sd-unit">mm</span>
                   </div>
+                </div>
+              )}
+              {isLine && (
+                <div className="sd-field">
+                  <label>{tx('Connectors on the cut', 'وصلات عالقصة')}</label>
+                  <div className="sd-seg" role="group" aria-label={tx('Connectors on the cut', 'وصلات عالقصة')}>
+                    <button type="button" className={connector === 'pins' ? 'on' : ''} aria-pressed={connector === 'pins'} onClick={() => setConnector('pins')}>{tx('Pins', 'مسامير')}</button>
+                    <button type="button" className={connector === 'peg' ? 'on' : ''} aria-pressed={connector === 'peg'} onClick={() => setConnector('peg')}>{tx('Peg + hole', 'لسان وجورة')}</button>
+                    <button type="button" className={connector === 'none' ? 'on' : ''} aria-pressed={connector === 'none'} onClick={() => setConnector('none')}>{tx('None', 'بلا')}</button>
+                  </div>
+                  <small>
+                    {connector === 'pins'
+                      ? tx('A hole in both faces and a loose pin to print: the pieces line up exactly when you glue them.', 'جورة بالوجهين ومسمار بينطبع لحالو: القطع بتركب مظبوط وقت تلزقها.')
+                      : connector === 'peg'
+                        ? tx('A peg on one face and a hole in the other — no extra part to print.', 'لسان على وجه وجورة بالتاني — بلا قطعة زيادة للطباعة.')
+                        : tx('Flat faces, nothing added.', 'وجوه مسطّحة، بلا إضافات.')}
+                  </small>
                 </div>
               )}
               <div className="sd-field">
@@ -243,8 +283,8 @@ export default function SplitEditor({ config }) {
                 <button type="button" className="sd-btn" disabled={!points.length} onClick={() => setPoints([])}>{tx('Clear', 'امسح')}</button>
               </div>
               <div className="sd-actions mt-2">
-                <button type="button" className="sd-btn sd-primary" disabled={points.length < 3 || !target || !!busy} onClick={doSplit}>
-                  {busy === 'cutting' ? tx('Cutting…', 'عم يقص…') : tx(`Cut (${points.length} points)`, `قص (${points.length} نقاط)`)}
+                <button type="button" className="sd-btn sd-primary" disabled={points.length < (isLine ? 2 : 3) || !target || !!busy || explode} onClick={doSplit}>
+                  {busy === 'cutting' ? tx('Cutting…', 'عم يقص…') : isLine ? tx('Cut along the line', 'قص عالخط') : tx(`Cut (${points.length} points)`, `قص (${points.length} نقاط)`)}
                 </button>
                 <button type="button" className="sd-btn sd-link" disabled={!history.length || !!busy} onClick={undoSplit}>{tx('Undo last cut', 'رجّع آخر قصة')}</button>
               </div>
@@ -274,6 +314,11 @@ export default function SplitEditor({ config }) {
                 ))}
               </ul>
               <small className="sd-hint">{tx('Hide a part to reach the area behind it.', 'خبّي قطعة لتوصل للمنطقة اللي وراها.')}</small>
+              {parts.length > 1 && (
+                <button type="button" className={`sd-btn mt-2 ${explode ? 'sd-primary' : ''}`} aria-pressed={explode} onClick={() => setExplode((x) => !x)}>
+                  {explode ? tx('Put the parts back together', 'رجّع القطع لمحلها') : tx('Pull the parts apart (view only)', 'فكّ القطع عن بعض (للعرض)')}
+                </button>
+              )}
             </fieldset>
 
             <button type="button" className="sd-btn sd-link" onClick={() => fileRef.current?.click()}>{tx('Open another file', 'افتح ملف تاني')}</button>
@@ -289,7 +334,7 @@ export default function SplitEditor({ config }) {
           onDrop={(e) => { e.preventDefault(); setDragOver(false); openFile(e.dataTransfer.files?.[0]); }}
         >
           {model ? (
-            <SplitViewer parts={parts} points={points} setPoints={setPoints} drawing={drawing && !busy} fitKey={fitKey} apiRef={apiRef} selectedId={selectedId} />
+            <SplitViewer parts={parts} points={explode ? [] : points} setPoints={placePoints} drawing={drawing && !busy && !explode} fitKey={fitKey} apiRef={apiRef} selectedId={selectedId} line={isLine} explode={explode} />
           ) : (
             <div className="sd-split-empty">
               <div
@@ -319,7 +364,10 @@ export default function SplitEditor({ config }) {
           )}
           {busy === 'cutting' && <div className="sd-badge">{tx('Cutting… big models can take a little while', 'عم يقص… المجسّمات الكبيرة بتاخد شوي وقت')}</div>}
           {error && <div className="sd-badge sd-err" role="alert">{error}</div>}
-          {model && drawing && !points.length && !busy && !error && (
+          {model && explode && !busy && !error && (
+            <div className="sd-badge">{tx('Parts pulled apart to look at them. Put them back to keep cutting.', 'القطع مفكوكة للعرض. رجّعها لتكمّل قص.')}</div>
+          )}
+          {model && drawing && !explode && !points.length && !busy && !error && (
             <div className="sd-badge">{tx('Click to place the first point', 'كبوس لتحط أول نقطة')}</div>
           )}
         </div>

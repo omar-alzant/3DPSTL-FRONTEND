@@ -23,9 +23,10 @@ import vase from './vase.js';
 import puzzle from './puzzle.js';
 import clicker from './clicker.js';
 import jobOutfit from './jobOutfit.js';
+import moldMaker from './moldMaker.js';
 
 export const TOOLS = [
-  jobOutfit, keychain, qrCode, phoneCase, coaster, cookieCutter, stamp, ramadanTray, deskOrganizer, lebanonKeychain,
+  jobOutfit, moldMaker, keychain, qrCode, phoneCase, coaster, cookieCutter, stamp, ramadanTray, deskOrganizer, lebanonKeychain,
   lithophane, photoLampshade, vase, puzzle, clicker, initialSign, birthSign,
   dualName, lbPlate, plate, keycaps, pencilTopper, toteBag, flexiToy,
 ];

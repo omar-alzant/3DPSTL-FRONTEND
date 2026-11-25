@@ -37,6 +37,7 @@ const firstImage = (v) => {
 // Studio tools shown on the home page (ids from src/Sources/studio/tools/*). Order = what people ask for most.
 const STUDIO_TOOLS = [
   { id: "job-outfit", name: "Job gift: outfit and name", text: "A sculpted work outfit on a stand with the name.", nameAr: "هدية المهنة", textAr: "لبس المهنة منحوت على قاعدة عليها الاسم." },
+  { id: "mold-maker", name: "Mold maker", text: "Upload your 3D file and get a 2, 4 or 8 part mold to cast or press.", nameAr: "صانع القوالب", textAr: "ارفع ملفك وبيطلعلك قالب من 2 أو 4 أو 8 قطع للصب أو الكبس." },
   { id: "name-keychain", name: "Name keychain", text: "Any name, your font, two colours.", nameAr: "ميدالية باسم", textAr: "أي اسم، بالخط يلي بيعجبك، بلونين." },
   { id: "phone-case", name: "Phone case", text: "Fitted to your model, with a name, photo or pattern.", nameAr: "كفر موبايل", textAr: "على قياس موبايلك، مع اسم أو صورة أو نقشة." },
   { id: "qr-code", name: "3D QR code", text: "Your link, Wi-Fi or WhatsApp on a plate people can scan.", nameAr: "كود QR مطبوع", textAr: "رابطك أو الـ Wi-Fi أو واتساب على لوحة بتنمسح بالكاميرا." },

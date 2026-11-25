@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { createOrder, designLink } from '../lib/api.js';
+import { createOrder, designLink, uploadOrderFile } from '../lib/api.js';
+import { build3MF } from '../lib/export.js';
 import { useAuth } from '../../context/AuthContext';
 import { savePending } from '../lib/pending.js';
 import { normalizeMapLink } from '../lib/mapLink.js';
 import { useLang } from '../../i18n/LanguageContext';
 import { useT } from '../i18n/index.js';
 
-export default function OrderDialog({ tool, params, stats, price, minutes = 0, config, onClose }) {
+export default function OrderDialog({ tool, params, parts, stats, price, minutes = 0, config, onClose }) {
   const { profile, token } = useAuth();
   const { tx } = useLang();
   const t = useT();
@@ -68,7 +69,12 @@ export default function OrderDialog({ tool, params, stats, price, minutes = 0, c
         size: stats.size.toArray().map((v) => +v.toFixed(1)),
       });
       try { localStorage.setItem('studio_address', form.address.trim()); localStorage.setItem('studio_location', mapLink); } catch {}
-      setState({ sending: false, done: res, error: null });
+      // designs made from the customer's own file can't be rebuilt from the link: send the ready file with the order
+      let fileFailed = false;
+      if (tool.attachFile && parts?.length) {
+        try { await uploadOrderFile(res.id, build3MF(parts, `${res.id}-${tool.id}`)); } catch { fileFailed = true; }
+      }
+      setState({ sending: false, done: { ...res, fileFailed }, error: null });
     } catch (err) {
       setState({ sending: false, done: null, error: err.message });
     }
@@ -93,6 +99,7 @@ export default function OrderDialog({ tool, params, stats, price, minutes = 0, c
           <div className="sd-done">
             <h3>{tx('We got your order ✓', 'تم استلام طلبك ✓')}</h3>
             <p>{tx('Order number:', 'رقم الطلب:')} <b dir="ltr">{state.done.id}</b>. {tx('We’ll contact you on your number soon.', 'سنتواصل معك على رقمك قريباً.')}</p>
+            {state.done.fileFailed && <p className="sd-error">{tx('We couldn’t attach your file to the order, please send it to us on WhatsApp with the order number.', 'ما قدرنا نرفق ملفك بالطلب، ابعتلنا ياه عالواتساب مع رقم الطلب.')}</p>}
             {loggedIn ? (
               <p className="sd-muted">{tx('You can follow your order from the', 'يمكنك متابعة حالة طلبك من صفحة')} <Link to="/profile?tab=orders" onClick={onClose}>My Orders</Link>{tx(' page.', '.')}</p>
             ) : (

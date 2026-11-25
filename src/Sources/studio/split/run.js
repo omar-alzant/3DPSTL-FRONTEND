@@ -1,6 +1,6 @@
 // Run a cut in a Web Worker (falls back to the main thread if workers are not available).
 import { THREE } from '../lib/geo.js';
-import { splitGeometry } from './engine.js';
+import { splitGeometry, planeSplit } from './engine.js';
 import { dropDegenerate } from './load.js';
 
 let worker = null;
@@ -35,13 +35,13 @@ const toGeometry = (arr) => {
   return dropDegenerate(g);
 };
 
-/** → { piece: BufferGeometry, rest: BufferGeometry } or { error } */
+/** → { piece, rest, pins: [BufferGeometry], note } or { error } */
 export async function runSplit(geometry, opts) {
   const w = getWorker();
   if (!w) {
     await new Promise((r) => setTimeout(r, 30)); // let the "working…" badge paint first
-    const r = splitGeometry(geometry, opts);
-    return r.error ? r : { piece: dropDegenerate(r.piece), rest: dropDegenerate(r.rest) };
+    const r = opts.kind === 'line' ? planeSplit(geometry, opts) : splitGeometry(geometry, opts);
+    return r.error ? r : { piece: dropDegenerate(r.piece), rest: dropDegenerate(r.rest), pins: (r.pins || []).map(dropDegenerate), note: r.note || null };
   }
   const id = ++seq;
   const positions = geometry.attributes.position.array.slice(); // the original stays for undo
@@ -53,5 +53,5 @@ export async function runSplit(geometry, opts) {
     if (res.message) console.warn('[split]', res.message);
     return res;
   }
-  return { piece: toGeometry(res.piece), rest: toGeometry(res.rest) };
+  return { piece: toGeometry(res.piece), rest: toGeometry(res.rest), pins: (res.pins || []).map(toGeometry), note: res.note || null };
 }
