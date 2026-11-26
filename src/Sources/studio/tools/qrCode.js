@@ -3,6 +3,7 @@
 // Flat two-colour (inlay) scans best: the code is level with the plate, so no shadows.
 import QRCode from 'qrcode';
 import { shapeText } from '../lib/fonts.js';
+import { traceImage } from '../lib/trace.js';
 import { union, difference, offset, circle, roundRect, bounds2, extrude } from '../lib/geo.js';
 
 const MIN_MODULE = 1.2; // mm — smaller squares don't print cleanly with a 0.4 mm nozzle
@@ -79,7 +80,13 @@ export default {
         { value: 'whatsapp', label: 'واتساب' },
         { value: 'instagram', label: 'إنستغرام' },
         { value: 'text', label: 'نص' },
+        { value: 'image', label: 'صورة كود جاهز' },
       ] },
+    { key: 'qrImage', label: 'صورة الكود (أو SVG)', type: 'image', default: '', samplePic: false, maxSize: 700, group: 'المحتوى', show: (p) => p.kind === 'image' },
+    { key: 'qrDark', label: 'قتامة الكود بالصورة', type: 'number', min: 20, max: 80, step: 1, unit: '%', default: 50, group: 'المحتوى', show: (p) => p.kind === 'image' && !!p.qrImage },
+    { key: 'logo', label: 'لوغو بنص الكود (اختياري)', type: 'image', default: '', samplePic: false, maxSize: 400, group: 'اللوغو', show: (p) => p.kind !== 'image' },
+    { key: 'logoSize', label: 'حجم اللوغو', type: 'number', min: 12, max: 30, step: 1, unit: '%', default: 22, group: 'اللوغو', show: (p) => p.kind !== 'image' && !!p.logo },
+    { key: 'logoDark', label: 'قتامة اللوغو', type: 'number', min: 20, max: 80, step: 1, unit: '%', default: 50, group: 'اللوغو', show: (p) => p.kind !== 'image' && !!p.logo },
     { key: 'url', label: 'الرابط', type: 'text', default: 'www.3dpstl.com', maxLength: 300, dir: 'ltr', group: 'المحتوى', show: (p) => p.kind === 'link' },
     { key: 'ssid', label: 'اسم الشبكة', type: 'text', default: '', maxLength: 32, dir: 'ltr', group: 'المحتوى', show: (p) => p.kind === 'wifi' },
     { key: 'password', label: 'كلمة السر', type: 'text', default: '', maxLength: 63, dir: 'ltr', group: 'المحتوى', show: (p) => p.kind === 'wifi' && p.security !== 'nopass' },
@@ -99,7 +106,7 @@ export default {
     { key: 'margin', label: 'الهامش حول الكود', type: 'number', min: 1, max: 6, step: 0.5, unit: 'مربع', default: 2, group: 'الشكل' },
     { key: 'corner', label: 'استدارة زوايا اللوحة', type: 'number', min: 0, max: 15, step: 0.5, unit: 'مم', default: 4, group: 'الشكل' },
     { key: 'soft', label: 'مربعات بزوايا ناعمة', type: 'checkbox', default: false, group: 'الشكل' },
-    { key: 'ecc', label: 'قوة التصحيح', type: 'select', default: 'M', group: 'الشكل',
+    { key: 'ecc', label: 'قوة التصحيح', type: 'select', default: 'M', group: 'الشكل', show: (p) => p.kind !== 'image' && !p.logo,
       options: [{ value: 'L', label: 'منخفضة (كود أبسط)' }, { value: 'M', label: 'متوسطة (موصى بها)' }, { value: 'Q', label: 'عالية' }, { value: 'H', label: 'عالية جداً' }] },
     { key: 'mount', label: 'التعليق', type: 'select', default: 'none', group: 'الشكل',
       options: [{ value: 'none', label: 'بدون' }, { value: 'tab', label: 'حلقة ميدالية' }, { value: 'screws', label: 'ثقبين للتعليق على الحائط' }] },
@@ -113,9 +120,35 @@ export default {
     { key: 'codeColor', label: 'لون الكود (غامق)', type: 'color', default: '#111111', group: 'الألوان' },
   ],
   fonts: (p) => (p.label?.trim() ? [p.labelFont] : []),
-  build(p, fonts) {
+  async build(p, fonts) {
     const S = p.size;
-    const { dark, m } = qrContours(qrPayload(p), S, p.ecc, p.soft);
+    let dark, m;
+    if (p.kind === 'image') {
+      // a ready code (e.g. a payment or menu QR): its dark parts are traced and sized to the plate
+      if (!p.qrImage) throw new Error('ارفع صورة الكود (مقصوصة على قدّ الكود)');
+      const t = await traceImage(p.qrImage, { threshold: p.qrDark });
+      if (!t.contours.length) throw new Error('ما لقينا الكود بالصورة — جرّب تغيّر «قتامة الكود»');
+      const b = bounds2(t.contours);
+      const k = S / Math.max(b.maxX - b.minX, b.maxY - b.minY);
+      dark = union(t.contours.map((c) => c.map(([x, y]) => [(x - b.cx) * k, (y - b.cy) * k])));
+      m = S / 29; // about one square of a usual code, for the margin
+      if (p.soft) dark = offset(offset(dark, -m * 0.2), m * 0.2);
+    } else {
+      // with a logo in the middle the code needs the strongest error correction to still scan
+      ({ dark, m } = qrContours(qrPayload(p), S, p.logo ? 'H' : p.ecc, p.soft));
+      if (p.logo) {
+        const t = await traceImage(p.logo, { threshold: p.logoDark });
+        if (!t.contours.length) throw new Error('ما لقينا شي باللوغو — جرّب تغيّر «قتامة اللوغو»');
+        const L = (S * p.logoSize) / 100;
+        const b = bounds2(t.contours);
+        const k = L / Math.max(b.maxX - b.minX, b.maxY - b.minY);
+        const logo = union(t.contours.map((c) => c.map(([x, y]) => [(x - b.cx) * k, (y - b.cy) * k])));
+        // a clear light square behind the logo, one square wider all round
+        const lb = bounds2(logo);
+        const clear = roundRect(0, 0, lb.maxX - lb.minX + 2 * m, lb.maxY - lb.minY + 2 * m, m * 0.8);
+        dark = union(difference(dark, clear), logo);
+      }
+    }
     const quiet = p.margin * m;
 
     // label under the code
