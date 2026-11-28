@@ -1,6 +1,7 @@
 // Admin → Studio orders → "+ New order": add an order that came by phone, WhatsApp or in the shop.
 // With `order` it edits that order instead (same form, filled in).
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { findAccounts } from '../studio/lib/api.js';
 import { Modal } from 'react-bootstrap';
 import { useLang } from '../i18n/LanguageContext';
 
@@ -30,6 +31,23 @@ export default function NewStudioOrder({ tools, onSave, onCancel, order = null }
   const editing = !!order;
   const [f, setF] = useState(() => (order ? fromOrder(order) : { toolId: 'manual', what: '', name: '', phone: '', address: '', location: '', qty: 1, price: '', status: 'new', notes: '' }));
   const [files, setFiles] = useState([]);
+  // customer account (edit only): linked = what the order has now; link = what it will have after saving
+  const linked = order?.user_id ? { id: order.user_id, email: order.account?.email, name: order.account?.name } : null;
+  const [link, setLink] = useState(linked);
+  const [q, setQ] = useState('');
+  const [found, setFound] = useState(null); // null = not searched yet
+  const [searching, setSearching] = useState(false);
+  const search = async (term) => {
+    const t = String(term || '').trim();
+    if (!t) return;
+    setSearching(true);
+    try { setFound(await findAccounts(t)); } catch { setFound([]); } finally { setSearching(false); }
+  };
+  // not linked yet: look for an account with the order's phone number straight away
+  useEffect(() => {
+    if (order && !order.user_id && order.customer_phone) search(order.customer_phone);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(null);
   const set = (k) => (e) => setF((x) => ({ ...x, [k]: e.target.value }));
@@ -54,6 +72,7 @@ export default function NewStudioOrder({ tools, onSave, onCancel, order = null }
           price: f.price === '' ? null : Number(f.price),
           status: f.status,
           notes: f.notes,
+          ...((link?.id || null) !== (linked?.id || null) ? { userId: link?.id || null } : {}),
         }, files);
         return;
       }
@@ -116,6 +135,36 @@ export default function NewStudioOrder({ tools, onSave, onCancel, order = null }
               </select>
             </label>
           </div>
+          {editing && (
+            <div className="sd-link-account">
+              <span className="sd-link-title">{tx('Customer account', 'حساب الزبون')}</span>
+              {link ? (
+                <div className="sd-link-row">
+                  <span>🔗 <bdi>{link.name || ''}</bdi> <span dir="ltr">{link.email || ''}</span></span>
+                  <button type="button" className="btn btn-sm btn-outline-secondary" onClick={() => setLink(null)}>{tx('Unlink', 'فكّ الربط')}</button>
+                </div>
+              ) : (
+                <>
+                  <small className="text-muted d-block mb-1">
+                    {tx('Link the order to the customer’s account once they sign up: it then shows in their orders and they can get the email.',
+                      'اربط الطلب بحساب الزبون بس يعمل حساب: بيطلع بطلباته وبيوصله الإيميل.')}
+                  </small>
+                  <div className="sd-link-row">
+                    <input className="form-control" value={q} onChange={(e) => setQ(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); search(q); } }} placeholder={tx('Email or phone of the account', 'إيميل أو رقم الحساب')} dir="auto" />
+                    <button type="button" className="btn btn-outline-primary" onClick={() => search(q)} disabled={searching || !q.trim()}>{searching ? '…' : tx('Search', 'دوّر')}</button>
+                  </div>
+                  {found && found.length === 0 && <small className="text-muted d-block mt-1">{tx('No account found.', 'ما لقينا حساب.')}</small>}
+                  {found && found.map((a) => (
+                    <div key={a.id} className="sd-link-row mt-1">
+                      <span><bdi>{a.full_name || ''}</bdi> <span dir="ltr">{a.email || ''}</span> <span dir="ltr" className="text-muted">{a.phone || ''}</span></span>
+                      <button type="button" className="btn btn-sm btn-primary" onClick={() => setLink({ id: a.id, email: a.email, name: a.full_name })}>{tx('Link', 'اربط')}</button>
+                    </div>
+                  ))}
+                </>
+              )}
+              {(link?.id || null) !== (linked?.id || null) && <small className="text-primary d-block mt-1">{tx('Saved when you press “Save changes”.', 'بينحفظ لما تكبس «احفظ التعديلات».')}</small>}
+            </div>
+          )}
           <label>{tx('Notes (optional)', 'ملاحظات (اختياري)')}
             <textarea className="form-control" rows="3" value={f.notes} onChange={set('notes')} maxLength={1000} dir="auto" />
           </label>

@@ -108,6 +108,12 @@ export async function emailOrderReady(id, message) {
   return json(r, 'تعذّر إرسال الإيميل');
 }
 
+// admin: customer accounts that match an email or a phone number (to link an order to)
+export async function findAccounts(q) {
+  const r = await fetch(`${API}/api/studio/orders/admin/accounts?q=${encodeURIComponent(q)}`, { headers: authHeader() });
+  return json(r, 'Failed to search accounts');
+}
+
 export async function deleteOrder(id) {
   const r = await fetch(`${API}/api/studio/orders/admin/${encodeURIComponent(id)}`, { method: 'DELETE', headers: authHeader() });
   return json(r, 'تعذّر حذف الطلب');

@@ -177,6 +177,7 @@ export default function AdminStudioOrders() {
             </p>
             {o.customer_address && <p dir="auto">📍 <bdi>{o.customer_address}</bdi></p>}
             {o.customer_location && <p><a href={o.customer_location} target="_blank" rel="noreferrer">{tx('🗺️ افتح الموقع على الخريطة', '🗺️ افتح الموقع على الخريطة')}</a></p>}
+            {o.user_id && <p className="sd-account" dir="auto">🔗 {tx('Account:', 'الحساب:')} <span dir="ltr">{o.account?.email || o.account?.name || '—'}</span></p>}
             {o.notes && <p className="sd-notes" dir="auto">{o.notes}</p>}
             <OrderFiles orderId={o.id} />
             <div className="sd-order-foot">

@@ -604,3 +604,9 @@
 .sd-btn.sd-danger-btn { color: var(--brand-danger) !important; border-color: color-mix(in srgb, var(--brand-danger) 45%, transparent); }
 .sd-btn.sd-danger-btn:hover { background: var(--brand-danger); color: #fff !important; }
 .sd-loading-link { padding: 80px 20px; text-align: center; color: var(--sd-dim); }
+/* edit order: link to a customer account (the form opens outside the Studio colours) */
+.sd-link-account { margin-bottom: 12px; padding: 10px 12px; border: 1px dashed var(--brand-border); border-radius: 10px; }
+.sd-link-title { display: block; font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+.sd-link-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; font-size: 14px; }
+.sd-link-row .form-control { flex: 1 1 200px; }
+.sd-account { margin: 2px 0 6px; font-size: 13px; color: var(--sd-dim); }
