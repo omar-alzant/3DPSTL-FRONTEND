@@ -26,7 +26,7 @@ const hm = (s) => {
 };
 const deg = (v) => (v == null ? '–' : `${Math.round(v)}°`);
 
-function Snapshot({ id, at }) {
+function Snapshot({ id, at, note }) {
   const [url, setUrl] = useState(null);
   useEffect(() => {
     if (!at) return undefined;
@@ -39,7 +39,7 @@ function Snapshot({ id, at }) {
     return () => { alive = false; };
   }, [id, at]);
   useEffect(() => () => url && URL.revokeObjectURL(url), [url]);
-  if (!url) return <div className="pr-cam pr-cam-empty" />;
+  if (!url) return <div className="pr-cam pr-cam-empty">{note && <small dir="ltr">📷 {note}</small>}</div>;
   return <img className="pr-cam" src={url} alt="" />;
 }
 
@@ -110,14 +110,18 @@ export default function AdminPrinters() {
 
       <div className="pr-grid">
         {(list || []).map((p) => {
+          // the bridge itself is silent: the page says so; a printer the bridge can't reach: the bridge says why
           const s = p.stale ? { state: 'offline' } : (p.status || {});
+          const offlineWhy = p.stale
+            ? tx('No news from the bridge (is the shop computer on?)', 'ما في أخبار من الجسر (كمبيوتر المحل شغّال؟)')
+            : s.state === 'offline' ? (s.note || tx('The printer doesn’t answer', 'المكنة ما عم تردّ')) : '';
           const [en, ar, tone] = STATE[s.state] || STATE.idle;
           const active = ['printing', 'paused', 'processing'].includes(s.state);
           const b = busy[p.id];
           const last = p.lastCommand;
           return (
             <article key={p.id} className={`pr-card pr-${tone}`}>
-              <Snapshot id={p.id} at={p.stale ? null : p.snapshotAt} />
+              <Snapshot id={p.id} at={p.stale ? null : p.snapshotAt} note={p.stale ? '' : s.camera} />
               <div className="pr-body">
                 <div className="pr-title">
                   <h3>{p.name}</h3>
@@ -136,7 +140,14 @@ export default function AdminPrinters() {
                   {!p.stale && <span>{tx('Bed', 'السرير')} <b dir="ltr">{deg(s.bed)}{s.bedTarget ? ` / ${deg(s.bedTarget)}` : ''}</b></span>}
                   {p.stale && <span>{tx('Last seen', 'آخر مرّة')} <b>{hm(p.seenSecondsAgo)}</b> {tx('ago', 'من')}</span>}
                 </div>
-                {s.error && <p className="pr-error">{s.error}</p>}
+                {s.error && (
+                  <div className="pr-alert" role="alert">
+                    <b>⚠ {tx('Printer error', 'خطأ بالمكنة')}</b>
+                    <span dir="ltr">{s.error}</span>
+                    <small>{tx('Check the message on the printer’s screen.', 'شوف الرسالة على شاشة المكنة.')}</small>
+                  </div>
+                )}
+                {offlineWhy && <div className="pr-alert pr-alert-soft"><span dir="auto">{offlineWhy}</span></div>}
                 {active && !p.stale && (
                   <div className="pr-actions">
                     {s.state === 'paused' ? (

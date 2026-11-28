@@ -30,3 +30,12 @@
 .pr-facts b { color: var(--brand-text); font-weight: 600; }
 .pr-actions { display: flex; gap: 8px; margin-top: 4px; }
 .pr-actions .btn { flex: 1; min-height: 40px; }
+
+/* errors on a printer card */
+.pr-alert { display: flex; flex-direction: column; gap: 2px; padding: 8px 10px; border-radius: 10px; font-size: 13px;
+  background: color-mix(in srgb, var(--brand-danger) 14%, transparent); border: 1px solid color-mix(in srgb, var(--brand-danger) 45%, transparent); }
+.pr-alert b { color: var(--brand-danger); }
+.pr-alert small { color: var(--brand-muted); }
+.pr-alert-soft { background: var(--brand-card-2); border-color: var(--brand-border); color: var(--brand-muted); }
+.pr-cam-empty { display: grid; place-items: center; padding: 10px; }
+.pr-cam-empty small { font-size: 12px; color: var(--brand-muted); background: var(--brand-card); padding: 4px 8px; border-radius: 8px; text-align: center; }
