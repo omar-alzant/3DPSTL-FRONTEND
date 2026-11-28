@@ -1,13 +1,34 @@
 import React, { useEffect, useState } from 'react';
 import { Navigate, useLocation, useParams, useSearchParams } from 'react-router-dom';
 import { getTool } from '../studio/tools/index.js';
-import { getConfig, DEFAULT_CONFIG, decodeParams } from '../studio/lib/api.js';
+import { getConfig, DEFAULT_CONFIG, decodeParams, hasSharedPictures, restorePictures } from '../studio/lib/api.js';
 import { isToolEnabled } from '../studio/lib/pricing.js';
 import Gallery from '../studio/components/Gallery.jsx';
 import Editor from '../studio/components/Editor.jsx';
 import SplitEditor, { SPLIT_TOOL } from '../studio/split/SplitEditor.jsx';
 import '../Style/Studio.css';
 import { useLang } from '../i18n/LanguageContext';
+
+// a design link whose pictures are stored on the server: fetch them back before opening the editor.
+// Picture fields only ever take pictures: any other web address in them is dropped.
+function LinkedEditor({ tool, initial, ...rest }) {
+  const { tx } = useLang();
+  const clean = React.useMemo(() => {
+    if (!initial) return initial;
+    const out = { ...initial };
+    for (const p of tool.params) if (p.type === 'image' && typeof out[p.key] === 'string' && !out[p.key].startsWith('data:image/') && !hasSharedPictures({ v: out[p.key] })) out[p.key] = '';
+    return out;
+  }, [initial, tool]);
+  const needs = !!clean && hasSharedPictures(clean);
+  const [restored, setRestored] = useState(null);
+  useEffect(() => {
+    let alive = true;
+    if (needs) restorePictures(clean).then((p) => alive && setRestored(p));
+    return () => { alive = false; };
+  }, [clean, needs]);
+  if (needs && !restored) return <div className="sd-loading-link">{tx('Opening the design…', 'عم نفتح التصميم…')}</div>;
+  return <Editor tool={tool} initial={needs ? restored : clean} {...rest} />;
+}
 
 // صفحة Studio: معرض الأدوات على /studio والمحرّر على /studio/:toolId (و ?d=… لتصميم محفوظ)
 export default function Studio() {
@@ -40,7 +61,7 @@ export default function Studio() {
       {isSplit ? (
         <SplitEditor config={config} />
       ) : tool ? (
-        <Editor key={toolId + (d || '') + (location.state?.params ? location.key : '')} tool={tool} initial={initial} config={config} orderId={location.state?.orderId} downloadId={location.state?.downloadId} />
+        <LinkedEditor key={toolId + (d || '') + (location.state?.params ? location.key : '')} tool={tool} initial={initial} config={config} orderId={location.state?.orderId} downloadId={location.state?.downloadId} />
       ) : (
         <Gallery config={config} />
       )}

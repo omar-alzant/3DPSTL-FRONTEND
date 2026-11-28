@@ -520,7 +520,8 @@
 
 /* a build that didn't work: a calm hint instead of an error */
 .sd-badge.sd-hint {
-  inset-inline-end: auto; inset-inline-start: 14px; max-width: min(420px, calc(100% - 28px)); border-radius: 12px;
+  /* starts after the zoom / inside-view buttons (40px + gaps) so it never covers them */
+  inset-inline-end: auto; inset-inline-start: 66px; max-width: min(420px, calc(100% - 80px)); border-radius: 12px;
   color: var(--sd-ink); border-color: #f5b94a; white-space: normal; line-height: 1.4;
 }
 
@@ -602,3 +603,4 @@
 .sd-admin-head .sd-btn, .sd-admin-head .sd-select { min-height: 40px; height: 40px; padding-block: 0; white-space: nowrap; }
 .sd-btn.sd-danger-btn { color: var(--brand-danger) !important; border-color: color-mix(in srgb, var(--brand-danger) 45%, transparent); }
 .sd-btn.sd-danger-btn:hover { background: var(--brand-danger); color: #fff !important; }
+.sd-loading-link { padding: 80px 20px; text-align: center; color: var(--sd-dim); }

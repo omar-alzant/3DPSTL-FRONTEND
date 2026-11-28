@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { defaults } from '../tools/index.js';
 import { useBuild } from '../lib/useBuild.js';
 import { exportSTL, exportSTLByColor, exportBambu3MF } from '../lib/export.js';
-import { designLink } from '../lib/api.js';
+import { designLink, hasPictures, withSharedPictures } from '../lib/api.js';
 import { priceFor, printMinutes, formatMinutes, toolCredits } from '../lib/pricing.js';
 import { spendCredits, designHash } from '../lib/credits.js';
 import { useCredits } from '../../context/CreditsContext';
@@ -145,11 +145,24 @@ export default function Editor({ tool, initial, config, orderId, downloadId }) {
   const tag = cost > 0 ? <small className="sd-cost"> · {cost} {tx('credits', 'كريدت')}</small> : null;
 
   const copyLink = async () => {
+    if (copied === 'busy') return;
+    let link = designLink(tool.id, params);
+    if (hasPictures(params)) {
+      // pictures are stored first, so whoever opens the link sees the whole design
+      setCopied('busy');
+      try {
+        link = designLink(tool.id, await withSharedPictures(params));
+      } catch {
+        setCopied('pics'); // couldn't store them: copy the link without pictures and say so
+      }
+    }
     try {
-      await navigator.clipboard.writeText(designLink(tool.id, params));
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1600);
-    } catch {}
+      await navigator.clipboard.writeText(link);
+    } catch {
+      window.prompt(tx('Copy the link:', 'انسخ الرابط:'), link); // some browsers refuse after a wait
+    }
+    setCopied((c) => (c === 'pics' ? 'pics' : true));
+    setTimeout(() => setCopied(false), 3000);
   };
 
   return (
@@ -257,7 +270,7 @@ export default function Editor({ tool, initial, config, orderId, downloadId }) {
             <button className="sd-btn" disabled={!parts?.length || !!error} onClick={() => download(() => exportSTL(parts, name))}>{tx('Download STL', 'تحميل STL')}{tag}</button>
             <button className="sd-btn" disabled={!parts?.length || !!error} onClick={() => download(() => exportBambu3MF(parts, name))} title={tx('Bambu Studio project (A1 printer) that opens with the colours you chose', 'مشروع Bambu Studio (طابعة A1) يفتح بنفس الألوان التي اخترتها')}>{tx('3MF file', '3MF ملف')}{tag}</button>
             <button className="sd-btn" disabled={!parts?.length || !!error} onClick={() => download(() => exportSTLByColor(parts, name))}>{tx('STL per colour', 'STL لكل لون')}{tag}</button>
-            <button className="sd-btn sd-link" onClick={copyLink}>{copied ? tx('Copied ✓', 'تم النسخ ✓') : tx('Copy design link', 'نسخ رابط التصميم')}</button>
+            <button className="sd-btn sd-link" onClick={copyLink}>{copied === 'busy' ? tx('Preparing the link…', 'عم نجهّز الرابط…') : copied === 'pics' ? tx('Copied ✓ (without the pictures)', 'تم النسخ ✓ (بلا الصور)') : copied ? tx('Copied ✓', 'تم النسخ ✓') : tx('Copy design link', 'نسخ رابط التصميم')}</button>
           </div>
           {cost > 0 && (
             <p className="sd-credit-line">

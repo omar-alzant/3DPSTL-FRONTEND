@@ -150,6 +150,55 @@ export const decodeParams = (s) => {
 // الصور (الشعارات) لا توضع في رابط المشاركة لأنها كبيرة؛ تُحفظ مع الطلب فقط
 export const shareable = (params) =>
   Object.fromEntries(Object.entries(params).filter(([, v]) => !(typeof v === 'string' && v.startsWith('data:'))));
+// pictures in shared links: stored on the server, the link carries their address
+const SUPABASE = (process.env.REACT_APP_SUPABASE_URL || '').replace(/\/$/, '');
+export const SHARE_PREFIX = SUPABASE ? `${SUPABASE}/storage/v1/object/public/studio-shared/` : '';
+const isData = (v) => typeof v === 'string' && v.startsWith('data:image/');
+const isShared = (v) => typeof v === 'string' && !!SHARE_PREFIX && v.startsWith(SHARE_PREFIX);
+export const hasPictures = (params) => Object.values(params || {}).some(isData);
+export const hasSharedPictures = (params) => Object.values(params || {}).some(isShared);
+
+const shared = new Map(); // data URL -> its address (the same picture isn't sent twice)
+async function shareImage(data) {
+  if (shared.has(data)) return shared.get(data);
+  const r = await fetch(`${API}/api/studio/share-image`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ data }),
+  });
+  const { url } = await json(r, 'تعذّر تجهيز الرابط');
+  shared.set(data, url);
+  return url;
+}
+
+/** the design with every uploaded picture replaced by its stored address (for "Copy design link") */
+export async function withSharedPictures(params) {
+  const out = { ...params };
+  for (const [k, v] of Object.entries(out)) if (isData(v)) out[k] = await shareImage(v);
+  return out;
+}
+
+const toDataURL = (blob) => new Promise((resolve, reject) => {
+  const fr = new FileReader();
+  fr.onload = () => resolve(fr.result);
+  fr.onerror = () => reject(fr.error);
+  fr.readAsDataURL(blob);
+});
+
+/** opening a link: stored pictures come back as pictures (as if just uploaded) */
+export async function restorePictures(params) {
+  const out = { ...params };
+  for (const [k, v] of Object.entries(out)) {
+    if (isShared(v)) {
+      try {
+        const r = await fetch(v);
+        out[k] = r.ok ? await toDataURL(await r.blob()) : '';
+      } catch { out[k] = ''; }
+    }
+  }
+  return out;
+}
+
 export const designPath = (toolId, params) =>
   `/studio/${toolId}${params ? `?d=${encodeParams(shareable(params))}` : ''}`;
 export const designLink = (toolId, params) => `${window.location.origin}${designPath(toolId, params)}`;
