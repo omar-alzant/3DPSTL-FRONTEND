@@ -587,3 +587,18 @@
 .sd-section input[type=range] { width: 100%; accent-color: var(--sd-accent); }
 .sd-section small { font-size: 11px; color: var(--sd-dim); }
 @media (max-width: 860px) { .sd-section { top: auto; bottom: 64px; } }
+
+/* Admin → Studio orders: order added by hand */
+.sd-tag-manual { margin-inline-start: 8px; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 999px; background: var(--sd-accent); color: #fff; vertical-align: middle; }
+/* the form opens in a window outside the page, so it uses the site's colours, not the Studio ones */
+.sd-new-order label { display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px; font-size: 14px; color: var(--brand-muted); }
+.sd-new-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0 12px; }
+.sd-order-files { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; margin: 4px 0 10px; font-size: 14px; }
+.sd-order-files a { text-decoration: none; overflow-wrap: anywhere; }
+.sd-link-btn { background: none; border: 0; padding: 0; color: var(--sd-accent); font: inherit; font-size: 14px; cursor: pointer; }
+.sd-link-btn:disabled { opacity: .6; cursor: default; }
+/* header row of the admin orders page: one slim line */
+.sd-admin-head .d-flex { align-items: center; flex-wrap: wrap; }
+.sd-admin-head .sd-btn, .sd-admin-head .sd-select { min-height: 40px; height: 40px; padding-block: 0; white-space: nowrap; }
+.sd-btn.sd-danger-btn { color: var(--brand-danger) !important; border-color: color-mix(in srgb, var(--brand-danger) 45%, transparent); }
+.sd-btn.sd-danger-btn:hover { background: var(--brand-danger); color: #fff !important; }

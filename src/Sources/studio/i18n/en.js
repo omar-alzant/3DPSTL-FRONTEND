@@ -726,4 +726,11 @@ export const EN = {
  "ارفع صورة الكود (مقصوصة على قدّ الكود)": "Upload the code picture (cropped to the code)",
  "ما لقينا الكود بالصورة — جرّب تغيّر «قتامة الكود»": "We couldn't find the code in the picture — try changing “Code darkness”",
  "ما لقينا شي باللوغو — جرّب تغيّر «قتامة اللوغو»": "We couldn't find anything in the logo — try changing “Logo darkness”",
+ "كتابة مع الكود (اختياري)": "Text with the code (optional)",
+ "مكان الكتابة": "Text position",
+ "تحت": "Below",
+ "فوق": "Above",
+ "شمال": "Left",
+ "ستاند (واقفة عالطاولة)": "Stand (stands on a table)",
+ "الستاند": "Stand",
 };

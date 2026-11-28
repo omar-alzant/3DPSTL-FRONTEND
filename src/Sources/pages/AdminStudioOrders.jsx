@@ -1,6 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { listOrders, updateOrder, designPath, orderFileLink } from '../studio/lib/api.js';
+import { listOrders, updateOrder, designPath, orderFileLink, createAdminOrder, deleteOrder } from '../studio/lib/api.js';
+import { Modal } from 'react-bootstrap';
+import { TOOLS as TEMPLATE_TOOLS } from '../studio/tools/index.js';
+import { SPLIT_TOOL } from '../studio/split/meta.js';
+import NewStudioOrder from '../components/NewStudioOrder';
+import OrderFiles from '../components/OrderFiles';
+import ReadyNotice, { waNumber } from '../components/ReadyNotice';
+import { uploadAdminOrderFile } from '../studio/lib/api.js';
 import '../Style/Studio.css';
 import { refreshAdminSummary } from '../hooks/useAdminSummary';
 import { useLang } from '../i18n/LanguageContext';
@@ -14,13 +21,30 @@ const STATUSES = [
 ];
 
 const fileName = (ref) => (typeof ref === 'string' && ref.startsWith('idb:') ? ref.split(':').slice(2).join(':') : '');
-const summary = (p = {}) => [p.text || p.name, p.letter || p.letters, p.digits, fileName(p.model)].filter(Boolean).join(' · ');
+const summary = (p = {}) => [p.what, p.text || p.name, p.letter || p.letters, p.digits, fileName(p.model)].filter(Boolean).join(' · ');
 
 export default function AdminStudioOrders() {
   const { tx } = useLang();
   const [orders, setOrders] = useState(null);
   const [error, setError] = useState(null);
   const [filter, setFilter] = useState('all');
+  const [adding, setAdding] = useState(false);
+  const [editing, setEditing] = useState(null); // the order being edited
+  const [removing, setRemoving] = useState(null); // { order, busy, error } while confirming a delete
+  const confirmDelete = async () => {
+    const o = removing.order;
+    setRemoving((r) => ({ ...r, busy: true, error: null }));
+    try {
+      await deleteOrder(o.id);
+      setOrders((list) => list.filter((x) => x.id !== o.id));
+      refreshAdminSummary();
+      setRemoving(null);
+    } catch (e) {
+      setRemoving((r) => ({ ...r, busy: false, error: e.message }));
+    }
+  };
+  const [readyFor, setReadyFor] = useState(null); // order that just turned "ready": offer to tell the customer
+  const tools = [...TEMPLATE_TOOLS.map((t) => ({ id: t.id, name: t.name })), { id: SPLIT_TOOL.id, name: SPLIT_TOOL.nameAr }];
 
   // the ready mold file the customer's browser sent with the order (a link that works for 10 minutes)
   const openFile = async (id) => {
@@ -52,6 +76,7 @@ export default function AdminStudioOrders() {
       const o = await updateOrder(id, { status });
       refreshAdminSummary();
       setOrders((list) => list.map((x) => (x.id === id ? o : x)));
+      if (status === 'ready') setReadyFor(o);
     } catch (e) {
       setError(e.message);
     }
@@ -71,22 +96,78 @@ export default function AdminStudioOrders() {
             {STATUSES.map((s) => <option key={s.value} value={s.value}>{tx(s.label, s.ar)}</option>)}
           </select>
           <button className="sd-btn" onClick={load}>{tx('Refresh', 'تحديث')}</button>
+          <button className="sd-btn sd-primary" onClick={() => setAdding(true)}>{tx('+ New order', '+ طلب جديد')}</button>
         </div>
       </div>
       {error && <p className="sd-error">{error}</p>}
+      {readyFor && <ReadyNotice order={readyFor} onClose={() => setReadyFor(null)} />}
+      {removing && (
+        <Modal show onHide={() => !removing.busy && setRemoving(null)} centered>
+          <Modal.Header closeButton={!removing.busy}>
+            <Modal.Title className="text-danger">{tx('Delete this order?', 'حذف هالطلب؟')}</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <p className="mb-2">
+              <b dir="ltr">{removing.order.id}</b> · <bdi>{removing.order.customer_name}</bdi> · <bdi>{removing.order.tool_name || removing.order.tool_id}</bdi>
+            </p>
+            <p className="mb-0">{tx('The order and all its files are deleted for good. This can’t be undone.', 'الطلب وكل ملفاته بينحذفوا نهائياً. ما فيك ترجّعهم.')}</p>
+            {removing.error && <p className="text-danger mt-2 mb-0">{removing.error}</p>}
+          </Modal.Body>
+          <Modal.Footer>
+            <button type="button" className="btn btn-outline-secondary" onClick={() => setRemoving(null)} disabled={removing.busy}>{tx('Cancel', 'إلغاء')}</button>
+            <button type="button" className="btn btn-danger" onClick={confirmDelete} disabled={removing.busy}>
+              {removing.busy ? tx('Deleting…', 'عم يحذف…') : tx('Yes, delete it', 'إيه، احذفه')}
+            </button>
+          </Modal.Footer>
+        </Modal>
+      )}
+      {editing && (
+        <NewStudioOrder
+          tools={tools}
+          order={editing}
+          onCancel={() => setEditing(null)}
+          onSave={async (patch, files = []) => {
+            const o = await updateOrder(editing.id, patch);
+            const failed = [];
+            for (const f of files) { try { await uploadAdminOrderFile(o.id, f); } catch { failed.push(f.name); } }
+            if (failed.length) setError(`${tx('Saved, but these files did not upload:', 'انحفظ، بس هالملفات ما انرفعت:')} ${failed.join('، ')}`);
+            setOrders((list) => list.map((x) => (x.id === o.id ? o : x)));
+            refreshAdminSummary();
+            const becameReady = o.status === 'ready' && editing.status !== 'ready';
+            setEditing(null);
+            if (becameReady) setReadyFor(o);
+          }}
+        />
+      )}
+      {adding && (
+        <NewStudioOrder
+          tools={tools}
+          onCancel={() => setAdding(false)}
+          onSave={async (order, files = []) => {
+            const o = await createAdminOrder(order);
+            // the order is saved first; a file that fails to upload can be attached again from its card
+            const failed = [];
+            for (const f of files) { try { await uploadAdminOrderFile(o.id, f); } catch { failed.push(f.name); } }
+            if (failed.length) setError(`${tx('The order was saved, but these files did not upload:', 'انحفظ الطلب، بس هالملفات ما انرفعت:')} ${failed.join('، ')}`);
+            setOrders((list) => [o, ...(list || [])]);
+            refreshAdminSummary();
+            setAdding(false);
+          }}
+        />
+      )}
       {orders && !shown.length && <p className="sd-muted">{tx('No studio orders yet.', 'لا توجد طلبات استوديو بعد.')}</p>}
       <div className="sd-orders">
         {shown.map((o) => (
           <article key={o.id} className={`sd-order st-${o.status}`}>
             <div className="sd-order-head">
-              <b>{o.tool_name || o.tool_id}</b>
+              <b>{o.tool_name || o.tool_id}{o.params?.manual && <span className="sd-tag-manual">{tx('Added by hand', 'مزاد باليد')}</span>}</b>
               <span className="sd-muted">{o.id}</span>
             </div>
             <p className="sd-big" dir="auto">{summary(o.params)}</p>
             <p>
               <bdi>{o.customer_name}</bdi> · <a href={`tel:${o.customer_phone}`}>{o.customer_phone}</a>
               {' · '}
-              <a href={`https://wa.me/${String(o.customer_phone || '').replace(/\D/g, '')}`} target="_blank" rel="noreferrer">{tx('WhatsApp', 'واتساب')}</a>
+              <a href={`https://wa.me/${waNumber(o.customer_phone)}`} target="_blank" rel="noreferrer">{tx('WhatsApp', 'واتساب')}</a>
             </p>
             <p className="sd-muted">
               Qty {o.qty}
@@ -97,11 +178,14 @@ export default function AdminStudioOrders() {
             {o.customer_address && <p dir="auto">📍 <bdi>{o.customer_address}</bdi></p>}
             {o.customer_location && <p><a href={o.customer_location} target="_blank" rel="noreferrer">{tx('🗺️ افتح الموقع على الخريطة', '🗺️ افتح الموقع على الخريطة')}</a></p>}
             {o.notes && <p className="sd-notes" dir="auto">{o.notes}</p>}
+            <OrderFiles orderId={o.id} />
             <div className="sd-order-foot">
+              <button type="button" className="sd-btn" onClick={() => setEditing(o)}>{tx('Edit', 'تعديل')}</button>
+              <button type="button" className="sd-btn sd-danger-btn" onClick={() => setRemoving({ order: o, busy: false, error: null })}>{tx('Delete', 'حذف')}</button>
               <select className="sd-select" value={o.status} onChange={(e) => setStatus(o.id, e.target.value)}>
                 {STATUSES.map((s) => <option key={s.value} value={s.value}>{tx(s.label, s.ar)}</option>)}
               </select>
-              {o.tool_id === 'mold-maker' ? (
+              {o.tool_id === 'manual' ? null : o.tool_id === 'mold-maker' ? (
                 <button type="button" className="sd-btn" onClick={() => openFile(o.id)}>
                   {tx('Download the mold (3MF)', 'نزّل ملف القالب (3MF)')}
                 </button>

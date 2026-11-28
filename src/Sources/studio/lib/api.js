@@ -73,6 +73,46 @@ export async function listOrders() {
   return json(r, 'Failed to load studio orders');
 }
 
+// admin adds an order by hand (phone, WhatsApp, in the shop)
+export async function createAdminOrder(order) {
+  const r = await fetch(`${API}/api/studio/orders/admin`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...authHeader() },
+    body: JSON.stringify(order),
+  });
+  return json(r, 'تعذّر حفظ الطلب');
+}
+
+// admin attachments on an order (STL, 3MF, photos, PDF…)
+export async function uploadAdminOrderFile(id, file) {
+  const r = await fetch(`${API}/api/studio/orders/admin/${encodeURIComponent(id)}/files`, {
+    method: 'POST',
+    headers: { 'Content-Type': file.type || 'application/octet-stream', 'X-Filename': encodeURIComponent(file.name), ...authHeader() },
+    body: file,
+  });
+  return json(r, `تعذّر رفع ${file.name}`);
+}
+
+export async function listAdminOrderFiles(id) {
+  const r = await fetch(`${API}/api/studio/orders/admin/${encodeURIComponent(id)}/files`, { headers: authHeader() });
+  return json(r, 'Failed to load the files');
+}
+
+// admin: email the customer that the order is ready
+export async function emailOrderReady(id, message) {
+  const r = await fetch(`${API}/api/studio/orders/admin/${encodeURIComponent(id)}/notify-ready`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...authHeader() },
+    body: JSON.stringify({ message }),
+  });
+  return json(r, 'تعذّر إرسال الإيميل');
+}
+
+export async function deleteOrder(id) {
+  const r = await fetch(`${API}/api/studio/orders/admin/${encodeURIComponent(id)}`, { method: 'DELETE', headers: authHeader() });
+  return json(r, 'تعذّر حذف الطلب');
+}
+
 export async function updateOrder(id, patch) {
   const r = await fetch(`${API}/api/studio/orders/admin/${encodeURIComponent(id)}`, {
     method: 'PATCH',
