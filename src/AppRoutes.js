@@ -31,6 +31,7 @@ import AboutUs from './Sources/pages/AboutUs';
 import AdminStudioOrders from './Sources/pages/AdminStudioOrders';
 import AdminStudioPricing from './Sources/pages/AdminStudioPricing';
 import AdminWorkCard from './Sources/pages/AdminWorkCard';
+import AdminPrinters from './Sources/pages/AdminPrinters';
 import AdminCredits from './Sources/pages/AdminCredits';
 import Credits from './Sources/pages/Credits';
 import AdminSystem from './Sources/pages/AdminSystem';
@@ -101,6 +102,7 @@ export default function AppRoutes() {
            <Route path="colors" element={<AdminColors />} />
            <Route path="studio" element={<AdminStudioOrders />} />
            <Route path="pricing" element={<AdminStudioPricing />} />
+           <Route path="printers" element={<AdminPrinters />} />
            <Route path="credits" element={<AdminCredits />} />
            <Route path="system" element={<AdminSystem />} />
           {/*<Route path="benefits" element={<AdminBenefits />} />

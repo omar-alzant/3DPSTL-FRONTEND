@@ -16,6 +16,7 @@ import {
   BsCoin,
   BsActivity,
   BsPostcard,
+  BsPrinter,
 } from "react-icons/bs";
 
 import "../Style/AdminLayout.css";
@@ -47,6 +48,7 @@ const ADMIN_MENU = [
   {
     title: ["Studio", "الاستوديو"],
     items: [
+      { label: "Printers", ar: "المكنات", path: "printers", icon: <BsPrinter /> },
       { label: "Studio Pricing", ar: "تسعير الاستوديو", path: "pricing", icon: <BsCurrencyDollar /> },
       { label: "Colors", ar: "الألوان", path: "colors", icon: <BsDisc /> },
     ],

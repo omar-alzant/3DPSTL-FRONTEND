@@ -1,0 +1,32 @@
+/* Admin → Printers */
+.pr-page { padding: 16px; }
+.pr-head { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+.pr-head h2 { margin: 0; }
+.pr-head small, .pr-muted { color: var(--brand-muted); }
+.pr-note { padding: 12px 14px; border-radius: 12px; background: var(--brand-card); border: 1px solid var(--brand-border); }
+.pr-error { color: var(--brand-danger); margin: 4px 0; font-size: 14px; }
+.pr-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+.pr-card { display: flex; flex-direction: column; border-radius: 16px; overflow: hidden; background: var(--brand-card); border: 1px solid var(--brand-border); border-top: 4px solid var(--brand-border); }
+.pr-run { border-top-color: var(--brand-primary); }
+.pr-pause { border-top-color: var(--brand-warning); }
+.pr-done { border-top-color: var(--brand-success); }
+.pr-err { border-top-color: var(--brand-danger); }
+.pr-off { opacity: .7; }
+.pr-cam { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; display: block; background: var(--brand-card-2); }
+.pr-cam-empty { background: repeating-linear-gradient(0deg, var(--brand-card-2) 0 6px, var(--brand-card) 6px 9px); }
+.pr-body { padding: 12px 14px 14px; display: flex; flex-direction: column; gap: 6px; }
+.pr-title { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.pr-title h3 { font-size: 17px; margin: 0; }
+.pr-state { font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 999px; background: var(--brand-card-2); white-space: nowrap; }
+.pr-run .pr-state { background: var(--brand-primary); color: #fff; }
+.pr-pause .pr-state { background: var(--brand-warning); color: #1a1a1a; }
+.pr-done .pr-state { background: var(--brand-success); color: #0b2a1c; }
+.pr-err .pr-state { background: var(--brand-danger); color: #fff; }
+.pr-file { margin: 0; font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pr-progress { height: 8px; border-radius: 999px; background: var(--brand-card-2); overflow: hidden; }
+.pr-progress span { display: block; height: 100%; background: var(--brand-primary); transition: width .6s; }
+.pr-pause .pr-progress span { background: var(--brand-warning); }
+.pr-facts { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 13px; color: var(--brand-muted); }
+.pr-facts b { color: var(--brand-text); font-weight: 600; }
+.pr-actions { display: flex; gap: 8px; margin-top: 4px; }
+.pr-actions .btn { flex: 1; min-height: 40px; }
