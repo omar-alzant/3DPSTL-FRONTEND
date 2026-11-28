@@ -24,9 +24,10 @@ import puzzle from './puzzle.js';
 import clicker from './clicker.js';
 import jobOutfit from './jobOutfit.js';
 import moldMaker from './moldMaker.js';
+import embosser from './embosser.js';
 
 export const TOOLS = [
-  jobOutfit, moldMaker, keychain, qrCode, phoneCase, coaster, cookieCutter, stamp, ramadanTray, deskOrganizer, lebanonKeychain,
+  jobOutfit, moldMaker, embosser, keychain, qrCode, phoneCase, coaster, cookieCutter, stamp, ramadanTray, deskOrganizer, lebanonKeychain,
   lithophane, photoLampshade, vase, puzzle, clicker, initialSign, birthSign,
   dualName, lbPlate, plate, keycaps, pencilTopper, toteBag, flexiToy,
 ];
